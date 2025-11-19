@@ -1,13 +1,5 @@
 @import "tailwindcss" theme(static);
 @import "@nuxt/ui";
 
-html,
-body {
-  background-color: #062849; /* bg-gray-50 */
-}
-
-html.dark,
-body.dark {
-  background-color: #111827; /* bg-gray-900 */
-}
+/*  */
 
