@@ -1,11 +1,10 @@
 <template>
-  <UModal v-model:open="isOpen" :ui="{ width: 'max-w-4xl' }">
+  <UModal v-model:open="isOpen" :ui="{ width: 'max-w-4xl', bg: 'bg-white', rounded: 'rounded-lg'}">
     <template #body>
-      <div class="space-y-8 p-6">
-        
+      <div class="space-y-8 p-6 ">
         <!-- Header -->
         <header>
-          <h2 class="text-4xl font-bold text-gray-900 mb-4">Select Your Role</h2>
+          <h2 class="text-4xl font-bold text-white-900 mb-4">Select Your Role</h2>
           <p class="text-lg text-gray-600">
             Choose the role that matches your position to access the appropriate dashboard and features.
           </p>
@@ -28,25 +27,10 @@
         </div>
 
         <!-- Actions -->
-        <div class="mb-6">
-          <p class="text-gray-900 mb-4">Please select your role to continue</p>
-          <div class="flex items-center justify-end gap-3">
-            <UButton label="Cancel" color="neutral" variant="outline" @click="closeModal" />
-            <UButton :disabled="!selectedRole" color="primary" @click="handleContinue">
-              <span class="flex items-center gap-2">
-                Continue <ArrowRightIcon class="w-5 h-5" />
-              </span>
-            </UButton>
-          </div>
-        </div>
+        
 
         <!-- Footer -->
-        <footer class="bg-gray-100 rounded-lg p-4">
-          <p class="text-sm text-gray-700">
-            Your role selection determines which modules and features you can access. 
-            If you need to change roles, please contact your system administrator.
-          </p>
-        </footer>
+        
 
       </div>
     </template>

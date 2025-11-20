@@ -1,156 +1,188 @@
 <template>
-  <div class="h-screen overflow-hidden bg-teal-50 flex flex-col">
-    <div class="max-w-7xl my-14 mx-auto px-6 lg:px-12 py-4 flex-1 w-full">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 h-full">
+  <div class="flex flex-col min-h-screen">
+    <div class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-12 py-8 sm:py-12 lg:py-18 flex-1 flex items-center justify-center xl:block relative z-0">
+      <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 w-full xl:items-start">
         <!-- Left Section -->
-        <div class="flex flex-col justify-between">
+        <div class="hidden xl:flex flex-col justify-between">
         
-          <div class="flex items-center gap-3 mt-4 mb-10">
-            <div class="flex flex-col items-center">
-                <img src='/assets/images/marc.jpg' class="w-16 h-16 object-cover rounded-xl">
-              
+          <div class="flex items-center gap-2 sm:gap-3 mt-4 mb-6 sm:mb-8 lg:mb-10 bg-white/90 backdrop-blur-sm rounded-lg shadow-md border border-gray-100 w-full sm:w-80 p-2 sm:p-3">
+            <div class="flex flex-col items-center shrink-0">
+                <img src='/assets/images/NHS-logo.png' class="h-12 w-12 sm:h-16 sm:w-16 object-contain" alt="NHS Logo">
             </div>
-            <div>
-              <h1 class="text-3xl font-bold text-gray-900">MARC</h1>
-              <p class="text-sm text-gray-600">Healthcare Excellence Platform</p>
+            <div class="min-w-0">
+              <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent">MARC</h1>
+              <p class="text-xs sm:text-sm text-gray-600">Healthcare Excellence Platform</p>
             </div>
           </div>
 
       
           <div class="flex-1">
-            <h2 class="text-5xl lg:text-4xl font-bold text-gray-900 mb-6 leading-tight">
+            <h2 class="text-3xl sm:text-4xl lg:text-5xl xl:text-4xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
               Empowering Healthcare Professionals
             </h2>
-            <p class="text-lg text-gray-600 mb-12">
+            <p class="text-base sm:text-lg text-gray-600 mb-8 sm:mb-12">
               A comprehensive platform designed to streamline hospital operations
               and enhance patient care quality.
             </p>
 
           
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
-              <div v-for="feature in features" :key="feature" class="bg-white rounded-lg p-4 flex items-center gap-3 shadow-sm">
-                <div class="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
-                  <CheckIcon class="w-4 h-4 text-white" />
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-8 sm:mb-12">
+              <div v-for="feature in features" :key="feature" class="bg-white/90 backdrop-blur-sm rounded-lg p-3 sm:p-4 flex items-center gap-2 sm:gap-3 shadow-md hover:shadow-lg border border-gray-100 transition-all duration-300 hover:-translate-y-1">
+                <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shrink-0">
+                  <CheckIcon class="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                 </div>
-                <span class="text-gray-700">{{ feature }}</span>
+                <span class="text-sm sm:text-base text-gray-700">{{ feature }}</span>
               </div>
             </div>
 
            
-            <div class="flex gap-12">
-              <div v-for="stat in stats" :key="stat.label">
-                <p class="text-4xl font-bold text-gray-900">{{ stat.value }}</p>
-                <p class="text-gray-600">{{ stat.label }}</p>
+            <div class="flex flex-wrap gap-6 sm:gap-8 lg:gap-12">
+              <div v-for="stat in stats" :key="stat.label" class="flex-shrink-0">
+                <p class="text-3xl sm:text-4xl font-bold bg-black bg-clip-text text-transparent">{{ stat.value }}</p>
+                <p class="text-sm sm:text-base text-gray-600">{{ stat.label }}</p>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Right Section - Login Form -->
-        <div class="flex flex-col justify-end items-center lg:items-end pb-16">
-          <div class="w-full max-w-md">
-            <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 relative">
+        <div class="flex flex-col justify-center items-center w-full xl:justify-end xl:items-end">
+          <div class="w-full max-w-md px-4 sm:px-6 lg:py-12">
+            <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200/50 p-4 sm:p-6 relative overflow-hidden">
+              <!-- Decorative gradient background -->
+              <div class="absolute top-0 right-0 w-48 h-48 sm:w-64 sm:h-64 bg-gradient-to-br from-emerald-50 to-transparent rounded-full blur-3xl opacity-50 -z-0"></div>
+              
               <!-- Logo Icon -->
-              <div class="absolute top-6 right-6">
-                <img src='/assets/images/marc.jpg' class="w-16 h-16 object-cover rounded-xl">
-               
+              <div class="absolute top-4 right-4 sm:top-6 sm:right-6 z-10">
+                <img src='/assets/images/NHS-logo.png' class="w-12 h-12 sm:w-16 sm:h-16 object-contain rounded-xl" alt="NHS Logo">
               </div>
 
               <!-- Form Header -->
-              <div class="mb-2">
-                <h3 class="text-3xl font-bold text-gray-900">Sign In</h3>
+              <div class="mb-2 relative z-10 pr-16 sm:pr-20">
+                <h3 class="text-2xl sm:text-3xl font-bold text-gray-900">Sign In</h3>
               </div>
-              <p class="text-gray-600 mb-8">Access your hospital dashboard</p>
+              <p class="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8 relative z-10">Access your hospital dashboard</p>
 
               <!-- Form -->
-              <form @submit.prevent="handleSignIn" class="space-y-6">
+              <form @submit.prevent="handleSignIn" class="space-y-4 sm:space-y-6 relative z-10">
                 <!-- Username Field -->
                 <div>
-                  <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
+                  <label for="username" class="block text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                     Username
                   </label>
-                  <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <UserIcon class="w-5 h-5 text-gray-400" />
-                    </div>
-                    <input
-                      id="username"
-                      v-model="username"
-                      type="text"
-                      placeholder="Enter username"
-                      class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
-                    />
-                  </div>
+                  <UInput
+                    id="username"
+                    v-model="username"
+                    type="text"
+                    placeholder="Enter username"
+                    class="w-full"
+                    :ui="{
+                      base: 'pl-10 pr-4 py-2.5 sm:py-3',
+                      rounded: 'rounded-lg',
+                      placeholder: 'placeholder-gray-400',
+                      size: { default: 'text-sm sm:text-base' },
+                      gap: { default: 'gap-2' },
+                      padding: { default: 'px-4' },
+                      ring: 'focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2',
+                      color: {
+                        white: {
+                          outline: 'shadow-md bg-white text-gray-900 ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200'
+                        }
+                      }
+                    }"
+                  >
+                    <template #leading>
+                      <UserIcon class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                    </template>
+                  </UInput>
                 </div>
 
                 <!-- Password Field -->
                 <div>
-                  <div class="flex justify-between items-center mb-2">
+                  <div class="flex justify-between items-center mb-1.5 sm:mb-2 flex-wrap gap-1">
                     <label for="password" class="block text-sm font-medium text-gray-700">
                       Password
                     </label>
-                    <a href="#" class="text-sm text-emerald-600 hover:text-emerald-700">
+                    <a href="#" class="text-xs sm:text-sm text-emerald-600 hover:text-emerald-700 transition-colors whitespace-nowrap">
                       Forgot password?
                     </a>
                   </div>
-                  <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <LockClosedIcon class="w-5 h-5 text-gray-400" />
-                    </div>
-                    <input
-                      id="password"
-                      v-model="password"
-                      :type="showPassword ? 'text' : 'password'"
-                      placeholder="Enter password"
-                      class="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
-                    />
-                    <UButton
-                      @click="showPassword = !showPassword"
-                      type="button"
-                      variant="ghost"
-                      color="gray"
-                      class="absolute inset-y-0 right-4 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition !p-0"
-                      :ui="{ rounded: 'rounded-none', padding: { sm: 'p-0', md: 'p-0', lg: 'p-0' } }"
-                    >
-                      <EyeSlashIcon v-if="showPassword" class="w-5 h-5" />
-                      <EyeIcon v-else class="w-5 h-5" />
-                    </UButton>
-                  </div>
+                  <UInput
+                    id="password"
+                    v-model="password"
+                    :type="showPassword ? 'text' : 'password'"
+                    placeholder="Enter password"
+                    class="w-full"
+                    :ui="{
+                      base: 'pl-10 pr-12 py-2.5 sm:py-3',
+                      rounded: 'rounded-lg',
+                      placeholder: 'placeholder-gray-400',
+                      size: { default: 'text-sm sm:text-base' },
+                      gap: { default: 'gap-2' },
+                      padding: { default: 'px-4' },
+                      ring: 'focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2',
+                      color: {
+                        white: {
+                          outline: 'shadow-md bg-white text-gray-900 ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200'
+                        }
+                      }
+                    }"
+                  >
+                    <template #leading>
+                      <LockClosedIcon class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                    </template>
+                    <template #trailing>
+                      <UButton
+                        @click="showPassword = !showPassword"
+                        type="button"
+                        variant="ghost"
+                        color="gray"
+                        class="text-gray-400 hover:text-gray-600 transition-colors !p-0"
+                        :ui="{ rounded: 'rounded-none', padding: { sm: 'p-0', md: 'p-0', lg: 'p-0' } }"
+                      >
+                        <EyeSlashIcon v-if="showPassword" class="w-4 h-4 sm:w-5 sm:h-5" />
+                        <EyeIcon v-else class="w-4 h-4 sm:w-5 sm:h-5" />
+                      </UButton>
+                    </template>
+                  </UInput>
                 </div>
 
            
-                <div class="flex items-center">
-                  <input
-                    id="keep-signed-in"
-                    v-model="keepSignedIn"
-                    type="checkbox"
-                    class="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
-                  />
-                  <label for="keep-signed-in" class="ml-2 text-sm text-gray-700">
-                    Keep me signed in
-                  </label>
-                </div>
+                <UCheckbox
+                  id="keep-signed-in"
+                  v-model="keepSignedIn"
+                  label="Keep me signed in"
+                  class="text-sm"
+                  :ui="{
+                    color: {
+                      emerald: {
+                        outline: 'text-emerald-600 dark:text-emerald-500 focus:ring-emerald-500 dark:ring-offset-gray-800 dark:focus:ring-emerald-500 focus:ring-2'
+                      }
+                    }
+                  }"
+                />
 
                 <!-- Submit Button -->
                 <UButton
                   type="submit"
-                  class="w-full !bg-gradient-to-r !from-emerald-500 !to-emerald-600 hover:!from-emerald-600 hover:!to-emerald-700 !text-white font-semibold py-3 px-4 rounded-lg transition shadow-md group"
+                  class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold py-2.5 sm:py-3 px-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 group text-sm sm:text-base"
                 >
                   <span class="flex w-full items-center justify-center gap-2">
-                    Sign In to Dashboard
-                    <ArrowRightIcon class="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    <span class="hidden sm:inline">Sign In to Dashboard</span>
+                    <span class="sm:hidden">Sign In</span>
+                    <ArrowRightIcon class="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform duration-200" />
                   </span>
                 </UButton>
               </form>
 
              
-              <div class="mt-8 text-center">
-                <p class="text-sm text-gray-600">
+              <div class="mt-6 sm:mt-8 text-center relative z-10">
+                <p class="text-xs sm:text-sm text-gray-600">
                   Need assistance?
-                  <a href="#" class="text-gray-700 hover:text-gray-900 font-medium ml-1">
+                  <a href="#" class="text-gray-700 hover:text-gray-900 font-medium ml-1 transition-colors">
                     Contact
                   </a>
-                  <a href="#" class="text-emerald-600 hover:text-emerald-700 font-medium ml-1">
+                  <a href="#" class="text-emerald-600 hover:text-emerald-700 font-medium ml-1 transition-colors">
                     IT Support
                   </a>
                 </p>
@@ -162,16 +194,16 @@
     </div>
 
     <!-- Footer -->
-    <footer class="-mt-8 pb-6 text-center text-gray-500 text-sm w-full">
-  <p>© 2025 MARC. All rights reserved.</p>
-  <div class="mt-2 flex justify-center items-center gap-2 text-sm">
-    <a href="#" class="hover:text-gray-700">Privacy Policy</a>
-    <span>•</span>
-    <a href="#" class="hover:text-gray-700">Terms of Service</a>
-    <span>•</span>
-    <a href="#" class="hover:text-gray-700">Help Center</a>
-  </div>
-</footer>
+    <footer class="-mt-4 sm:-mt-8 pb-4 sm:pb-6 text-center text-gray-500 text-xs sm:text-sm w-full relative z-0 px-4">
+      <p class="font-medium">© 2025 MARC. All rights reserved.</p>
+      <div class="mt-2 sm:mt-3 flex flex-wrap justify-center items-center gap-2 sm:gap-3 text-xs sm:text-sm">
+        <a href="#" class="hover:text-emerald-600 transition-colors font-medium">Privacy Policy</a>
+        <span class="text-gray-300 hidden sm:inline">•</span>
+        <a href="#" class="hover:text-emerald-600 transition-colors font-medium">Terms of Service</a>
+        <span class="text-gray-300 hidden sm:inline">•</span>
+        <a href="#" class="hover:text-emerald-600 transition-colors font-medium">Help Center</a>
+      </div>
+    </footer>
 
     <!-- Sign In Success Modal -->
     <SignInSuccessModal
@@ -182,6 +214,10 @@
 </template>
 
 <script setup>
+definePageMeta({
+  layout: 'login'
+});
+
 import { ref } from "vue";
 import {
   UserIcon,
@@ -195,6 +231,7 @@ import {
 const username = ref("");
 const password = ref("");
 const showPassword = ref(false);
+const keepSignedIn = ref(false);
 const isModalOpen = ref(false);
 
 const features = [
