@@ -5,8 +5,18 @@ export default defineNuxtConfig({
 
   modules: [
     '@nuxt/ui',
-       '@vueuse/nuxt'
+    '@vueuse/nuxt'
   ],
   css: ['~/assets/css/main.css'],
 
+  colorMode: {
+    preference: 'system', // default value of $colorMode.preference
+    fallback: 'light', // fallback value if no preference is stored
+    hid: 'nuxt-color-mode-script',
+    globalName: '__NUXT_COLOR_MODE__',
+    componentName: 'ColorScheme',
+    classPrefix: '',
+    classSuffix: '',
+    storageKey: 'nuxt-color-mode'
+  }
 })
