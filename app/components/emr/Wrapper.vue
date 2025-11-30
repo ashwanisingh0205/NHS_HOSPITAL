@@ -8,7 +8,7 @@
 
     <!-- Text Input Types -->
     <UInput
-      v-if="['text', 'email', 'number', 'password', 'tel', 'url'].includes(field.type)"
+      v-if="['text', 'email', 'number', 'password', 'tel', 'url','date'].includes(field.type)"
       v-model="localValue"
       :type="field.type"
       :placeholder="field.placeholder"
@@ -107,54 +107,32 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
-const nestedValues = ref({})
-
+/* ------------------ Main v-model Handler ------------------ */
 const localValue = computed({
-  get: () => props.field.type === 'group' ? nestedValues.value : props.modelValue,
-  set: (val) => {
+  get: () =>
+    props.field.type === 'group'
+      ? nestedValues.value
+      : props.modelValue,
+
+  set: val => {
+    if (props.field.type === 'group') return // groups handled separately
+
     if (props.field.type === 'number') {
-      emit('update:modelValue', val === '' || val === null ? null : Number(val))
+      emit('update:modelValue', val === '' ? null : Number(val))
     } else {
       emit('update:modelValue', val)
     }
   }
 })
 
-const fieldOptions = computed(() => {
-  if (!props.field.options) return []
-  return props.field.options.map(opt => 
+/* ------------------ Options ------------------ */
+const fieldOptions = computed(() =>
+  (props.field.options || []).map(opt =>
     typeof opt === 'object' ? opt : { label: opt, value: opt }
   )
-})
-
-const errorMessage = computed(() => 
-  typeof props.error === 'string' ? props.error : null
 )
 
-const nestedError = (id) => {
-  if (props.error && typeof props.error === 'object') {
-    return props.error[id] || null
-  }
-  return null
-}
 
-const getDefaultValue = (field) => {
-  if (field.defaultValue !== undefined) return field.defaultValue
-  if (field.type === 'checkbox') return false
-  if (['number', 'select', 'radio'].includes(field.type)) return null
-  return ''
-}
-
-const updateNestedValue = (id, value) => {
-  nestedValues.value[id] = value
-  emit('update:modelValue', { ...nestedValues.value })
-}
-
-onMounted(() => {
-  if (props.field.type === 'group' && props.field.fields) {
-    props.field.fields.forEach(subField => {
-      nestedValues.value[subField.id] = getDefaultValue(subField)
-    })
-  }
-})
+  typeof props.error === 'object' ? props.error?.[id] || null : null
 </script>
+

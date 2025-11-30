@@ -1,18 +1,16 @@
-/**
- * Simple composable - just replace the return statements with your API calls
- */
+
 
 export const useFormData = () => {
   const loading = ref(false)
   const error = ref(null)
 
-  // Fetch form config from API - each field's label comes from API
+
   const fetchFormConfig = async () => {
     loading.value = true
     error.value = null
     
     try {
-      // Replace this with: return await $fetch('/api/form-config')
+  
       
       await new Promise(resolve => setTimeout(resolve, 200))
       
@@ -26,12 +24,12 @@ export const useFormData = () => {
           },
           {
             id: "password",
-            label: "Password",  // Title comes from API
+            label: "Password",  
             type: "password"
           },
           {
             id: "email",
-            label: "Email",  // Title comes from API
+            label: "Email",  
             type: "email",
             required: true
           },
@@ -68,7 +66,8 @@ export const useFormData = () => {
             label: "Address",  // Title comes from API
             type: "textarea",
             rows: 4
-          }
+          },
+          
         ]
       }
     } catch (err) {

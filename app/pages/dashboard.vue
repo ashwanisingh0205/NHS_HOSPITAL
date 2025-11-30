@@ -6,22 +6,16 @@
       <span class="ml-3 text-gray-600">Loading form...</span>
     </div>
 
-    <!-- Error State -->
-    <div v-else-if="error" class="py-12">
-      <UAlert
-        color="red"
-        variant="soft"
-        icon="lucide:alert-circle"
-        :description="error"
-      />
-    </div>
-
-    <!-- Dynamic Form -->
+    <!-- Dynamic Form 
+     formCode="REGISTRATION",
+      :formParam="{ userId: 12345 }" -->
+      
     <DynamicForm
-      v-else-if="formConfig"
-      :form-config="formConfig"
-      :initial-data="formData"
-      @submit="handleSubmit"
+     v-else-if="formConfig"
+:form-config="formConfig"
+:initial-data="formData"
+@submit="handleSubmit"
+     
     />
   </div>
 </template>
@@ -42,8 +36,7 @@ const formData = ref(null)
 // Handle form submission
 const handleSubmit = (data) => {
   console.log('Form submitted:', data)
-  // TODO: Replace with your API call
-  // await $fetch('/api/save-form', { method: 'POST', body: data })
+ 
   alert('Form submitted successfully!')
 }
 
