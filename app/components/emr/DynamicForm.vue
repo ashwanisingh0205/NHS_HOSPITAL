@@ -17,17 +17,15 @@
           <Wrapper
             :field="field"
             v-model="formData[field.id]"
-           
           />
         </div>
       </div>
 
       <div class="flex gap-3 pt-2">
-        <UButton type="submit" 
-         label="Submit form"
+        <UButton 
+            type="submit" 
+            label="Submit form"
         />
-          
-      
       </div>
     </UForm>
 
