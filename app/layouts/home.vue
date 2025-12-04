@@ -342,7 +342,7 @@ const mainNavItems = [
 const navSections = {
     dashboard: [
         { name: 'Overview', path: '/dashboard', icon: 'lucide:home' },
-        { name: 'Analytics', path: 'registration', icon: 'lucide:trending-up' },
+        { name: 'Forms', path: '/masters/form_builder/form_list', icon: 'lucide:file-text' },
         { name: 'Reports', path: '/dashboard/reports', icon: 'lucide:file-bar-chart' },
         { name: 'Statistics', path: '/dashboard/stats', icon: 'lucide:pie-chart' },
     ],
@@ -417,7 +417,10 @@ const toggleExpanded = (itemName) => {
     index > -1 ? expandedItems.value.splice(index, 1) : expandedItems.value.push(itemName);
 };
 
-const isActive = (path) => route.path === path || route.path.startsWith(path + '/');
+const isActive = (path) => {
+    const normalizedPath = path.startsWith('/') ? path : '/' + path;
+    return route.path === normalizedPath || route.path.startsWith(normalizedPath + '/');
+};
 
 const handleMainNavClick = (sectionId) => {
     activeSection.value = sectionId;

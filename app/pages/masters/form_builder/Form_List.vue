@@ -1,19 +1,14 @@
 <template>
-  <div class="space-y-6">
-    <div class="flex items-center justify-between">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Form List</h1>
-    </div>
-
-    <UCard :ui="{ body: { padding: 'p-6' } }">
+  <div class="flex-1 min-w-0">
+    <UCard>
       <template #header>
         <div class="flex items-center justify-between">
-          <h2 class="text-lg font-bold text-gray-900 dark:text-white">Form List</h2>
+          <h2 class="text-lg font-semibold">Form List</h2>
           <UButton
-            @click="selectedForm ; isModalOpen = true"
-            variant="solid"
+            @click="selectedForm = null; isModalOpen = true"
             icon="i-lucide:plus"
             label="New"
-            color="neutral"
+            color="info"
           />
         </div>
       </template>
@@ -23,6 +18,8 @@
           v-for="form in forms"
           :key="form.id"
           :form="form"
+          :is-selected="selectedForm?.id === form.id"
+          @view="handleFormView"
           @edit="selectedForm = form; isModalOpen = true"
         />
       </div>
@@ -99,6 +96,11 @@ const forms = ref([
     documentType: 'Document Type 2'
   }
 ]);
+
+const handleFormView = (form) => {
+  // Navigate to Form_Field page with form ID as query parameter
+  navigateTo(`/masters/form_builder/form_field?id=${form.id}`);
+};
 
 const handleFormSubmit = (formData) => {
   if (selectedForm.value) {

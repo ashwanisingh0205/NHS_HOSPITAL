@@ -1,5 +1,9 @@
 <template>
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+    <div 
+        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 cursor-pointer transition-all hover:shadow-md"
+        :class="{ 'ring-2 ring-blue-500 dark:ring-blue-400': isSelected }"
+        @click="$emit('view', form)"
+    >
         <div class="flex items-start justify-between gap-4">
             <div class="flex-1 min-w-0">
                 <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-3">
@@ -15,7 +19,15 @@
             </div>
             <div class="flex items-center gap-2 shrink-0">
                 <UButton
-                    @click="$emit('edit', form)"
+                    @click.stop="$emit('view', form)"
+                    variant="solid"
+                    size="sm"
+                    icon="i-lucide:eye"
+                    color="neutral"
+                    class="bg-gray-800 dark:bg-gray-700 text-white hover:bg-gray-700 dark:hover:bg-gray-600"
+                />
+                <UButton
+                    @click.stop="$emit('edit', form)"
                     variant="outline"
                     size="sm"
                     icon="i-lucide:pencil"
@@ -31,9 +43,13 @@ defineProps({
     form: {
         type: Object,
         required: true
+    },
+    isSelected: {
+        type: Boolean,
+        default: false
     }
 });
 
-defineEmits(['edit']);
+defineEmits(['edit', 'view']);
 </script>
 
