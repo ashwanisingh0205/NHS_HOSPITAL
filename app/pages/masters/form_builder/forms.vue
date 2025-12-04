@@ -1,39 +1,44 @@
 <template>
-  <div class="flex-1 min-w-0">
-    <UCard>
-      
-      <template #header>
-        <div class="flex items-center justify-between">
-          <h2 class="text-lg font-semibold">Form List</h2>
-          <UButton
-            @click="selectedForm = null; isModalOpen = true"
-            icon="i-lucide:plus"
-            label="New"
-            color="info"
-          />
-        </div>
-      </template>
+  <div class="flex gap-4">
+    <!-- Form List Column (Left) -->
+    <div class="w-1/3 min-w-0 flex flex-col">
+      <UCard>
+        <template #header>
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-semibold">Form List</h2>
+            <UButton
+              @click="selectedForm = null; isModalOpen = true"
+              icon="i-lucide:plus"
+              label="New"
+              color="info"
+            />
+          </div>
+        </template>
 
-      <div class="space-y-4">
-        <FormCard
-          v-for="form in forms"
-          :key="form.id"
-          :form="form"
-          :is-selected="selectedForm?.id === form.id"
-          @view="handleFormView"
-          @edit="selectedForm = form; isModalOpen = true"
-        />
-      </div>
-    </UCard>
+        <template #default>
+          <div class="p-4 space-y-4">
+            <FormCard
+              v-for="form in forms"
+              :key="form.id"
+              :form="form"
+              :is-selected="selectedForm?.id === form.id"
+              @view="handleFormView"
+              @edit="selectedForm = form; isModalOpen = true"
+            />
+          </div>
+        </template>
+      </UCard>
+    </div>
 
-    <NuxtChild
-    />
-
+    <!-- Form Fields Column (Right - NuxtPage) -->
+    <div class="flex-1 min-w-0 flex flex-col">
+      <NuxtPage />
+    </div>
   </div>
+
   <FormEditModal
-      v-model:open="isModalOpen"
-     
-    />
+    v-model:open="isModalOpen"
+  />
 </template>
 
 <script setup>
@@ -100,10 +105,34 @@ const forms = ref([
   }
 ]);
 
+const route = useRoute();
+
+// Provide forms data to child pages via provide/inject
+provide('forms', forms);
+provide('selectedForm', selectedForm);
+
 const handleFormView = (form) => {
-  // Navigate to Form_Field page with form ID as query parameter
-  navigateTo(`/masters/form_builder/form_fields?id=${form.id}`);
+  selectedForm.value = form;
+  // Navigate to nested route for form fields
+  navigateTo({
+    path: '/masters/form_builder/forms/form_fields',
+    query: { id: form.id.toString() }
+  });
 };
+
+// Watch route changes to sync selectedForm with URL
+watch(() => route.query.id, (formId) => {
+  if (formId) {
+    const id = Number(formId);
+    const form = forms.value.find(f => f.id === id);
+    if (form) {
+      selectedForm.value = form;
+    }
+  } else if (route.path === '/masters/form_builder/forms') {
+    // Clear selection when on parent route only (no query param)
+    selectedForm.value = null;
+  }
+}, { immediate: true });
 
 const handleFormSubmit = (formData) => {
   if (selectedForm.value) {

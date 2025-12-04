@@ -1,24 +1,16 @@
 <template>
-  <div class="w-full">
+  <div class="w-full flex flex-col">
     <UCard>
       <template #header>
         <div class="flex items-center justify-between">
-          <div class="flex items-center gap-4">
-            <UButton
-              @click="navigateTo('/masters/form_builder/forms')"
-              icon="i-lucide:arrow-left"
-              variant="outline"
-              color="neutral"
-              size="sm"
-            />
-            <h2 class="text-lg font-semibold">
-              Form Field
-              <span v-if="selectedForm" class="text-sm text-gray-500 font-normal">
-                - {{ selectedForm.title }}
-              </span>
-            </h2>
-          </div>
+          <h2 class="text-lg font-semibold">
+            Form Field
+            <span v-if="selectedForm" class="text-sm text-gray-500 font-normal">
+              - {{ selectedForm.title }}
+            </span>
+          </h2>
           <UButton
+            v-if="selectedForm"
             @click="handleNewFormField"
             icon="i-lucide:plus"
             label="New"
@@ -27,31 +19,39 @@
         </div>
       </template>
 
-      <div v-if="selectedForm" class="space-y-2">
-        <UCard
-          v-for="(field, index) in selectedFormFields"
-          :key="field.id || index"
-        >
-          <div class="flex items-start justify-between">
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 mb-1">
-                <UBadge :label="field.type" color="error" size="xs" />
-                <span class="text-xs text-gray-500">{{ field.id }}</span>
+      <template #default>
+        <div v-if="selectedForm && selectedFormFields.length > 0" class="p-4 space-y-2">
+          <UCard
+            v-for="(field, index) in selectedFormFields"
+            :key="field.id || index"
+            class="cursor-pointer hover:shadow-md transition-shadow"
+          >
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                  <UBadge :label="field.type" color="error" size="xs" />
+                  <span class="text-xs text-gray-500">{{ field.id }}</span>
+                </div>
+                <p class="text-sm mb-1 font-medium">{{ field.description }}</p>
+                <code class="text-xs text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">{{ field.key }}</code>
               </div>
-              <p class="text-sm mb-1">{{ field.description }}</p>
-              <code class="text-xs text-gray-500">{{ field.key }}</code>
+              <UButton
+                @click.stop="handleFormFieldEdit(field)"
+                size="xs"
+                icon="i-lucide:pencil"
+                variant="outline"
+                color="neutral"
+              />
             </div>
-            <UButton
-              @click="handleFormFieldEdit(field)"
-              size="xs"
-              icon="i-lucide:pencil"
-              variant="outline"
-              color="neutral"
-            />
-          </div>
-        </UCard>
-      </div>
-     
+          </UCard>
+        </div>
+        <div v-else-if="selectedForm && selectedFormFields.length === 0" class="flex items-center justify-center text-gray-500 dark:text-gray-400 p-4">
+          <p>No form fields found for this form</p>
+        </div>
+        <div v-else class="flex items-center justify-center text-gray-500 dark:text-gray-400 p-4">
+          <p>Select a form from the list to view its fields</p>
+        </div>
+      </template>
     </UCard>
   </div>
 </template>
@@ -61,14 +61,9 @@ definePageMeta({ layout: 'home' });
 
 const route = useRoute();
 
-// Mock forms data - in production, this would come from an API/store
-const forms = [
-  { id: 1, title: 'DIABETIC FLOW SHEET' },
-  { id: 2, title: 'Doctor Diabetic Flow Sheet' },
-  { id: 3, title: 'Doctor Urinary Catheterization Checklist' },
-  { id: 4, title: 'EMERGENCY NURSING ASSESSMENT SHEET' },
-  { id: 5, title: 'PATIENT VITALS RECORD' }
-];
+// Inject forms and selectedForm from parent component
+const injectedForms = inject('forms', null);
+const injectedSelectedForm = inject('selectedForm', null);
 
 // Mock form fields data - in production, this would come from an API
 const formFieldsData = {
@@ -93,7 +88,10 @@ const formFieldsData = {
     { type: 'RADIO', id: 384, description: 'Applied sterile drape and applied sterile gloves', key: 'APPLIED-STERILE' },
     { type: 'TEXT', id: 377, description: 'State the reason for catheterization', key: 'STATE' },
     { type: 'RADIO', id: 381, description: 'The urethral meatus was cleaned with sterile saline and betadine.', key: 'URETHRAL-MEATUS' },
-    { type: 'TEXT', id: 382, description: 'Foley\'s size', key: 'FOLEYS-SIZE' }
+    { type: 'TEXT', id: 382, description: 'Foley\'s size', key: 'FOLEYS-SIZE' },
+    { type: 'TEXT', id: 383, description: 'Foley\'s Type', key: 'TYPE' },
+    { type: 'RADIO', id: 379, description: 'Provided privacy for the patient and explained the patient about the procedure', key: 'PRIVACY' },
+    { type: 'RADIO', id: 385, description: 'Removed plastic covering from catheter and Use sterile lubricant: Lubricated catheter.', key: 'LUBRICATED' }
   ],
   4: [
     { type: 'TEXT', id: 601, description: 'Blood Pressure', key: 'BP' },
@@ -108,16 +106,16 @@ const formFieldsData = {
   ]
 };
 
-// Get selected form based on query parameter
+// Get selected form from injected value (synced with parent)
 const selectedForm = computed(() => {
-  const formId = Number(route.query.id);
-  return forms.find(f => f.id === formId) || null;
+  return injectedSelectedForm?.value || null;
 });
 
 // Get form fields for selected form
 const selectedFormFields = computed(() => {
-  if (!selectedForm.value) return [];
-  return formFieldsData[selectedForm.value.id] || [];
+  if (!selectedForm.value || !selectedForm.value.id) return [];
+  const fields = formFieldsData[selectedForm.value.id];
+  return Array.isArray(fields) ? fields : [];
 });
 
 const handleNewFormField = () => {
@@ -128,3 +126,4 @@ const handleFormFieldEdit = (field) => {
   console.log('Edit form field:', field);
 };
 </script>
+
