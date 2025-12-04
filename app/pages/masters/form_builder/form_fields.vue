@@ -5,7 +5,7 @@
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-4">
             <UButton
-              @click="navigateTo('/masters/form_builder/form_list')"
+              @click="navigateTo('/masters/form_builder/forms')"
               icon="i-lucide:arrow-left"
               variant="outline"
               color="neutral"

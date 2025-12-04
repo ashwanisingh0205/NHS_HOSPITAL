@@ -1,6 +1,7 @@
 <template>
   <div class="flex-1 min-w-0">
     <UCard>
+      
       <template #header>
         <div class="flex items-center justify-between">
           <h2 class="text-lg font-semibold">Form List</h2>
@@ -25,12 +26,14 @@
       </div>
     </UCard>
 
-    <FormEditModal
-      v-model:open="isModalOpen"
-      :form="selectedForm"
-      @submit="handleFormSubmit"
+    <NuxtChild
     />
+
   </div>
+  <FormEditModal
+      v-model:open="isModalOpen"
+     
+    />
 </template>
 
 <script setup>
@@ -99,7 +102,7 @@ const forms = ref([
 
 const handleFormView = (form) => {
   // Navigate to Form_Field page with form ID as query parameter
-  navigateTo(`/masters/form_builder/form_field?id=${form.id}`);
+  navigateTo(`/masters/form_builder/form_fields?id=${form.id}`);
 };
 
 const handleFormSubmit = (formData) => {

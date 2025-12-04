@@ -162,6 +162,29 @@
                 </div>
 
                 <div class="flex items-center gap-1 sm:gap-2 lg:gap-3 shrink-0">
+                    <!-- Customer Care Button (Account Manager) -->
+                    <UButton
+                        variant="primary"
+                        class="md:flex items-center px-2 py-0.5 rounded-lg border border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    >
+                        <div class="relative shrink-0">
+                            <div class="w-12 h-12 rounded-full border border-purple-200/50 dark:border-purple-300/50 bg-sky-100 dark:bg-sky-900/50 p-0.5">
+                                <div class="w-full h-full rounded-full overflow-hidden bg-sky-100 dark:bg-sky-900/50 flex items-center justify-center">
+                                    <img
+                                        :src="accountManagerAvatar"
+                                        :alt="accountManagerName"
+                                        class="w-full h-full object-cover"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-start min-w-0">
+                            <span class="text-sm text-black dark:text-purple-100 leading-tight whitespace-nowrap">Meet {{ accountManagerName }}</span>
+                            <span class="text-xs text-black dark:text-purple-100 leading-tight whitespace-nowrap">Your Account Manager</span>
+                        </div>
+                    </UButton>
+
+                    <!-- Notification Button -->
                     <UButton
                         variant="primary"
                         size="md"
@@ -269,27 +292,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <UButton
-                        variant="primary"
-                        class="md:flex items-center px-2 py-0.5 rounded-lg border border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                    >
-                        <div class="relative shrink-0">
-                            <div class="w-12 h-12 rounded-full border border-purple-200/50 dark:border-purple-300/50 bg-sky-100 dark:bg-sky-900/50 p-0.5">
-                                <div class="w-full h-full rounded-full overflow-hidden bg-sky-100 dark:bg-sky-900/50 flex items-center justify-center">
-                                    <img
-                                        :src="accountManagerAvatar"
-                                        :alt="accountManagerName"
-                                        class="w-full h-full object-cover"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex flex-col items-start min-w-0">
-                            <span class="text-sm text-black dark:text-purple-100 leading-tight whitespace-nowrap">Meet {{ accountManagerName }}</span>
-                            <span class="text-xs text-black dark:text-purple-100 leading-tight whitespace-nowrap">Your Account Manager</span>
-                        </div>
-                    </UButton>
                 </div>
             </header>
 
@@ -342,7 +344,7 @@ const mainNavItems = [
 const navSections = {
     dashboard: [
         { name: 'Overview', path: '/dashboard', icon: 'lucide:home' },
-        { name: 'Forms', path: '/masters/form_builder/form_list', icon: 'lucide:file-text' },
+        { name: 'Forms', path: '/masters/form_builder/forms', icon: 'lucide:file-text' },
         { name: 'Reports', path: '/dashboard/reports', icon: 'lucide:file-bar-chart' },
         { name: 'Statistics', path: '/dashboard/stats', icon: 'lucide:pie-chart' },
     ],
