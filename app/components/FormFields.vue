@@ -1,8 +1,8 @@
 <template>
-  <div class="w-full flex flex-col">
-    <UCard>
+  <div class="w-full flex flex-col h-full min-h-0">
+    <UCard class="h-full flex flex-col min-h-0">
       <template #header>
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between shrink-0">
           <h2 class="text-lg font-semibold">
             Form Field
             <span v-if="selectedForm" class="text-sm text-gray-500 font-normal">
@@ -20,36 +20,38 @@
       </template>
 
       <template #default>
-        <div v-if="selectedForm && selectedFormFields.length > 0" class="p-4 space-y-2">
-          <UCard
-            v-for="(field, index) in selectedFormFields"
-            :key="field.id || index"
-            class="cursor-pointer  "
-          >
-            <div class="flex items-start justify-between gap-4">
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2 mb-1">
-                  <UBadge :label="field.type" color="error" size="xs" />
-                  <span class="text-xs text-gray-500">{{ field.id }}</span>
+        <div class="flex-1 min-h-0 overflow-y-auto">
+          <div v-if="selectedForm && selectedFormFields.length > 0" class="p-4 space-y-2">
+            <UCard
+              v-for="(field, index) in selectedFormFields"
+              :key="field.id || index"
+              class="cursor-pointer hover:shadow-md transition-shadow"
+            >
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 mb-1">
+                    <UBadge :label="field.type" color="error" size="xs" />
+                    <span class="text-xs text-gray-500">{{ field.id }}</span>
+                  </div>
+                  <p class="text-sm mb-1 font-medium">{{ field.description }}</p>
+                  <code class="text-xs text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">{{ field.key }}</code>
                 </div>
-                <p class="text-sm mb-1 font-medium">{{ field.description }}</p>
-                <code class="text-xs text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">{{ field.key }}</code>
+                <UButton
+                  @click.stop="handleFormFieldEdit(field)"
+                  size="xs"
+                  icon="i-lucide:pencil"
+                  variant="outline"
+                  color="neutral"
+                />
               </div>
-              <UButton
-                @click.stop="handleFormFieldEdit(field)"
-                size="xs"
-                icon="i-lucide:pencil"
-                variant="outline"
-                color="neutral"
-              />
-            </div>
-          </UCard>
-        </div>
-        <div v-else-if="selectedForm && selectedFormFields.length === 0" class="flex items-center justify-center text-gray-500 dark:text-gray-400 p-4">
-          <p>No form fields found for this form</p>
-        </div>
-        <div v-else class="flex items-center justify-center text-gray-500 dark:text-gray-400 p-4">
-          <p>Select a form from the list to view its fields</p>
+            </UCard>
+          </div>
+          <div v-else-if="selectedForm && selectedFormFields.length === 0" class="flex items-center justify-center text-gray-500 dark:text-gray-400 p-4">
+            <p>No form fields found for this form</p>
+          </div>
+          <div v-else class="flex items-center justify-center text-gray-500 dark:text-gray-400 p-4">
+            <p>Select a form from the list to view its fields</p>
+          </div>
         </div>
       </template>
     </UCard>
@@ -57,10 +59,6 @@
 </template>
 
 <script setup>
-definePageMeta({ layout: 'home' });
-
-const route = useRoute();
-
 // Inject forms and selectedForm from parent component
 const SelectedForm = inject('selectedForm', null);
 

@@ -30,7 +30,7 @@
       </UCard>
     </div>
 
-    <!-- Form Fields Column (Right - NuxtPage) -->
+    <!-- Form Fields Column (Right) -->
     <div class="flex-1 min-w-0 flex flex-col">
       <NuxtPage />
     </div>
