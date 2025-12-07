@@ -311,7 +311,7 @@ const navSections = {
     dashboard: [
         { name: 'Overview', path: '/dashboard', icon: 'lucide:home' },
         { name: 'Forms', path: '/masters/form_builder/forms', icon: 'lucide:file-text' },
-        { name: 'Reports', path: '/dashboard/reports', icon: 'lucide:file-bar-chart' },
+        { name: 'Reports', path: '/reports', icon: 'lucide:file-bar-chart' },
         { name: 'Statistics', path: '/dashboard/stats', icon: 'lucide:pie-chart' },
     ],
     projects: [

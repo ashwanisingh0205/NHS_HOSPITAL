@@ -3,7 +3,7 @@
     <UCard
       :ui="cardUi"
       @click="$emit('view', form)"
-      :class="{ 'border-info-500 border-1': isSelected, 'border-gray-200 border': !isSelected }"
+      :variant="isSelected ? 'outline' : 'soft'"
     >
       <div class="flex items-start justify-between gap-4">
         <div class="flex-1 min-w-0">
