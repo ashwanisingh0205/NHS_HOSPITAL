@@ -10,6 +10,7 @@
         <Radio v-if="field.data_type === 'RADIO'" :field="field" />
         <Dropdown v-if="field.data_type === 'DROPDOWN'" :field="field" />
         <DropdownSearch v-if="field.data_type === 'DROPDOWN_SEARCH'" :field="field" />
+        <Table v-if="field.data_type === 'TABLE'" :field="field" class="mb-2" />
         
     </div>
 </template>
@@ -22,6 +23,7 @@ import Switch from "./components/Switch.vue";
 import Checkbox from "./components/Checkbox.vue";
 import Dropdown from "./components/Dropdown.vue";
 import DropdownSearch from "./components/DropdownSearch.vue";
+import  Table from "./components/Table.vue";
 
 
 const props = defineProps({
