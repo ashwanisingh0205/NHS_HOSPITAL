@@ -6,7 +6,9 @@
             </span>
         </div>
         <div class="border border-gray-200 rounded-lg p-5 bg-white">
-            <FormRenderer :fields="field.fields" />
+            <div :class="getGridClass()">
+                <FormRenderer :fields="field.fields" :cols="cols" />
+            </div>
         </div>
     </div>
 </template>
@@ -19,5 +21,21 @@ const props = defineProps({
         type: Object,
         required: true,
     },
+    cols: {
+        type: Number,
+        default: 3,
+    },
 });
+
+function getGridClass() {
+    const colsMap = {
+        1: 'grid grid-cols-1 gap-4',
+        2: 'grid grid-cols-2 gap-4',
+        3: 'grid grid-cols-3 gap-4',
+        4: 'grid grid-cols-4 gap-4',
+        5: 'grid grid-cols-5 gap-4',
+        6: 'grid grid-cols-6 gap-4',
+    };
+    return colsMap[props.cols] || 'grid grid-cols-3 gap-4';
+}
 </script>
