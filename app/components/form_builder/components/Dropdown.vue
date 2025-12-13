@@ -1,6 +1,6 @@
 <template>
     <UFormField :label="field.label">
-        <USelectMenu v-model="field.value" :icon="field.icon" />
+        <USelectMenu v-model="field.value" :icon="field.icon" class="w-full" />
     </UFormField>
 </template>
 <script setup>

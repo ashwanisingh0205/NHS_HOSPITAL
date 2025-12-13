@@ -7,15 +7,19 @@
 
 <template>
     <template v-for="field in fields" :key="field.id">
+       
         <Group 
             v-if="field.data_type === 'GROUP'" 
             :field="field" 
             :cols="cols"
             class="mb-2"
         />
-        <div v-else-if="field.data_type === 'TABLE'" class="mb-2">
-            <!-- Table component -->
-        </div>
+        
+        <Table 
+            v-else-if="field.data_type === 'TABLE'" 
+            :field="field" 
+            class="mb-2"
+        />
         <Card 
             v-else-if="field.data_type === 'CARD'" 
             :field="field" 
@@ -33,6 +37,7 @@
 import Group from './components/Group.vue';
 import FormWrapper from './FormWrapper.vue';
 import Card from './components/Card.vue';
+import Table from './components/Table.vue';
 
 const props = defineProps({
     fields: {

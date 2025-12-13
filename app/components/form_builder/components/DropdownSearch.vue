@@ -5,6 +5,7 @@
       :options="options"
       :loading="loading"
       :searchable="true"
+      class="w-full"
       :placeholder="field.title || field.placeholder || 'Search...'"
       :icon="field.icon"
       searchable-placeholder="Type to search..."
