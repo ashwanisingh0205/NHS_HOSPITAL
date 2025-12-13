@@ -2,7 +2,7 @@
 
 
   <!-- Dynamic Form -->
-  <DynamicForm formCode="REGISTRATION" :formParam="{ userId: 12345 }" @submit="handleSubmit" />
+  <!-- <DynamicForm formCode="REGISTRATION" :formParam="{ userId: 12345 }" @submit="handleSubmit" /> -->
 
   <Form />
 </template>
