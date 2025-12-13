@@ -19,8 +19,10 @@ handleOnBind();
     <div class="container mt-4">
         <h1>{{ formConfig?.form?.form_name }}</h1>
         <form v-if="formConfig">
-            <FormRenderer :fields="formConfig.fields" />
-
+            <FormRenderer 
+                :fields="formConfig.fields" 
+                :cols="formConfig.form.cols" 
+            />
         </form>
 
 
@@ -43,7 +45,7 @@ const applyWidthCalculation = (fields) => {
 
         // Handle "20%" or other string values
         if (typeof labelWidth === "string" && labelWidth.includes('%')) {
-            labelWidth = parseInt(labelWidth.replace('%', ''));
+            labelWidth = Number.parseInt(labelWidth.replace('%', ''), 10);
         }
 
         // Default label width = 30 if missing or zero
