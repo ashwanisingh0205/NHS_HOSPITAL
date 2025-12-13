@@ -1,14 +1,13 @@
 <template>
     <UFormField :label="field.label">
-            <UInput 
-                v-model="field.value" 
-                :placeholder="field.label"
-                :icon="field.icon"
-                :type="inputType" 
-                :maxlength="field.max_value" 
-                :minlength="field.min_value"
-            >
-            </UInput>
+        <UInput 
+            :type="inputType" 
+            v-model="field.value" 
+            :placeholder="field.label"
+            :icon="field.icon"
+            class="w-full"
+            :maxlength="field.max_value" 
+            :minlength="field.min_value" />
     </UFormField>
 </template>
 <script setup>
