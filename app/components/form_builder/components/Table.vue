@@ -20,7 +20,7 @@
                 :key="colField.field_code"
                 class="px-4 py-3 whitespace-nowrap"
               >
-                <FormWrapper :field="getCellField(colField, row, rowIndex)" />
+                <FormWrapper :field="getCellField(colField, row)" />
               </td>
             </tr>
           </tbody>
@@ -58,29 +58,20 @@
     
     // Get column definitions from field.fields
     if (props.field.fields && Array.isArray(props.field.fields)) {
-      // Sort by priority to maintain column order
-      columnFields.value = [...props.field.fields].sort((a, b) => (a.priority || 0) - (b.priority || 0))
-    } else if (tableRows.value.length > 0) {
-      // If no fields defined, create columns from first row keys
-      columnFields.value = Object.keys(tableRows.value[0]).map(key => ({
-        field_code: key,
-        label: key,
-        data_type: 'TEXT',
-      }))
-    }
+   
+      columnFields.value = [...props.field.fields]
+    } 
+    
   })
   
-  
-  
   // Create field object for each cell with value from row data
-  function getCellField(colField, row, rowIndex) {
+  function getCellField(colField, row) {
     const cellValue = row[colField.field_code] || ''
     
     return {
       ...colField,
       value: cellValue,
-      // Ensure value is set for the component
-      label: '', // Hide label in table cells
+     
     }
   }
   </script>
