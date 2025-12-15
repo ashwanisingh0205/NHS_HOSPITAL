@@ -293,6 +293,7 @@
 			"field_code": "vitals",
 			"parent_field_code": null,
 			"label": "Vitals",
+
 			"label_position": "TOP",
 			"label_style": null,
 			"label_width": 30,
@@ -545,18 +546,25 @@
 			"parent_field_code": null,
 			"label": "Disease",
 			"label_position": "INLINE-WITH-TITLE",
-			"items": [
+			"orientation": "horizontal",
+			"choices": [
 				{
+					"id": 1,
 					"label": "Fever",
-					"value": "fever"
+					"value": "fever",
+					"description": null
 				},
 				{
+					"id": 2,
 					"label": "Cough",
-					"value": "cough"
+					"value": "cough",
+					"description": null
 				},
 				{
+					"id": 3,
 					"label": "Headache",
-					"value": "headache"
+					"value": "headache",
+					"description": null
 				}
 			],
 			"icon": null,
