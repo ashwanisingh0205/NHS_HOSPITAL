@@ -3,22 +3,43 @@
     <h1 class="text-2xl font-bold mb-6">HR Forms</h1>
     
     <!-- Forms List -->
-    <div v-if="!selectedForm && !loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <UCard
-        v-for="form in forms"
-        :key="form.id"
-        @click="selectForm(form)"
-        class="cursor-pointer "
-      >
-        <div class="p-4">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            {{ form.form_name }}
-          </h3>
-          <div class="space-y-1 text-sm text-gray-600 dark:text-gray-400">
-            <p><span class="font-medium">Code:</span> {{ form.form_code }}</p>
-            <p><span class="font-medium">Type:</span> {{ form.form_type }}</p>
-            <p v-if="form.frequency"><span class="font-medium">Frequency:</span> {{ form.frequency }}</p>
+   <!-- Forms List -->
+   <div v-if="!selectedForm && !loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <UCard v-for="form in forms" :key="form.id" @click="selectForm(form)" :ui="{
+        root: 'border-2 border-cyan-500 rounded-xl cursor-pointer',
+        body: 'p-4 space-y-2'
+      }">
+        <div class="flex items-start justify-between mb-3">
+          <h3 class="text-lg font-semibold text-gray-900">{{ form.form_name }}</h3>
+          <div class="flex gap-1">
+            <UIcon v-if="form.whatsapp_template_id" name="i-logos-whatsapp-icon" class="w-5 h-5" />
+            <UIcon v-if="form.pdf_id" name="i-heroicons-document-text-solid" class="w-5 h-5 text-orange-500" />
           </div>
+        </div>
+
+        <div class="flex items-center gap-2 text-sm text-gray-600">
+          <UIcon name="i-heroicons-tag-solid" class="text-cyan-500" />
+          <span>Code: <span class="text-gray-900">{{ form.form_code }}</span></span>
+        </div>
+
+        <div class="flex items-center gap-2 text-sm text-gray-600">
+          <UIcon name="i-heroicons-document-text-solid" class="text-cyan-500" />
+          <span>Type: <UBadge color="cyan" size="xs" variant="soft">{{ form.form_type }}</UBadge></span>
+        </div>
+
+        <div v-if="form.category_id" class="flex items-center gap-2 text-sm text-gray-600">
+          <UIcon name="i-heroicons-folder-solid" class="text-cyan-500" />
+          <span>Category: {{ form.category_id }}</span>
+        </div>
+
+        <div v-if="form.corporate_id" class="flex items-center gap-2 text-sm text-gray-600">
+          <UIcon name="i-heroicons-building-office-solid" class="text-cyan-500" />
+          <span>Corp/Unit: {{ form.corporate_id }}</span>
+        </div>
+
+        <div v-if="form.frequency" class="flex items-center gap-2 text-sm text-gray-600">
+          <UIcon name="i-heroicons-calendar-solid" class="text-cyan-500" />
+          <span>Frequency: <span class="text-gray-900">{{ form.frequency }}</span></span>
         </div>
       </UCard>
     </div>

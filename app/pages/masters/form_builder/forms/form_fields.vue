@@ -6,12 +6,12 @@
           <h2 class="text-lg font-semibold">
             Form Field
             <span v-if="selectedForm" class="text-sm text-gray-500 font-normal">
-              - {{ selectedForm.title }}
+              - {{ selectedForm.title || selectedForm.form_name }}
             </span>
           </h2>
           <UButton
             v-if="selectedForm"
-            @click="handleNewFormField"
+            @click="isFieldModalOpen = true"
             icon="i-lucide:plus"
             label="New"
             color="info"
@@ -20,32 +20,20 @@
       </template>
 
       <template #default>
-        <div v-if="selectedForm && selectedFormFields.length > 0" class="p-4 space-y-2">
-          <UCard
-            v-for="(field, index) in selectedFormFields"
-            :key="field.id || index"
-            class="cursor-pointer"
-          >
-            <div class="flex items-start justify-between gap-4">
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2 mb-1">
-                  <UBadge :label="field.type" color="error" size="xs" />
-                  <span class="text-xs text-gray-500">{{ field.id }}</span>
-                </div>
-                <p class="text-sm mb-1 font-medium">{{ field.description }}</p>
-                <code class="text-xs text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">{{ field.key }}</code>
-              </div>
-              <UButton
-                @click.stop="handleFormFieldEdit(field)"
-                size="xs"
-                icon="i-lucide:pencil"
-                variant="outline"
-                color="neutral"
-              />
-            </div>
-          </UCard>
+        <div v-if="loading" class="p-8 text-center text-gray-500">
+          <UIcon name="lucide:loader-2" class="w-8 h-8 mx-auto mb-2 animate-spin" />
+          <p>Loading form fields...</p>
         </div>
-        <div v-else-if="selectedForm && selectedFormFields.length === 0" class="p-8 text-center">
+        <div v-else-if="error" class="p-8 text-center text-red-500">
+          <UIcon name="lucide:alert-circle" class="w-8 h-8 mx-auto mb-2" />
+          <p>{{ error }}</p>
+        </div>
+        <div v-else-if="formConfig?.fields?.length" class="p-4">
+          <UForm>
+            <FormRenderer :fields="formConfig.fields" />
+          </UForm>
+        </div>
+        <div v-else-if="selectedForm" class="p-8 text-center">
           <UIcon name="lucide:file-text" class="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500 mb-4" />
           <p class="text-gray-600 dark:text-gray-400 mb-2">No form fields found</p>
           <p class="text-sm text-gray-500 dark:text-gray-500">Click "New" to add a form field</p>
@@ -58,75 +46,101 @@
       </template>
     </UCard>
   </div>
+
+  <FormFieldEditModal
+    v-model:open="isFieldModalOpen"
+    :form="selectedForm"
+    @submit="handleFieldSubmit"
+  />
 </template>
 
 <script setup>
+import axios from 'axios';
+import FormRenderer from '../../../../components/form_builder/FormRenderer.vue';
+import FormFieldEditModal from '../../../../components/FormFieldEditModal.vue';
+
 definePageMeta({ layout: 'home' });
 
 const route = useRoute();
+const selectedForm = inject('selectedForm', ref(null));
+const forms = inject('forms', ref([]));
 
-// Inject forms and selectedForm from parent component
-const SelectedForm = inject('selectedForm', null);
+const formConfig = ref(null);
+const loading = ref(false);
+const error = ref(null);
+const isFieldModalOpen = ref(false);
+const currentFormCode = ref(null);
 
-// Mock form fields data - in production, this would come from an API
-const formFieldsData = {
-  1: [
-    { type: 'TEXT', id: 101, description: 'Patient chief complaint', key: 'CHIEF-COMPLAINT' },
-    { type: 'TEXTAREA', id: 102, description: 'Detailed complaint description', key: 'COMPLAINT-DETAIL' },
-    { type: 'TEXT', id: 201, description: 'Onset of symptoms', key: 'ONSET' },
-    { type: 'TEXT', id: 202, description: 'Duration of illness', key: 'DURATION' },
-    { type: 'RADIO', id: 301, description: 'Smoking status', key: 'SMOKING-STATUS' },
-    { type: 'TEXT', id: 401, description: 'Medication name', key: 'MEDICATION-NAME' }
-  ],
-  2: [
-    { type: 'TEXT', id: 101, description: 'Patient chief complaint', key: 'CHIEF-COMPLAINT' },
-    { type: 'TEXTAREA', id: 102, description: 'Detailed complaint description', key: 'COMPLAINT-DETAIL' },
-    { type: 'TEXT', id: 201, description: 'Onset of symptoms', key: 'ONSET' },
-    { type: 'RADIO', id: 301, description: 'Smoking status', key: 'SMOKING-STATUS' },
-    { type: 'TEXT', id: 401, description: 'Medication name', key: 'MEDICATION-NAME' }
-  ],
-  3: [
-    { type: 'RADIO', id: 696, description: '1. Identified the patient and checked doctor\'s order', key: 'DOCTORS-ORDER' },
-    { type: 'RADIO', id: 380, description: 'Given dorsal recumbent position and draped patient.', key: 'DORSAL-RECUMBENT' },
-    { type: 'RADIO', id: 384, description: 'Applied sterile drape and applied sterile gloves', key: 'APPLIED-STERILE' },
-    { type: 'TEXT', id: 377, description: 'State the reason for catheterization', key: 'STATE' },
-    { type: 'RADIO', id: 381, description: 'The urethral meatus was cleaned with sterile saline and betadine.', key: 'URETHRAL-MEATUS' },
-    { type: 'TEXT', id: 382, description: 'Foley\'s size', key: 'FOLEYS-SIZE' },
-    { type: 'TEXT', id: 383, description: 'Foley\'s Type', key: 'TYPE' },
-    { type: 'RADIO', id: 379, description: 'Provided privacy for the patient and explained the patient about the procedure', key: 'PRIVACY' },
-    { type: 'RADIO', id: 385, description: 'Removed plastic covering from catheter and Use sterile lubricant: Lubricated catheter.', key: 'LUBRICATED' }
-  ],
-  4: [
-    { type: 'TEXT', id: 601, description: 'Blood Pressure', key: 'BP' },
-    { type: 'TEXT', id: 602, description: 'Heart Rate', key: 'HR' },
-    { type: 'TEXT', id: 603, description: 'Temperature', key: 'TEMP' },
-    { type: 'TEXT', id: 604, description: 'Respiratory Rate', key: 'RR' }
-  ],
-  5: [
-    { type: 'TEXT', id: 801, description: 'Systolic BP', key: 'SYS-BP' },
-    { type: 'TEXT', id: 802, description: 'Diastolic BP', key: 'DIA-BP' },
-    { type: 'TEXT', id: 803, description: 'Pulse', key: 'PULSE' }
-  ]
+const applyWidthCalculation = (fields) => {
+  fields.forEach(f => {
+    let labelWidth = typeof f.label_width === "string" && f.label_width.includes('%')
+      ? parseInt(f.label_width.replace('%', ''), 10)
+      : f.label_width || 30;
+    
+    f.label_width = labelWidth;
+    f.value_width = 100 - labelWidth;
+    
+    if (Array.isArray(f.fields)) applyWidthCalculation(f.fields);
+  });
 };
 
-// Get selected form from injected value (synced with parent)
-const selectedForm = computed(() => {
-  return SelectedForm?.value || null;
+const loadFormFields = async (formCode) => {
+  if (!formCode || currentFormCode.value === formCode) return;
+  
+  currentFormCode.value = formCode;
+  loading.value = true;
+  error.value = null;
+  
+  try {
+    const { data } = await axios.get(`http://13.200.174.164:3001/v1/form/formdata?form_code=${formCode}`);
+    
+    if (data.success && data.form && Array.isArray(data.fields)) {
+      formConfig.value = {
+        form: data.form,
+        fields: data.fields,
+        fieldMap: data.fieldMap || {}
+      };
+      applyWidthCalculation(formConfig.value.fields);
+    } else {
+      error.value = 'Invalid response format from API';
+      formConfig.value = null;
+    }
+  } catch (err) {
+    error.value = err.response?.data?.message || err.message || 'Failed to load form fields';
+    formConfig.value = null;
+  } finally {
+    loading.value = false;
+  }
+};
+
+const checkAndLoadForm = () => {
+  let formCode = selectedForm.value?.form_code;
+  
+  if (!formCode && route.query.id && forms.value.length) {
+    const form = forms.value.find(f => f.id === parseInt(route.query.id, 10));
+    formCode = form?.form_code;
+  }
+  
+  if (formCode) {
+    loadFormFields(formCode);
+  } else {
+    formConfig.value = null;
+    currentFormCode.value = null;
+  }
+};
+
+const handleFieldSubmit = async () => {
+  if (selectedForm.value?.form_code) {
+    currentFormCode.value = null;
+    await loadFormFields(selectedForm.value.form_code);
+  }
+};
+
+onMounted(() => {
+  checkAndLoadForm();
 });
 
-// Get form fields for selected form
-const selectedFormFields = computed(() => {
-  if (!selectedForm.value || !selectedForm.value.id) return [];
-  const fields = formFieldsData[selectedForm.value.id];
-  return Array.isArray(fields) ? fields : [];
+onUpdated(() => {
+  checkAndLoadForm();
 });
-
-const handleNewFormField = () => {
-  console.log('New form field for:', selectedForm.value);
-};
-
-const handleFormFieldEdit = (field) => {
-  console.log('Edit form field:', field);
-};
 </script>
-

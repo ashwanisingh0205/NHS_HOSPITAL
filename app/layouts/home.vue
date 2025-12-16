@@ -310,11 +310,12 @@ const mainNavItems = [
 const navSections = {
     dashboard: [
         { name: 'Overview', path: '/dashboard', icon: 'lucide:home' },
+        {name:"Items",path:'/masters/items/item', icon:'lucide:list-ordered'},
         { name: 'Forms', path: '/masters/form_builder/forms', icon: 'lucide:file-text' },
+        {name:"Infra",path:'/masters/infra/infra', icon:'lucide:building'},
         { name: 'Reports', path: '/reports', icon: 'lucide:file-bar-chart' },
         {name: 'Statistics', path: '/statistics', icon: 'lucide:pie-chart' },
         {name:'Patient', path: '/patient', icon: 'lucide:user' },
-        {name:'Table',path:'/table', icon:'lucide:table' },
         {name:'Hr',path:'/hr', icon:'lucide:users'}
     ],
     projects: [

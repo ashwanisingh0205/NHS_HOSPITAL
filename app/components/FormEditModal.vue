@@ -1,7 +1,7 @@
 <template>
   <UModal
     v-model:open="isOpen"
-    :ui="{ width: 'max-w-4xl', bg: 'bg-white dark:bg-gray-800', rounded: 'rounded-lg', zIndex: 'z-50' }"
+    :ui="{  width: 'w-[95vw] max-w-[95vw]', bg: 'bg-white dark:bg-gray-800', rounded: 'rounded-lg', zIndex: 'z-50' }"
   >
     <template #header>
       <div class="flex items-center justify-between w-full">
@@ -21,6 +21,7 @@
       <DynamicForm
         :form="props.form"
         form-type="form-edit"
+        @close="isOpen = false"
       />
     </template>
   </UModal>
