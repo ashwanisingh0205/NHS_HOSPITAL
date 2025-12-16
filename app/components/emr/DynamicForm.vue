@@ -17,13 +17,13 @@
       <UButton type="submit" label="Submit form" :loading="loading" :disabled="loading" />
     </div>
     
-    <!-- Success/Error Messages -->
+    <!-- Success/Error Messages
     <UAlert
       v-if="submitMessage"
       :color="submitSuccess ? 'green' : 'red'"
       variant="soft"
       :title="submitMessage"
-    />
+    /> -->
   </UForm>
 </template>
 
