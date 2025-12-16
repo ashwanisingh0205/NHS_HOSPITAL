@@ -139,22 +139,35 @@ const transformPayload = (raw) => {
   Object.keys(raw).forEach(key => {
     const value = raw[key]
     
-    if (value === null || value === undefined) {
-      if (NUMERIC_FIELDS.has(key)) payload[key] = 0
-      else if (BOOLEAN_FIELDS.has(key)) payload[key] = false
+    // Skip null, undefined, and empty strings
+    if (value === null || value === undefined || value === '') {
       return
     }
     
+    // Handle numeric fields
     if (NUMERIC_FIELDS.has(key)) {
       const num = Number(value)
+      // For form-field-edit, only include numeric fields if they have a value (except form_id which is required)
+      if (props.formType === 'form-field-edit' && key !== 'form_id' && (Number.isNaN(num) || num === 0)) {
+        return
+      }
       payload[key] = Number.isNaN(num) ? 0 : num
-    } else if (BOOLEAN_FIELDS.has(key)) {
+    } 
+    // Handle boolean fields
+    else if (BOOLEAN_FIELDS.has(key)) {
       payload[key] = Boolean(value)
-    } else {
+    } 
+    // Handle string fields
+    else {
+      // Skip empty strings
+      if (typeof value === 'string' && value.trim() === '') {
+        return
+      }
       payload[key] = value
     }
   })
   
+  // Always set status to true if not present
   if (payload.status === undefined) payload.status = true
   return payload
 }
@@ -191,7 +204,7 @@ const handleSubmit = async () => {
         field_code: 'Field Code',
         label: 'Label'
       }
-      apiEndpoint = 'http://13.200.174.164:3001/v1/masters/forms/form/field'
+      apiEndpoint = 'http://13.200.174.164:3001/v1/masters/forms/field'
     } else if (props.formType === 'form-edit') {
       requiredFields = {
         corporate_id: 'Corporate ID',
@@ -201,7 +214,8 @@ const handleSubmit = async () => {
         form_name: 'Form Name'
       }
     }
-    
+    console.log('apiEndpoint', apiEndpoint);
+    console.log('payload', payload);
     const missingFields = validateRequired(payload, requiredFields)
     if (missingFields.length > 0) {
       submitMessage.value = `Please fill in: ${missingFields.join(', ')}`
@@ -209,7 +223,12 @@ const handleSubmit = async () => {
       return
     }
 
-    const response = await axios.post(apiEndpoint, payload, {
+    // Wrap payload in fields array for form-field-edit
+    const requestPayload = props.formType === 'form-field-edit' 
+      ? { fields: [payload] }
+      : payload
+
+    const response = await axios.post(apiEndpoint, requestPayload, {
       headers: { 'Content-Type': 'application/json' }
     })
 
