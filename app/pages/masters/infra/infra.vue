@@ -20,7 +20,6 @@
               placeholder="Search blocks..."
               icon="i-lucide:search"
               class="w-full"
-              @input="handleSearch"
             />
           </div>
         </template>
@@ -78,8 +77,6 @@ const loading = ref(false);
 const error = ref(null);
 const searchQuery = ref('');
 const formConfig = ref(null);
-
-const route = useRoute();
 
 // Fetch form configuration for blocks
 const loadFormConfig = async () => {
@@ -152,10 +149,6 @@ const filteredBlocks = computed(() => {
     block.block_name?.toLowerCase().includes(query)
   );
 });
-
-const handleSearch = () => {
-  // Search is handled by computed property
-};
 
 // Provide blocks data to child pages via provide/inject
 provide('blocks', blocks);

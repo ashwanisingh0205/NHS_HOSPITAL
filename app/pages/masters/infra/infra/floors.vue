@@ -13,7 +13,7 @@
             </h2>
             <UButton
               v-if="selectedBlock"
-              @click="isFloorModalOpen = true"
+              @click="handleNewFloor"
               icon="i-lucide:plus"
               label="New"
               color="info"
@@ -26,7 +26,6 @@
               placeholder="Search floors..."
               icon="i-lucide:search"
               class="w-full"
-              @input="handleSearch"
             />
           </div>
         </template>
@@ -95,10 +94,44 @@ const searchQuery = ref('');
 const isFloorModalOpen = ref(false);
 const formConfig = ref(null);
 
+// Create default form config
+const createDefaultFormConfig = () => ({
+  form: { form_name: 'Floor Form' },
+  fields: [
+    {
+      id: 'floor_name',
+      field_code: 'floor_name',
+      label: 'Floor Name',
+      type: 'text',
+      data_type: 'TEXT',
+      required: true,
+      placeholder: 'Enter floor name'
+    },
+    {
+      id: 'floor_code',
+      field_code: 'floor_code',
+      label: 'Floor Code',
+      type: 'text',
+      data_type: 'TEXT',
+      required: false,
+      placeholder: 'Enter floor code'
+    },
+    {
+      id: 'floor_number',
+      field_code: 'floor_number',
+      label: 'Floor Number',
+      type: 'number',
+      data_type: 'NUMBER',
+      required: false,
+      placeholder: 'Enter floor number'
+    }
+  ],
+  fieldMap: {}
+});
+
 // Fetch form configuration for floors (if available)
 const loadFormConfig = async () => {
   try {
-    // Try to get form config for floors - adjust endpoint if different
     const response = await axios.get('http://13.200.174.164:3001/v1/masters/infra/form_floors').catch(() => null);
     if (response?.data?.success && response.data.form && Array.isArray(response.data.fields)) {
       const typeMap = {
@@ -128,77 +161,11 @@ const loadFormConfig = async () => {
         fieldMap: response.data.fieldMap || {}
       };
     } else {
-      // Create a simple form config if API doesn't provide one
-      formConfig.value = {
-        form: { form_name: 'Floor Form' },
-        fields: [
-          {
-            id: 'floor_name',
-            field_code: 'floor_name',
-            label: 'Floor Name',
-            type: 'text',
-            data_type: 'TEXT',
-            required: true,
-            placeholder: 'Enter floor name'
-          },
-          {
-            id: 'floor_code',
-            field_code: 'floor_code',
-            label: 'Floor Code',
-            type: 'text',
-            data_type: 'TEXT',
-            required: false,
-            placeholder: 'Enter floor code'
-          },
-          {
-            id: 'floor_number',
-            field_code: 'floor_number',
-            label: 'Floor Number',
-            type: 'number',
-            data_type: 'NUMBER',
-            required: false,
-            placeholder: 'Enter floor number'
-          }
-        ],
-        fieldMap: {}
-      };
+      formConfig.value = createDefaultFormConfig();
     }
   } catch (err) {
-    // Create default form config on error
     console.error('Failed to load floor form config:', err);
-    formConfig.value = {
-      form: { form_name: 'Floor Form' },
-      fields: [
-        {
-          id: 'floor_name',
-          field_code: 'floor_name',
-          label: 'Floor Name',
-          type: 'text',
-          data_type: 'TEXT',
-          required: true,
-          placeholder: 'Enter floor name'
-        },
-        {
-          id: 'floor_code',
-          field_code: 'floor_code',
-          label: 'Floor Code',
-          type: 'text',
-          data_type: 'TEXT',
-          required: false,
-          placeholder: 'Enter floor code'
-        },
-        {
-          id: 'floor_number',
-          field_code: 'floor_number',
-          label: 'Floor Number',
-          type: 'number',
-          data_type: 'NUMBER',
-          required: false,
-          placeholder: 'Enter floor number'
-        }
-      ],
-      fieldMap: {}
-    };
+    formConfig.value = createDefaultFormConfig();
   }
 };
 
@@ -238,17 +205,12 @@ const filteredFloors = computed(() => {
   );
 });
 
-const handleSearch = () => {
-  // Search is handled by computed property
-};
-
 // Provide floors data to child pages via provide/inject
 provide('floors', floors);
 provide('selectedFloor', selectedFloor);
 
 const handleFloorView = (floor) => {
   selectedFloor.value = floor;
-  // Navigate to nested route for locations
   navigateTo({
     path: '/masters/infra/infra/floors/locations',
     query: { id: floor.id.toString() }

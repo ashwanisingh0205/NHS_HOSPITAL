@@ -11,7 +11,7 @@
           </h2>
           <UButton
             v-if="selectedFloor"
-            @click="isLocationModalOpen = true"
+            @click="handleNewLocation"
             icon="i-lucide:plus"
             label="New"
             color="info"
@@ -80,10 +80,44 @@ const error = ref(null);
 const isLocationModalOpen = ref(false);
 const formConfig = ref(null);
 
+// Create default form config
+const createDefaultFormConfig = () => ({
+  form: { form_name: 'Location Form' },
+  fields: [
+    {
+      id: 'location',
+      field_code: 'location',
+      label: 'Location',
+      type: 'text',
+      data_type: 'TEXT',
+      required: true,
+      placeholder: 'Enter location'
+    },
+    {
+      id: 'full_path',
+      field_code: 'full_path',
+      label: 'Full Path',
+      type: 'text',
+      data_type: 'TEXT',
+      required: false,
+      placeholder: 'Enter full path'
+    },
+    {
+      id: 'location_type',
+      field_code: 'location_type',
+      label: 'Location Type',
+      type: 'text',
+      data_type: 'TEXT',
+      required: false,
+      placeholder: 'Enter location type'
+    }
+  ],
+  fieldMap: {}
+});
+
 // Fetch form configuration for locations (if available)
 const loadFormConfig = async () => {
   try {
-    // Try to get form config for locations - adjust endpoint if different
     const response = await axios.get('http://13.200.174.164:3001/v1/masters/infra/form_locations').catch(() => null);
     if (response?.data?.success && response.data.form && Array.isArray(response.data.fields)) {
       const typeMap = {
@@ -113,77 +147,11 @@ const loadFormConfig = async () => {
         fieldMap: response.data.fieldMap || {}
       };
     } else {
-      // Create a simple form config if API doesn't provide one
-      formConfig.value = {
-        form: { form_name: 'Location Form' },
-        fields: [
-          {
-            id: 'location',
-            field_code: 'location',
-            label: 'Location',
-            type: 'text',
-            data_type: 'TEXT',
-            required: true,
-            placeholder: 'Enter location'
-          },
-          {
-            id: 'full_path',
-            field_code: 'full_path',
-            label: 'Full Path',
-            type: 'text',
-            data_type: 'TEXT',
-            required: false,
-            placeholder: 'Enter full path'
-          },
-          {
-            id: 'location_type',
-            field_code: 'location_type',
-            label: 'Location Type',
-            type: 'text',
-            data_type: 'TEXT',
-            required: false,
-            placeholder: 'Enter location type'
-          }
-        ],
-        fieldMap: {}
-      };
+      formConfig.value = createDefaultFormConfig();
     }
   } catch (err) {
-    // Create default form config on error
     console.error('Failed to load location form config:', err);
-    formConfig.value = {
-      form: { form_name: 'Location Form' },
-      fields: [
-        {
-          id: 'location',
-          field_code: 'location',
-          label: 'Location',
-          type: 'text',
-          data_type: 'TEXT',
-          required: true,
-          placeholder: 'Enter location'
-        },
-        {
-          id: 'full_path',
-          field_code: 'full_path',
-          label: 'Full Path',
-          type: 'text',
-          data_type: 'TEXT',
-          required: false,
-          placeholder: 'Enter full path'
-        },
-        {
-          id: 'location_type',
-          field_code: 'location_type',
-          label: 'Location Type',
-          type: 'text',
-          data_type: 'TEXT',
-          required: false,
-          placeholder: 'Enter location type'
-        }
-      ],
-      fieldMap: {}
-    };
+    formConfig.value = createDefaultFormConfig();
   }
 };
 
