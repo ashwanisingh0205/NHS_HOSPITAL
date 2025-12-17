@@ -11,7 +11,7 @@
           </h2>
           <UButton
             v-if="selectedForm"
-            @click="isFieldModalOpen = true"
+            @click="handleNewField"
             icon="i-lucide:plus"
             label="New"
             color="info"
@@ -20,28 +20,34 @@
       </template>
 
       <template #default>
-        <div v-if="loading" class="p-8 text-center text-gray-500">
-          <UIcon name="lucide:loader-2" class="w-8 h-8 mx-auto mb-2 animate-spin" />
-          <p>Loading form fields...</p>
-        </div>
-        <div v-else-if="error" class="p-8 text-center text-red-500">
-          <UIcon name="lucide:alert-circle" class="w-8 h-8 mx-auto mb-2" />
-          <p>{{ error }}</p>
-        </div>
-        <div v-else-if="formConfig?.fields?.length" class="p-4">
-          <UForm>
-            <FormRenderer :fields="formConfig.fields" />
-          </UForm>
-        </div>
-        <div v-else-if="selectedForm" class="p-8 text-center">
-          <UIcon name="lucide:file-text" class="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500 mb-4" />
-          <p class="text-gray-600 dark:text-gray-400 mb-2">No form fields found</p>
-          <p class="text-sm text-gray-500 dark:text-gray-500">Click "New" to add a form field</p>
-        </div>
-        <div v-else class="p-8 text-center">
-          <UIcon name="lucide:file-search" class="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500 mb-4" />
-          <p class="text-gray-600 dark:text-gray-400 mb-2">No form selected</p>
-          <p class="text-sm text-gray-500 dark:text-gray-500">Select a form from the list to view its fields</p>
+        <div class="overflow-y-auto h-full" style="max-height: calc(110vh - 20rem);">
+          <div v-if="loading" class="p-8 text-center text-gray-500">
+            <UIcon name="lucide:loader-2" class="w-8 h-8 mx-auto mb-2 animate-spin" />
+            <p>Loading form fields...</p>
+          </div>
+          <div v-else-if="error" class="p-8 text-center text-red-500">
+            <UIcon name="lucide:alert-circle" class="w-8 h-8 mx-auto mb-2" />
+            <p>{{ error }}</p>
+          </div>
+          <div v-else-if="formConfig?.fields?.length" class="p-4 space-y-4">
+            <FieldCard
+              v-for="field in formConfig.fields"
+              :key="field.id"
+              :field="field"
+              :is-selected="selectedField?.id === field.id"
+              @edit="handleFieldEdit"
+            />
+          </div>
+          <div v-else-if="selectedForm" class="p-8 text-center">
+            <UIcon name="lucide:file-text" class="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500 mb-4" />
+            <p class="text-gray-600 dark:text-gray-400 mb-2">No form fields found</p>
+            <p class="text-sm text-gray-500 dark:text-gray-500">Click "New" to add a form field</p>
+          </div>
+          <div v-else class="p-8 text-center">
+            <UIcon name="lucide:file-search" class="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500 mb-4" />
+            <p class="text-gray-600 dark:text-gray-400 mb-2">No form selected</p>
+            <p class="text-sm text-gray-500 dark:text-gray-500">Select a form from the list to view its fields</p>
+          </div>
         </div>
       </template>
     </UCard>
@@ -50,14 +56,15 @@
   <FormFieldEditModal
     v-model:open="isFieldModalOpen"
     :form="selectedForm"
+    :field="fieldForModal"
     @submit="handleFieldSubmit"
   />
 </template>
 
 <script setup>
 import axios from 'axios';
-import FormRenderer from '../../../../components/form_builder/FormRenderer.vue';
 import FormFieldEditModal from '../../../../components/FormFieldEditModal.vue';
+import FieldCard from '../../../../components/FieldCard.vue';
 
 definePageMeta({ layout: 'home' });
 
@@ -66,6 +73,8 @@ const selectedForm = inject('selectedForm', ref(null));
 const forms = inject('forms', ref([]));
 
 const formConfig = ref(null);
+const selectedField = ref(null);
+const fieldForModal = ref(null);
 const loading = ref(false);
 const error = ref(null);
 const isFieldModalOpen = ref(false);
@@ -74,7 +83,7 @@ const currentFormCode = ref(null);
 const applyWidthCalculation = (fields) => {
   fields.forEach(f => {
     let labelWidth = typeof f.label_width === "string" && f.label_width.includes('%')
-      ? parseInt(f.label_width.replace('%', ''), 10)
+      ? Number.parseInt(f.label_width.replace('%', ''), 10)
       : f.label_width || 30;
     
     f.label_width = labelWidth;
@@ -117,7 +126,7 @@ const checkAndLoadForm = () => {
   let formCode = selectedForm.value?.form_code;
   
   if (!formCode && route.query.id && forms.value.length) {
-    const form = forms.value.find(f => f.id === parseInt(route.query.id, 10));
+    const form = forms.value.find(f => f.id === Number.parseInt(route.query.id, 10));
     formCode = form?.form_code;
   }
   
@@ -127,6 +136,17 @@ const checkAndLoadForm = () => {
     formConfig.value = null;
     currentFormCode.value = null;
   }
+};
+
+const handleFieldEdit = (field) => {
+  selectedField.value = field;
+  fieldForModal.value = field;
+  isFieldModalOpen.value = true;
+};
+
+const handleNewField = () => {
+  fieldForModal.value = null;
+  isFieldModalOpen.value = true;
 };
 
 const handleFieldSubmit = async () => {
