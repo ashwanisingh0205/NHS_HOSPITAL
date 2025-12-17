@@ -1,6 +1,6 @@
 <template>
-  <div class="w-full flex flex-col">
-    <UCard>
+  <div class="w-full flex flex-col h-full">
+    <UCard class="h-full flex flex-col">
       <template #header>
         <div class="flex items-center justify-between">
           <h2 class="text-lg font-semibold">
@@ -20,32 +20,34 @@
       </template>
 
       <template #default>
-        <div v-if="loading" class="p-8 text-center text-gray-500">
-          <UIcon name="lucide:loader-2" class="w-8 h-8 mx-auto mb-2 animate-spin" />
-          <p>Loading locations...</p>
-        </div>
-        <div v-else-if="error" class="p-8 text-center text-red-500">
-          <UIcon name="lucide:alert-circle" class="w-8 h-8 mx-auto mb-2" />
-          <p>{{ error }}</p>
-        </div>
-        <div v-else-if="locations.length > 0" class="p-4 space-y-4">
-          <LocationCard
-            v-for="location in locations"
-            :key="location.id"
-            :location="location"
-            :is-selected="false"
-            @edit="handleLocationEdit"
-          />
-        </div>
-        <div v-else-if="selectedFloor" class="p-8 text-center">
-          <UIcon name="lucide:map-pin" class="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500 mb-4" />
-          <p class="text-gray-600 dark:text-gray-400 mb-2">No locations found</p>
-          <p class="text-sm text-gray-500 dark:text-gray-500">Click "New" to add a location</p>
-        </div>
-        <div v-else class="p-8 text-center">
-          <UIcon name="lucide:file-search" class="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500 mb-4" />
-          <p class="text-gray-600 dark:text-gray-400 mb-2">No floor selected</p>
-          <p class="text-sm text-gray-500 dark:text-gray-500">Select a floor from the list to view its locations</p>
+        <div class="overflow-y-auto h-full" style="max-height: calc(110vh - 20rem);">
+          <div v-if="loading" class="p-8 text-center text-gray-500">
+            <UIcon name="lucide:loader-2" class="w-8 h-8 mx-auto mb-2 animate-spin" />
+            <p>Loading locations...</p>
+          </div>
+          <div v-else-if="error" class="p-8 text-center text-red-500">
+            <UIcon name="lucide:alert-circle" class="w-8 h-8 mx-auto mb-2" />
+            <p>{{ error }}</p>
+          </div>
+          <div v-else-if="locations.length > 0" class="p-4 space-y-4">
+            <LocationCard
+              v-for="location in locations"
+              :key="location.id"
+              :location="location"
+              :is-selected="false"
+              @edit="handleLocationEdit"
+            />
+          </div>
+          <div v-else-if="selectedFloor" class="p-8 text-center">
+            <UIcon name="lucide:map-pin" class="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500 mb-4" />
+            <p class="text-gray-600 dark:text-gray-400 mb-2">No locations found</p>
+            <p class="text-sm text-gray-500 dark:text-gray-500">Click "New" to add a location</p>
+          </div>
+          <div v-else class="p-8 text-center">
+            <UIcon name="lucide:file-search" class="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500 mb-4" />
+            <p class="text-gray-600 dark:text-gray-400 mb-2">No floor selected</p>
+            <p class="text-sm text-gray-500 dark:text-gray-500">Select a floor from the list to view its locations</p>
+          </div>
         </div>
       </template>
     </UCard>
