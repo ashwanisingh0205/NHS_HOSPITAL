@@ -51,9 +51,9 @@
       </UCard>
     </div>
 
-    <!-- Right Column (for future use) -->
+    <!-- Floors Column (Right) -->
     <div class="flex-1 min-w-0 flex flex-col h-full">
-      <!-- Can add nested pages here later -->
+      <NuxtPage />
     </div>
   </div>
 
@@ -157,9 +157,17 @@ const handleSearch = () => {
   // Search is handled by computed property
 };
 
+// Provide blocks data to child pages via provide/inject
+provide('blocks', blocks);
+provide('selectedBlock', selectedBlock);
+
 const handleBlockView = (block) => {
   selectedBlock.value = block;
-  // Can navigate to nested route here if needed
+  // Navigate to nested route for floors
+  navigateTo({
+    path: '/masters/infra/infra/floors',
+    query: { id: block.id.toString() }
+  });
 };
 
 const handleBlockEdit = (block) => {
@@ -183,3 +191,4 @@ onMounted(async () => {
   await loadBlocks();
 });
 </script>
+
