@@ -98,17 +98,13 @@ const filteredData = computed(() => {
 
 /* ------------------ Add Button ------------------ */
 const handleAdd = () => {
-    params.value = {
-        params: { form: 'true', id: 0 }
-    };
+    params.value = null;
     formModel.value = true;
 };
 
 /* ------------------ Edit Button ------------------ */
 const handleEdit = (item) => {
-    params.value = {
-        params: { form: 'true', id: item.id }
-    };
+    params.value = { id: item.id };
     formModel.value = true;
 };
 

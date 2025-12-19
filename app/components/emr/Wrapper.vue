@@ -8,10 +8,10 @@
 
     <!-- Text Input Types -->
     <UInput
-      v-if="['text', 'email', 'number', 'password', 'tel', 'url','date'].includes(field.type)"
-      v-model="localValue"
-      :type="field.type"
-      :placeholder="field.placeholder"
+      v-if="['TEXT', 'EMAIL', 'NUMBER', 'password', 'tel', 'url','date'].includes(field.data_type)"
+      v-model="field.value[0]"
+      :type="field.data_type"
+      :placeholder="field.label"
       :icon="field.icon"
       class="w-full"
       
@@ -19,10 +19,10 @@
 
     <!-- Select -->
     <USelectMenu
-      v-else-if="field.type === 'select'"
-      v-model="localValue"
+      v-else-if="field.data_type === 'DROPDOWN'"
+      v-model="field.value[0]"
       :items="fieldItems"
-      :placeholder="field.placeholder"
+      :placeholder="field.label"
       searchable
       :icon="field.icon"
       class="w-full"
@@ -30,22 +30,22 @@
 
     <!-- Textarea -->
     <UTextarea
-      v-else-if="field.type === 'textarea'"
-      v-model="localValue"
-      :placeholder="field.placeholder"
+      v-else-if="field.data_type === 'textarea'"
+      v-model="field.value[0]"
+      :placeholder="field.label"
       :rows="field.rows || 4"
     
     />
 
     <!-- Single Checkbox (no options) -->
     <UCheckbox
-      v-else-if="field.type === 'checkbox' && !field.options"
-      v-model="localValue"
+      v-else-if="field.data_type === 'checkbox' && !field.options"
+      v-model="field.value[0]"
       :label="field.checkboxLabel || field.label"
     />
 
     <!-- Multiple Checkboxes (with options) -->
-    <div v-else-if="field.type === 'checkbox' && field.options" class="space-y-2">
+    <div v-else-if="field.data_type === 'checkbox' && field.options" class="space-y-2">
       <UCheckbox
         v-for="option in fieldOptions"
         :key="option.value || option"
@@ -56,7 +56,7 @@
     </div>
 
     <!-- Radio -->
-    <div v-else-if="field.type === 'radio'" class="flex gap-4">
+    <div v-else-if="field.data_type === 'radio'" class="flex gap-4">
       <label
         v-for="option in fieldOptions"
         :key="option.value || option"
@@ -76,7 +76,7 @@
 
     <!-- Date -->
     <UInput
-      v-else-if="field.type === 'date'"
+      v-else-if="field.data_type === 'date'"
       v-model="localValue"
       type="date"
       
@@ -84,7 +84,7 @@
 
     <!-- Nested Fields (Recursive) -->
     <div
-      v-else-if="field.type === 'group' && field.fields"
+      v-else-if="field.data_type === 'group' && field.fields"
       class="rounded-lg border border-gray-200 bg-gray-50/60 p-4 dark:border-gray-800 dark:bg-gray-900/40"
     >
       <p v-if="field.label" class="font-semibold text-gray-900 dark:text-white mb-4">
@@ -118,14 +118,14 @@ const emit = defineEmits(['update:modelValue'])
 /* ------------------ Main v-model Handler ------------------ */
 const localValue = computed({
   get: () => {
-    if (props.field.type === 'group') return nestedValues.value
+    if (props.field.data_type === 'group') return nestedValues.value
     return props.modelValue
   },
 
   set: val => {
-    if (props.field.type === 'group') return // groups handled separately
+    if (props.field.data_type === 'group') return // groups handled separately
 
-    if (props.field.type === 'number') {
+    if (props.field.data_type === 'number') {
       emit('update:modelValue', val === '' ? null : Number(val))
     } else {
       emit('update:modelValue', val)
