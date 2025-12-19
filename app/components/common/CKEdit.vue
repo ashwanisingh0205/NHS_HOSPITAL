@@ -2,7 +2,6 @@
     <UButton
         @click="handleAdd"
         :icon="icon"
-        :label="label"
         variant="outline"
         :color="color" />
 </template>

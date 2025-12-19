@@ -1,41 +1,28 @@
 <template>
     <div class="flex gap-2">
         <div class="w-1/3">
-            <UCard>
-                <template #header>
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-semibold">{{ title }}</h2>
-                        <CKAdd @click="handleAdd" />
-                    </div>
-                    <CKSearch v-model="searchQuery" />
-                </template>
-                
-                <template #default>
-                    <!-- Table -->
-                    <UTable :loading="loading" :data="filteredData" :columns="columns">
-                        <!-- Empty message -->
-                        <template v-if="!loading" #empty>
-                            <UError :error="{ statusMessage: error || 'No Record Found!!' }" />
-                        </template>
-                        <template #block_name-cell="{ row }">
-                            <ULink
-                                :to="{ name: 'masters-infra-infra-floors', query: { id: row.original.id } }"  class="cursor-pointer">
-                                {{ row.original.block_name }}
-                            </ULink>
-                        </template>
-                        <template #action-cell="{ row }">
-                            <div class="text-end">
-                                <CKEdit @click="handleEdit(row)" />
-                            </div>
-                        </template>
-                    </UTable>
-                </template>
-            </UCard>
+            <CKCardList :loading="loading" :title="title" @handleAdd="handleAdd" v-model="searchQuery">
+                <UTable :loading="loading" :data="filteredData" :columns="columns">
+                    <!-- Empty message -->
+                    <template v-if="!loading" #empty>
+                        <UError :error="{ statusMessage: error || 'No Record Found!!' }" />
+                    </template>
+                    <template #block_name-cell="{ row }">
+                        <ULink
+                            :to="{ name: 'masters-infra-infra-floors', query: { block_id: row.original.id } }"  class="cursor-pointer">
+                            {{ row.original.block_name }}
+                        </ULink>
+                    </template>
+                    <template #action-cell="{ row }">
+                        <div class="text-end">
+                            <CKEdit @click="handleEdit(row)" />
+                        </div>
+                    </template>
+                </UTable>
+            </CKCardList>
         </div>
-        
         <NuxtPage />
     </div>
-    
     
     
     <UModal v-model:open="formModel" title="New Block">
@@ -48,35 +35,34 @@
         </template>
     </UModal>
     
-    
 </template>
 
 <script setup>
 import axios from 'axios';
 import DynamicForm from "~/components/emr/DynamicForm.vue";
-import CKAdd from "~/components/common/CKAdd.vue";
 import CKEdit from "~/components/common/CKEdit.vue";
-import CKSearch from "~/components/common/CKSearch.vue";
+import CKCardList from "~/components/common/CKCardList.vue";
 
+/* ------------------ Default Variables ------------------ */
 definePageMeta({ layout: 'home' });
-
-
-
 const title = ref("Block List");
+const endPoint = ref("http://13.200.174.164:3001/v1/masters/infra/blocks");
+const params = ref({});
+const formModel = ref(false);
 
 
-
+/* ------------------ onMounted ------------------ */
 onMounted(async () => {
     await loadData();
 });
 
 
-/* ------------------ Load Data ------------------ */
+/* ------------------ Load Table Data ------------------ */
 const loading = ref(true);
 const error = ref(null);
-const blocks = ref([]);
+const data = ref([]);
 const columns = ref([
-    { accessorKey: 'id', header: 'ID' },
+    { accessorKey: 'id', header: 'Sr.No.' },
     { accessorKey: 'block_name', header: 'Block Name' },
     { id: 'action' }
 ]);
@@ -84,10 +70,10 @@ const loadData = async () => {
     loading.value = true;
     error.value = null;
     try {
-        const response = await axios.get('http://13.200.174.164:3001/v1/masters/infra/blocks');
-        const data = response.data;
-        if (data.success && Array.isArray(data.block)) {
-            blocks.value = data.block;
+        const response = await axios.get(endPoint.value);
+        const temp = response.data;
+        if (temp.success && Array.isArray(temp.block)) {
+            data.value = temp.block;
         } else {
             error.value = 'Invalid response format from API';
         }
@@ -98,24 +84,21 @@ const loadData = async () => {
     }
 };
 
-/* ------------------ Filter Data ------------------ */
+
+/* ------------------ Search ------------------ */
 const searchQuery = ref('');
 const filteredData = computed(() => {
     if (!searchQuery.value.trim()) {
-        return blocks.value;
+        return data.value;
     }
     const query = searchQuery.value.toLowerCase();
-    return blocks.value.filter(block =>
+    return data.value.filter(block =>
         block.block_name?.toLowerCase().includes(query)
     );
 });
 
 
 
-/* ------------------ Load Form ------------------ */
-const form = ref(null);
-const endPoint = ref("http://13.200.174.164:3001/v1/masters/infra/blocks");
-const params = ref({});
 
 
 /* ------------------ Add Button ------------------ */
@@ -126,16 +109,13 @@ const handleAdd = () => {
     formModel.value = true;
 };
 
-
 /* ------------------ Edit Button ------------------ */
-const formModel = ref(false);
-const handleEdit = (block) => {
+const handleEdit = (item) => {
     params.value = {
-        params: { form: 'true', id: block.id }
+        params: { form: 'true', id: item.id }
     };
     formModel.value = true;
 };
-
 
 /* ------------------ Form Submit ------------------ */
 const handleFormSubmit = async () => {
