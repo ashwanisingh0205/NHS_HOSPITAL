@@ -1,69 +1,64 @@
 <template>
-  <div class="flex gap-2 h-[calc(103vh-8rem)]">
-    <!-- Floor List Column (Left) -->
-    <div class="w-1/3 min-w-0 flex flex-col h-full">
-      <UCard class="h-full flex flex-col">
-        <template #header>
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-semibold">
-              Floors
-              <span v-if="selectedBlock" class="text-sm text-gray-500 font-normal">
+    <div class="w-1/3">
+        <UCard class="h-full flex flex-col">
+            <template #header>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold">
+                        Floors
+                        <span v-if="selectedBlock" class="text-sm text-gray-500 font-normal">
                 - {{ selectedBlock.block_name }}
               </span>
-            </h2>
-            <UButton
-              v-if="selectedBlock"
-              @click="handleNewFloor"
-              icon="i-lucide:plus"
-              label="New"
-              color="info"
-            />
-          </div>
-          <!-- Search Input -->
-          <div class="mt-4">
-            <UInput
-              v-model="searchQuery"
-              placeholder="Search floors..."
-              icon="i-lucide:search"
-              class="w-full"
-            />
-          </div>
-        </template>
-
-        <template #default>
-          <div class="overflow-y-auto h-full" style="max-height: calc(110vh - 20rem);">
-            <div v-if="loading" class="p-4 text-center text-gray-500">
-              Loading floors...
-            </div>
-            <div v-else-if="error" class="p-4 text-center text-red-500">
-              {{ error }}
-            </div>
-            <div v-else-if="!selectedBlock" class="p-4 text-center text-gray-500">
-              Select a block to view floors
-            </div>
-            <div v-else-if="filteredFloors.length === 0" class="p-4 text-center text-gray-500">
-              No floors found
-            </div>
-            <div v-else class="p-4 space-y-4">
-              <FloorCard
-                v-for="floor in filteredFloors"
-                :key="floor.id"
-                :floor="floor"
-                :is-selected="selectedFloor?.id === floor.id"
-                @view="handleFloorView"
-                @edit="handleFloorEdit"
-              />
-            </div>
-          </div>
-        </template>
-      </UCard>
+                    </h2>
+                    <UButton
+                        v-if="selectedBlock"
+                        @click="handleNewFloor"
+                        icon="i-lucide:plus"
+                        label="New"
+                        color="info"
+                    />
+                </div>
+                <!-- Search Input -->
+                <div class="mt-4">
+                    <UInput
+                        v-model="searchQuery"
+                        placeholder="Search floors..."
+                        icon="i-lucide:search"
+                        class="w-full"
+                    />
+                </div>
+            </template>
+            
+            <template #default>
+                <div class="overflow-y-auto h-full" style="max-height: calc(110vh - 20rem);">
+                    <div v-if="loading" class="p-4 text-center text-gray-500">
+                        Loading floors...
+                    </div>
+                    <div v-else-if="error" class="p-4 text-center text-red-500">
+                        {{ error }}
+                    </div>
+                    <div v-else-if="!selectedBlock" class="p-4 text-center text-gray-500">
+                        Select a block to view floors
+                    </div>
+                    <div v-else-if="filteredFloors.length === 0" class="p-4 text-center text-gray-500">
+                        No floors found
+                    </div>
+                    <div v-else class="p-4 space-y-4">
+                        <FloorCard
+                            v-for="floor in filteredFloors"
+                            :key="floor.id"
+                            :floor="floor"
+                            :is-selected="selectedFloor?.id === floor.id"
+                            @view="handleFloorView"
+                            @edit="handleFloorEdit"
+                        />
+                    </div>
+                </div>
+            </template>
+        </UCard>
     </div>
-
+    
     <!-- Locations Column (Right) -->
-    <div class="flex-1 min-w-0 flex flex-col h-full">
-      <NuxtPage />
-    </div>
-  </div>
+    <NuxtPage />
 
   <FloorEditModal
     v-model:open="isFloorModalOpen"

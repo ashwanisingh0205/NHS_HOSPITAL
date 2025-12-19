@@ -30,7 +30,7 @@
                 </div>
 
                 <div class="p-4 border-b border-gray-200 dark:border-gray-800">
-                    <UInput icon="i-lucide-search" placeholder="Search..." />
+                    <UDashboardSearchButton class="w-full" />
                 </div>
 
                 <div class="flex-1 flex flex-col overflow-hidden">

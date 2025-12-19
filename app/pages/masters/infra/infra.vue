@@ -1,187 +1,147 @@
 <template>
-  <div class="flex gap-2 h-[calc(103vh-8rem)]">
-    <!-- Block List Column (Left) -->
-    <div class="w-1/3 min-w-0 flex flex-col h-full">
-      <UCard class="h-full flex flex-col">
-        <template #header>
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-semibold">Block List</h2>
-            <UButton
-              @click="handleNewBlock"
-              icon="i-lucide:plus"
-              label="New"
-              color="info"
-            />
-          </div>
-          <!-- Search Input -->
-          <div class="mt-4">
-            <UInput
-              v-model="searchQuery"
-              placeholder="Search blocks..."
-              icon="i-lucide:search"
-              class="w-full"
-            />
-          </div>
-        </template>
-
-        <template #default>
-          <div class="overflow-y-auto h-full" style="max-height: calc(110vh - 20rem);">
-            <div v-if="loading" class="p-4 text-center text-gray-500">
-              Loading blocks...
-            </div>
-            <div v-else-if="error" class="p-4 text-center text-red-500">
-              {{ error }}
-            </div>
-            <div v-else-if="filteredBlocks.length === 0" class="p-4 text-center text-gray-500">
-              No blocks found
-            </div>
-            <div v-else class="p-4 space-y-4">
-              <BlockCard
-                v-for="block in filteredBlocks"
-                :key="block.id"
-                :block="block"
-                :is-selected="selectedBlock?.id === block.id"
-                @view="handleBlockView"
-                @edit="handleBlockEdit"
-              />
-            </div>
-          </div>
-        </template>
-      </UCard>
+    <div class="flex gap-2">
+        <div class="w-1/3">
+            <UCard>
+                <template #header>
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold">{{ title }}</h2>
+                        <CKAdd @click="handleAdd" />
+                    </div>
+                    <CKSearch v-model="searchQuery" />
+                </template>
+                
+                <template #default>
+                    <!-- Table -->
+                    <UTable :loading="loading" :data="filteredData" :columns="columns">
+                        <!-- Empty message -->
+                        <template v-if="!loading" #empty>
+                            <UError :error="{ statusMessage: error || 'No Record Found!!' }" />
+                        </template>
+                        <template #block_name-cell="{ row }">
+                            <ULink
+                                :to="{ name: 'masters-infra-infra-floors', query: { id: row.original.id } }"  class="cursor-pointer">
+                                {{ row.original.block_name }}
+                            </ULink>
+                        </template>
+                        <template #action-cell="{ row }">
+                            <div class="text-end">
+                                <CKEdit @click="handleEdit(row)" />
+                            </div>
+                        </template>
+                    </UTable>
+                </template>
+            </UCard>
+        </div>
+        
+        <NuxtPage />
     </div>
-
-    <!-- Floors Column (Right) -->
-    <div class="flex-1 min-w-0 flex flex-col h-full">
-      <NuxtPage />
-    </div>
-  </div>
-
-  <BlockEditModal
-    v-model:open="isModalOpen"
-    :block="blockForModal"
-    :form-config="formConfig"
-    @submit="handleBlockSubmit"
-  />
+    
+    
+    
+    <UModal v-model:open="formModel" title="New Block">
+        <template #body>
+            <DynamicForm
+                :endPoint="endPoint"
+                :params="params"
+                @submit="handleFormSubmit"
+            />
+        </template>
+    </UModal>
+    
+    
 </template>
 
 <script setup>
 import axios from 'axios';
+import DynamicForm from "~/components/emr/DynamicForm.vue";
+import CKAdd from "~/components/common/CKAdd.vue";
+import CKEdit from "~/components/common/CKEdit.vue";
+import CKSearch from "~/components/common/CKSearch.vue";
 
 definePageMeta({ layout: 'home' });
 
-const isModalOpen = ref(false);
-const selectedBlock = ref(null);
-const blockForModal = ref(null);
-const blocks = ref([]);
-const loading = ref(false);
-const error = ref(null);
-const searchQuery = ref('');
-const formConfig = ref(null);
 
-// Fetch form configuration for blocks
-const loadFormConfig = async () => {
-  try {
-    const response = await axios.get('http://13.200.174.164:3001/v1/masters/infra/form_blocks');
-    const data = response.data;
-    if (data.success && data.form && Array.isArray(data.fields)) {
-      // Transform fields to work with DynamicForm
-      const transformedFields = data.fields.map(field => {
-        // Map data_type to type for Wrapper component
-        const typeMap = {
-          'TEXT': 'text',
-          'NUMBER': 'number',
-          'DATE': 'date',
-          'DATETIME': 'date',
-          'TEXTAREA': 'textarea',
-          'DROPDOWN': 'select',
-          'DROPDOWN_SEARCH': 'select',
-          'CHECKBOX': 'checkbox',
-          'RADIO': 'radio',
-          'SWITCH': 'checkbox'
-        };
-        
-        return {
-          ...field,
-          id: field.field_code || field.id, // Use field_code as id
-          type: typeMap[field.data_type] || 'text',
-          required: field.status_required || false,
-          placeholder: field.placeholder || `Enter ${field.label?.toLowerCase() || field.field_code}`
-        };
-      });
 
-      formConfig.value = {
-        form: data.form,
-        fields: transformedFields,
-        fieldMap: data.fieldMap || {}
-      };
-    }
-  } catch (err) {
-    console.error('Failed to load form config:', err);
-  }
-};
+const title = ref("Block List");
 
-// Fetch blocks from API
-const loadBlocks = async () => {
-  loading.value = true;
-  error.value = null;
-  try {
-    const response = await axios.get('http://13.200.174.164:3001/v1/masters/infra/blocks');
-    const data = response.data;
-    if (data.success && Array.isArray(data.block)) {
-      blocks.value = data.block;
-    } else {
-      error.value = 'Invalid response format from API';
-    }
-  } catch (err) {
-    error.value = err.response?.data?.message || err.message || 'Failed to load blocks';
-  } finally {
-    loading.value = false;
-  }
-};
 
-// Filter blocks based on search query
-const filteredBlocks = computed(() => {
-  if (!searchQuery.value.trim()) {
-    return blocks.value;
-  }
-  const query = searchQuery.value.toLowerCase();
-  return blocks.value.filter(block => 
-    block.block_name?.toLowerCase().includes(query)
-  );
-});
 
-// Provide blocks data to child pages via provide/inject
-provide('blocks', blocks);
-provide('selectedBlock', selectedBlock);
-
-const handleBlockView = (block) => {
-  selectedBlock.value = block;
-  // Navigate to nested route for floors
-  navigateTo({
-    path: '/masters/infra/infra/floors',
-    query: { id: block.id.toString() }
-  });
-};
-
-const handleBlockEdit = (block) => {
-  selectedBlock.value = block;
-  blockForModal.value = block;
-  isModalOpen.value = true;
-};
-
-const handleNewBlock = () => {
-  blockForModal.value = null;
-  isModalOpen.value = true;
-};
-
-const handleBlockSubmit = async () => {
-  await loadBlocks();
-};
-
-// Load form config and blocks on mount
 onMounted(async () => {
-  await loadFormConfig();
-  await loadBlocks();
+    await loadData();
 });
+
+
+/* ------------------ Load Data ------------------ */
+const loading = ref(true);
+const error = ref(null);
+const blocks = ref([]);
+const columns = ref([
+    { accessorKey: 'id', header: 'ID' },
+    { accessorKey: 'block_name', header: 'Block Name' },
+    { id: 'action' }
+]);
+const loadData = async () => {
+    loading.value = true;
+    error.value = null;
+    try {
+        const response = await axios.get('http://13.200.174.164:3001/v1/masters/infra/blocks');
+        const data = response.data;
+        if (data.success && Array.isArray(data.block)) {
+            blocks.value = data.block;
+        } else {
+            error.value = 'Invalid response format from API';
+        }
+    } catch (err) {
+        error.value = err.response?.data?.message || err.message || 'Failed to load blocks';
+    } finally {
+        loading.value = false;
+    }
+};
+
+/* ------------------ Filter Data ------------------ */
+const searchQuery = ref('');
+const filteredData = computed(() => {
+    if (!searchQuery.value.trim()) {
+        return blocks.value;
+    }
+    const query = searchQuery.value.toLowerCase();
+    return blocks.value.filter(block =>
+        block.block_name?.toLowerCase().includes(query)
+    );
+});
+
+
+
+/* ------------------ Load Form ------------------ */
+const form = ref(null);
+const endPoint = ref("http://13.200.174.164:3001/v1/masters/infra/blocks");
+const params = ref({});
+
+
+/* ------------------ Add Button ------------------ */
+const handleAdd = () => {
+    params.value = {
+        params: { form: 'true', id: 0 }
+    };
+    formModel.value = true;
+};
+
+
+/* ------------------ Edit Button ------------------ */
+const formModel = ref(false);
+const handleEdit = (block) => {
+    params.value = {
+        params: { form: 'true', id: block.id }
+    };
+    formModel.value = true;
+};
+
+
+/* ------------------ Form Submit ------------------ */
+const handleFormSubmit = async () => {
+    formModel.value = false;
+    await loadData();
+};
+
 </script>
 
