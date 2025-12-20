@@ -3,6 +3,7 @@
         @click="handleAdd"
         :icon="icon"
         variant="outline"
+        size="sm"
         :color="color" />
 </template>
 
@@ -10,7 +11,7 @@
 const props = defineProps({
     icon: { type: String, default: "i-lucide:pencil" },
     label: { type: String, default: "Edit" },
-    color: { type: String, default: "primary" },
+    color: { type: String, default: "neutral" },
 })
 
 const emit = defineEmits(['click']);

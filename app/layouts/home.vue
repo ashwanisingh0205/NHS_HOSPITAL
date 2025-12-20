@@ -30,7 +30,11 @@
                 </div>
 
                 <div class="p-4 border-b border-gray-200 dark:border-gray-800">
-                    <UDashboardSearchButton class="w-full" />
+                    <UDashboardSearchButton
+                        v-model:search-term="searchTerm"
+                        :groups="groups"
+                        class="w-full" />
+                    <UDashboardSearch :groups="groups" />
                 </div>
 
                 <div class="flex-1 flex flex-col overflow-hidden">
@@ -296,6 +300,163 @@ const isDarkMode = computed({
         colorMode.preference = value ? 'dark' : 'light';
     }
 });
+
+const searchTerm = ref("");
+const showSearch = ref(false);
+const groups = ref([
+    {
+        id: 'users',
+        label: 'Users',
+        items: [
+            {
+                label: 'Benjamin Canac',
+                suffix: 'benjamincanac',
+                avatar: {
+                    src: 'https://github.com/benjamincanac.png'
+                }
+            },
+            {
+                label: 'Romain Hamel',
+                suffix: 'romhml',
+                avatar: {
+                    src: 'https://github.com/romhml.png'
+                }
+            },
+            {
+                label: 'Sébastien Chopin',
+                suffix: 'atinux',
+                avatar: {
+                    src: 'https://github.com/atinux.png'
+                }
+            },
+            {
+                label: 'Hugo Richard',
+                suffix: 'HugoRCD',
+                avatar: {
+                    src: 'https://github.com/HugoRCD.png'
+                }
+            },
+            {
+                label: 'Sandro Circi',
+                suffix: 'sandros94',
+                avatar: {
+                    src: 'https://github.com/sandros94.png'
+                }
+            },
+            {
+                label: 'Daniel Roe',
+                suffix: 'danielroe',
+                avatar: {
+                    src: 'https://github.com/danielroe.png'
+                }
+            },
+            {
+                label: 'Jakub Michálek',
+                suffix: 'J-Michalek',
+                avatar: {
+                    src: 'https://github.com/J-Michalek.png'
+                }
+            },
+            {
+                label: 'Eugen Istoc',
+                suffix: 'genu',
+                avatar: {
+                    src: 'https://github.com/genu.png'
+                }
+            }
+        ]
+    },
+    {
+        id: 'IPD',
+        label: 'IPD Patients',
+        items: [
+            {
+                label: 'Benjamin Canac',
+                suffix: 'benjamincanac',
+                avatar: {
+                    src: 'https://github.com/benjamincanac.png'
+                }
+            },
+            {
+                label: 'Romain Hamel',
+                suffix: 'romhml',
+                avatar: {
+                    src: 'https://github.com/romhml.png'
+                }
+            },
+            {
+                label: 'Sébastien Chopin',
+                suffix: 'atinux',
+                avatar: {
+                    src: 'https://github.com/atinux.png'
+                }
+            },
+            {
+                label: 'Hugo Richard',
+                suffix: 'HugoRCD',
+                avatar: {
+                    src: 'https://github.com/HugoRCD.png'
+                }
+            },
+            {
+                label: 'Sandro Circi',
+                suffix: 'sandros94',
+                avatar: {
+                    src: 'https://github.com/sandros94.png'
+                }
+            },
+            {
+                label: 'Daniel Roe',
+                suffix: 'danielroe',
+                avatar: {
+                    src: 'https://github.com/danielroe.png'
+                }
+            },
+            {
+                label: 'Jakub Michálek',
+                suffix: 'J-Michalek',
+                avatar: {
+                    src: 'https://github.com/J-Michalek.png'
+                }
+            },
+            {
+                label: 'Eugen Istoc',
+                suffix: 'genu',
+                avatar: {
+                    src: 'https://github.com/genu.png'
+                }
+            }
+        ]
+    },
+    {
+        id: 'consultants',
+        label: 'Consultants',
+        items: [
+            {
+                label: 'Dr. Naveen Chitkara',
+                suffix: 'Sr.Spine & Neuro Surgeon',
+                avatar: {
+                    src: 'https://www.nhshospital.in/images/doctors/founder1.png'
+                }
+            },
+            {
+                label: 'Dr. Shubhang Aggarwal',
+                suffix: 'Sr.Orthopaedic',
+                avatar: {
+                    src: 'https://www.nhshospital.in/images/doctors/founder3.png'
+                }
+            },
+            {
+                label: 'Dr. Sandeep Goel',
+                suffix: 'Sr.Neurologist',
+                avatar: {
+                    src: 'https://www.nhshospital.in/images/doctors/founder2.png'
+                }
+            },
+        ]
+    }
+])
+const value = ref({})
 
 const mainNavItems = [
     { id: 'dashboard', name: 'Dashboard', icon: 'lucide:layout-dashboard' },

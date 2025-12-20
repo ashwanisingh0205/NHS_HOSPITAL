@@ -1,5 +1,5 @@
 <template>
-    <UCard>
+    <UCard :ui="{ body: 'sm:p-0 p-0'}">
         <template #header>
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-lg font-semibold">{{ title }}</h2>
@@ -12,11 +12,9 @@
                 v-model="localValue" />
         </template>
         
-        <template #default>
-            <slot />
-        </template>
+        <slot />
     </UCard>
-    
+
 </template>
 
 <script setup>

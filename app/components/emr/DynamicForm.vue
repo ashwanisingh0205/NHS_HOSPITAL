@@ -1,13 +1,11 @@
 <template>
-    <div v-if="loading" class="flex items-center justify-center py-12">
-        <UIcon name="lucide:loader-2" class="w-6 h-6 animate-spin text-gray-400 dark:text-gray-500" />
-        <span class="ml-3 text-gray-600 dark:text-gray-400">Loading form...</span>
-    </div>
+    
+    <CKLoader v-if="loading" />
     
     <UForm v-else class="space-y-6" @submit.prevent="handleSubmit">
         <div class="grid gap-6 md:grid-cols-2">
             <div v-for="field in form.fields" :key="field.id">
-                <Wrapper :field="field" v-model="formData[field.id]" />
+                <Wrapper :field="field" />
             </div>
         </div>
         
@@ -18,8 +16,8 @@
 </template>
 
 <script setup>
-import axios from 'axios'
 import Wrapper from '~/components/emr/Wrapper.vue'
+import CKLoader from "~/components/common/CKLoader.vue";
 
 const props = defineProps({
     endPoint: { type: String, default: "" },
@@ -27,21 +25,21 @@ const props = defineProps({
 })
 const emit = defineEmits(['submit', 'close'])
 
+const { $axios } = useNuxtApp()
+
 const form = ref({})
+const loading = ref(true)
+const submitting = ref(false)
 
 onMounted(async () => {
     try {
         loading.value = true
-        console.log("asdf");
-        
-        const blockResponse = await axios.get(props.endPoint, {
-            params: {
-                form: 'true',
-                ...props.params
-            }
-        })
-        form.value= blockResponse.data
-        
+        const params = { form: 'true' }
+        if (props.params) {
+            Object.assign(params, props.params)
+        }
+        const response = await $axios.get(props.endPoint, { params })
+        form.value = response.data
     } catch (err) {
         console.error('Error loading form:', err)
     } finally {
@@ -49,37 +47,35 @@ onMounted(async () => {
     }
 })
 
-const formData = ref({})
-const loading = ref(true)
-const submitting = ref(false)
-const fields = ref([])
-
 const handleSubmit = async () => {
-    
     submitting.value = true
     try {
+        const payload = {}
         
-        if(props.params.id){
-            const response = await axios.post(props.endPoint, form.fields, {
-                headers: { 'Content-Type': 'application/json' }
-            })
-        } else {
-            const response = await axios.patch(props.endPoint, form.fields, {
-                headers: { 'Content-Type': 'application/json' }
+        form.value.fields?.forEach(field => {
+            const key = field.field_code || field.id
+            const value = field.value?.[0] ?? ''
+            if (key === 'location_type' && value === '') return
+            payload[key] = value
+        })
+        
+        if (props.params) {
+            Object.entries(props.params).forEach(([key, value]) => {
+                if (key !== 'id') payload[key] = value
             })
         }
         
-        if (response.data) {
-            emit('submit', { })
-        }
+        const isEdit = props.params?.id
+        const config = { headers: { 'Content-Type': 'application/json' } }
+        if (isEdit) config.params = { id: Number(props.params.id) }
+        
+        await $axios[isEdit ? 'patch' : 'post'](props.endPoint, payload, config)
+        emit('submit', { })
     } catch (err) {
-        const errorMsg = err.response?.data?.message || err.message || 'Failed to submit form'
-        alert(`Error: ${errorMsg}`)
-        emit('submit', { data: formData.value, error: err.response?.data || err.message })
+        alert(err.response?.data?.message || err.message || 'Failed to submit form')
+        emit('submit', { error: err.response?.data || err.message })
     } finally {
         submitting.value = false
     }
 }
-
-
 </script>
