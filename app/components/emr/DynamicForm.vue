@@ -18,8 +18,9 @@
 </template>
 
 <script setup>
-import axios from 'axios'
 import Wrapper from '~/components/emr/Wrapper.vue'
+
+const { $axios } = useNuxtApp()
 
 const props = defineProps({
     endPoint: { type: String, default: "" },
@@ -42,7 +43,7 @@ const loadForm = async () => {
             form.value = structuredClone(props.staticForm)
         } else if (props.formCode) {
             // Fetch from formdata API using form_code
-            const response = await axios.get('http://13.200.174.164:3001/v1/form/formdata', {
+            const response = await $axios.get('/form/formdata', {
                 params: { form_code: props.formCode }
             })
             
@@ -64,7 +65,7 @@ const loadForm = async () => {
             if (props.params) {
                 Object.assign(params, props.params)
             }
-            const response = await axios.get(props.endPoint, { params })
+            const response = await $axios.get(props.endPoint, { params })
             form.value = response.data
         }
     } catch (err) {
@@ -78,8 +79,8 @@ onMounted(() => {
     loadForm()
 })
 
-// Watch for changes in formCode or initialData to reload form
-watch([() => props.formCode, () => props.initialData], () => {
+// Watch for changes in formCode, initialData, or staticForm to reload form
+watch([() => props.formCode, () => props.initialData, () => props.staticForm], () => {
     loadForm()
 }, { deep: true })
 
@@ -100,7 +101,7 @@ const handleSubmit = async () => {
         
         // Only make API call if endPoint is provided
         if (props.endPoint) {
-            await axios[isEdit ? 'patch' : 'post'](props.endPoint, payload, config)
+            await $axios[isEdit ? 'patch' : 'post'](props.endPoint, payload, config)
         }
         
         // Emit submit with form data

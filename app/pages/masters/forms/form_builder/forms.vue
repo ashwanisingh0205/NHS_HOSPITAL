@@ -25,22 +25,20 @@
         <NuxtPage :key="$route.fullPath" />
     </div>
     
-    <UModal v-model:open="formModel" :title="modalTitle">
-        <template #body>
-            <DynamicForm
-                :key="formResetKey"
-                :staticForm="staticFormConfig"
-                :params="params"
-                @submit="handleFormSubmit"
-            />
-        </template>
-    </UModal>
+    <CKFormModal
+        v-model="formModel"
+        :title="modalTitle"
+        :endPoint="endPoint"
+        :staticForm="staticFormConfig"
+        :params="params"
+        @handleFormSubmit="handleFormSubmit"
+    />
 </template>
 
 <script setup>
-import DynamicForm from "~/components/emr/DynamicForm.vue";
 import CKEdit from "~/components/common/CKEdit.vue";
 import CKCardList from "~/components/common/CKCardList.vue";
+import CKFormModal from "~/components/common/CKFormModal.vue";
 
 definePageMeta({ layout: 'home' });
 
@@ -57,7 +55,6 @@ const searchQuery = ref('');
 const formModel = ref(false);
 const params = ref(null);
 const formData = ref(null);
-const formResetKey = ref(0);
 
 // Computed
 const modalTitle = computed(() => params.value?.id ? "Edit Form" : "New Form");
@@ -151,31 +148,15 @@ const handleEdit = async (row) => {
                 status: response.data.form.status ?? true
             };
         }
-        formResetKey.value++;
         formModel.value = true;
     } catch (err) {
         console.error('Error loading form data:', err);
     }
 };
 
-const handleFormSubmit = async (submitData) => {
-    if (submitData?.error) return;
-    
-    try {
-        const isEdit = params.value?.id;
-        const config = { headers: { 'Content-Type': 'application/json' } };
-        
-        if (isEdit) {
-            await $axios.patch(endPoint, submitData.payload || {}, { ...config, params: { id: Number(params.value.id) } });
-        } else {
-            await $axios.post(endPoint, submitData.payload || {}, config);
-        }
-        
-        formModel.value = false;
-        await loadData();
-    } catch (err) {
-        alert(err.response?.data?.message || err.message || 'Failed to submit form');
-    }
+const handleFormSubmit = async () => {
+    formModel.value = false;
+    await loadData();
 };
 
 onMounted(loadData);

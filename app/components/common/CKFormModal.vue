@@ -1,8 +1,10 @@
 <template>
-    <UModal v-model:open="localValue" :dismissible="false" title="New Block">
+    <UModal v-model:open="localValue" :dismissible="false" :title="title">
         <template #body>
             <DynamicForm
+                :key="formResetKey"
                 :endPoint="endPoint"
+                :staticForm="staticForm"
                 :params="params"
                 @submit="handleFormSubmit"
             />
@@ -14,13 +16,20 @@
 import DynamicForm from "~/components/emr/DynamicForm.vue";
 
 const props = defineProps({
-    modelValue: { type: String, default: "" },
+    modelValue: { type: Boolean, default: false },
+    title: { type: String, default: "Form" },
     endPoint: { type: String, default: "" },
+    staticForm: { type: Object, default: null },
     params: { type: Object, default: {} },
 })
 
+const formResetKey = ref(0);
+watch(() => props.params, () => {
+    formResetKey.value++;
+}, { deep: true });
 
-const emit = defineEmits(['modelValue', 'handleFormSubmit']);
+
+const emit = defineEmits(['update:modelValue', 'handleFormSubmit']);
 const handleFormSubmit = async (submitData) => {
     emit('handleFormSubmit')
 }
