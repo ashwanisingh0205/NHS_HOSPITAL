@@ -1,6 +1,8 @@
 <template>
-    
-    <CKLoader v-if="loading" />
+    <div v-if="loading" class="flex items-center justify-center py-12">
+        <UIcon name="lucide:loader-2" class="w-6 h-6 animate-spin text-gray-400 dark:text-gray-500" />
+        <span class="ml-3 text-gray-600 dark:text-gray-400">Loading form...</span>
+    </div>
     
     <UForm v-else class="space-y-6" @submit.prevent="handleSubmit">
         <div class="grid gap-6 md:grid-cols-2">
@@ -16,36 +18,70 @@
 </template>
 
 <script setup>
+import axios from 'axios'
 import Wrapper from '~/components/emr/Wrapper.vue'
-import CKLoader from "~/components/common/CKLoader.vue";
 
 const props = defineProps({
     endPoint: { type: String, default: "" },
     params: { type: Object, default: null },
+    staticForm: { type: Object, default: null },
+    formCode: { type: String, default: "" },
+    initialData: { type: Object, default: null },
 })
 const emit = defineEmits(['submit', 'close'])
-
-const { $axios } = useNuxtApp()
 
 const form = ref({})
 const loading = ref(true)
 const submitting = ref(false)
 
-onMounted(async () => {
+const loadForm = async () => {
     try {
         loading.value = true
-        const params = { form: 'true' }
-        if (props.params) {
-            Object.assign(params, props.params)
+        if (props.staticForm) {
+            // Use static form if provided - create deep copy to avoid reference issues
+            form.value = structuredClone(props.staticForm)
+        } else if (props.formCode) {
+            // Fetch from formdata API using form_code
+            const response = await axios.get('http://13.200.174.164:3001/v1/form/formdata', {
+                params: { form_code: props.formCode }
+            })
+            
+            if (response.data.success && response.data.fields) {
+                // Map API response to form structure
+                form.value = {
+                    fields: response.data.fields.map(field => ({
+                        ...field,
+                        // Set initial value from initialData if provided
+                        value: props.initialData && props.initialData[field.field_code] !== undefined
+                            ? [props.initialData[field.field_code]]
+                            : field.value || []
+                    }))
+                }
+            }
+        } else if (props.endPoint) {
+            // Fetch from endpoint
+            const params = { form: 'true' }
+            if (props.params) {
+                Object.assign(params, props.params)
+            }
+            const response = await axios.get(props.endPoint, { params })
+            form.value = response.data
         }
-        const response = await $axios.get(props.endPoint, { params })
-        form.value = response.data
     } catch (err) {
         console.error('Error loading form:', err)
     } finally {
         loading.value = false
     }
+}
+
+onMounted(() => {
+    loadForm()
 })
+
+// Watch for changes in formCode or initialData to reload form
+watch([() => props.formCode, () => props.initialData], () => {
+    loadForm()
+}, { deep: true })
 
 const handleSubmit = async () => {
     submitting.value = true
@@ -55,22 +91,20 @@ const handleSubmit = async () => {
         form.value.fields?.forEach(field => {
             const key = field.field_code || field.id
             const value = field.value?.[0] ?? ''
-            if (key === 'location_type' && value === '') return
             payload[key] = value
         })
-        
-        if (props.params) {
-            Object.entries(props.params).forEach(([key, value]) => {
-                if (key !== 'id') payload[key] = value
-            })
-        }
         
         const isEdit = props.params?.id
         const config = { headers: { 'Content-Type': 'application/json' } }
         if (isEdit) config.params = { id: Number(props.params.id) }
         
-        await $axios[isEdit ? 'patch' : 'post'](props.endPoint, payload, config)
-        emit('submit', { })
+        // Only make API call if endPoint is provided
+        if (props.endPoint) {
+            await axios[isEdit ? 'patch' : 'post'](props.endPoint, payload, config)
+        }
+        
+        // Emit submit with form data
+        emit('submit', { form: form.value, payload })
     } catch (err) {
         alert(err.response?.data?.message || err.message || 'Failed to submit form')
         emit('submit', { error: err.response?.data || err.message })

@@ -1,0 +1,173 @@
+<template>
+    <div class="flex gap-2">
+        <div class="w-full">
+            <CKCardList :loading="loading" :title="title" @handleAdd="handleAdd" v-model="searchQuery">
+                <UTable :loading="loading" :data="filteredFields" :columns="columns">
+                    <template v-if="!loading" #empty>
+                        <UError :error="{ statusMessage: error || 'No Record Found!!' }" />
+                    </template>
+                    <template #id-cell="{ row }">
+                        {{ filteredFields.findIndex(f => f.id === row.original.id) + 1 }}
+                    </template>
+                    <template #action-cell="{ row }">
+                        <div class="text-end">
+                            <CKEdit @click="handleEdit(row)" />
+                        </div>
+                    </template>
+                </UTable>
+            </CKCardList>
+        </div>
+    </div>
+    
+    <UModal v-model:open="formModel" :title="modalTitle">
+        <template #body>
+            <DynamicForm
+                :key="formResetKey"
+                :staticForm="staticFormConfig"
+                @submit="handleFormSubmit"
+            />
+        </template>
+    </UModal>
+</template>
+
+<script setup>
+import DynamicForm from "~/components/emr/DynamicForm.vue";
+import CKEdit from "~/components/common/CKEdit.vue";
+import CKCardList from "~/components/common/CKCardList.vue";
+
+definePageMeta({ layout: 'home' });
+
+const { $axios } = useNuxtApp();
+const route = useRoute();
+const selectedForm = inject('selectedForm', ref(null));
+
+// State
+const fields = ref([]);
+const formModel = ref(false);
+const formResetKey = ref(0);
+const loading = ref(false);
+const error = ref(null);
+const editingField = ref(null);
+const searchQuery = ref('');
+
+// Computed
+const title = computed(() => 
+    selectedForm.value ? `Form Fields - ${selectedForm.value.form_name}` : "Form Fields"
+);
+
+const modalTitle = computed(() => editingField.value ? "Edit Form Field" : "New Form Field");
+
+const columns = [
+    { accessorKey: 'id', header: 'Sr.No.' },
+    { accessorKey: 'label', header: 'Label' },
+    { id: 'action' }
+];
+
+const staticFormConfig = computed(() => {
+    const data = editingField.value || { form_id: selectedForm.value?.id };
+    
+    return {
+        fields: [
+            { id: 'form_id', field_code: 'form_id', data_type: 'NUMBER', label: 'Form ID', value: [data.form_id], required: true },
+            { id: 'data_type', field_code: 'data_type', data_type: 'TEXT', label: 'Data Type', value: [data.data_type || 'TEXT'], required: true },
+            { id: 'field_code', field_code: 'field_code', data_type: 'TEXT', label: 'Field Code', value: [data.field_code || ''], required: true },
+            { id: 'label', field_code: 'label', data_type: 'TEXT', label: 'Label', value: [data.label || ''], required: true },
+            { id: 'label_position', field_code: 'label_position', data_type: 'TEXT', label: 'Label Position', value: [data.label_position || 'TOP'], required: false },
+            { id: 'status', field_code: 'status', data_type: 'checkbox', label: 'Status', value: [data.status ?? true], required: false },
+            { id: 'priority', field_code: 'priority', data_type: 'NUMBER', label: 'Priority', value: [data.priority || 0], required: false }
+        ]
+    };
+});
+
+const filteredFields = computed(() => {
+    const allFields = flattenFields(fields.value);
+    
+    if (!searchQuery.value.trim()) return allFields;
+    
+    const query = searchQuery.value.toLowerCase();
+    return allFields.filter(f => 
+        f.label?.toLowerCase().includes(query) || 
+        f.field_code?.toLowerCase().includes(query) ||
+        f.data_type?.toLowerCase().includes(query)
+    );
+});
+
+// Methods
+const flattenFields = (fieldArray) => {
+    const result = [];
+    fieldArray.forEach(field => {
+        result.push(field);
+        if (field.fields) result.push(...flattenFields(field.fields));
+    });
+    return result;
+};
+
+const loadFormFields = async () => {
+    const formId = route.query.id || selectedForm.value?.id;
+    if (!formId) return;
+    
+    loading.value = true;
+    error.value = null;
+    
+    try {
+        const { data } = await $axios.get('/masters/forms/field', {
+            params: { form_id: formId }
+        });
+        
+        fields.value = data.success && data.fields ? data.fields : [];
+    } catch (err) {
+        error.value = err.response?.data?.message || 'Failed to load form fields';
+        fields.value = [];
+    } finally {
+        loading.value = false;
+    }
+};
+
+const handleAdd = () => {
+    editingField.value = null;
+    formResetKey.value++;
+    formModel.value = true;
+};
+
+const handleEdit = (row) => {
+    editingField.value = row.original;
+    formResetKey.value++;
+    formModel.value = true;
+};
+
+const handleFormSubmit = async (submitData) => {
+    if (submitData?.error) return;
+    
+    try {
+        const payload = submitData.payload;
+        
+        if (editingField.value) {
+            await $axios.patch('/masters/forms/field', payload, {
+                params: { id: editingField.value.id }
+            });
+        } else {
+            await $axios.post('/masters/forms/field', {
+                fields: [{
+                    form_id: Number(payload.form_id),
+                    data_type: payload.data_type,
+                    field_code: payload.field_code,
+                    label: payload.label,
+                    label_position: payload.label_position,
+                    status: payload.status,
+                    priority: Number(payload.priority)
+                }]
+            });
+        }
+        
+        formModel.value = false;
+        await loadFormFields();
+    } catch (err) {
+        alert(err.response?.data?.message || 'Failed to submit form field');
+    }
+};
+
+watch(() => route.query.id, loadFormFields);
+watch(() => selectedForm.value?.id, loadFormFields);
+
+onMounted(loadFormFields);
+</script>
