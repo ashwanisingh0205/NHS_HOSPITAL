@@ -5,6 +5,8 @@
                 :key="formResetKey"
                 :endPoint="endPoint"
                 :staticForm="staticForm"
+                :formCode="formCode"
+                :initialData="initialData"
                 :params="params"
                 @submit="handleFormSubmit"
             />
@@ -20,11 +22,16 @@ const props = defineProps({
     title: { type: String, default: "Form" },
     endPoint: { type: String, default: "" },
     staticForm: { type: Object, default: null },
+    formCode: { type: String, default: "" },
+    initialData: { type: Object, default: null },
     params: { type: Object, default: {} },
 })
 
 const formResetKey = ref(0);
 watch(() => props.params, () => {
+    formResetKey.value++;
+}, { deep: true });
+watch(() => props.initialData, () => {
     formResetKey.value++;
 }, { deep: true });
 

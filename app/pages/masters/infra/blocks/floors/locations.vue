@@ -20,31 +20,33 @@
     <NuxtPage />
     
     
-    <UModal v-model:open="formModel" :title="title">
-        <template #body>
-            <DynamicForm
-                :endPoint="endPoint"
-                :params="params"
-                @submit="handleFormSubmit"
-            />
-        </template>
-    </UModal>
+    <CKFormModal
+        v-model="formModel"
+        :title="params.id ? 'Edit Location' : 'New Location'"
+        :endPoint="endPoint"
+        :formCode="'infra_location_master'"
+        :initialData="initialData"
+        :params="params"
+        @handleFormSubmit="handleFormSubmit"
+    />
 
 </template>
 
 <script setup>
-import axios from 'axios';
-import DynamicForm from "~/components/emr/DynamicForm.vue";
 import CKEdit from "~/components/common/CKEdit.vue";
 import CKCardList from "~/components/common/CKCardList.vue";
+import CKFormModal from "~/components/common/CKFormModal.vue";
+
 const route = useRoute();
+const { $axios } = useNuxtApp();
 
 /* ------------------ Default Variables ------------------ */
 definePageMeta({ layout: 'home' });
-const title = ref("Floor List");
-const endPoint = ref("http://13.200.174.164:3001/v1/masters/infra/locations");
+const title = ref("Location List");
+const endPoint = ref("/masters/infra/locations");
 const params = ref({});
 const formModel = ref(false);
+const initialData = ref(null);
 
 
 /* ------------------ onMounted ------------------ */
@@ -66,7 +68,7 @@ const loadData = async () => {
     loading.value = true;
     error.value = null;
     try {
-        const response = await axios.get(endPoint.value, {
+        const response = await $axios.get(endPoint.value, {
             params: { floor_id: route.query.floor_id }
         });
         const temp = response.data;
@@ -91,7 +93,7 @@ const filteredData = computed(() => {
     }
     const query = searchQuery.value.toLowerCase();
     return data.value.filter(item =>
-        item.floor_name?.toLowerCase().includes(query)
+        item.location?.toLowerCase().includes(query)
     );
 });
 
@@ -101,13 +103,29 @@ const filteredData = computed(() => {
 
 /* ------------------ Add Button ------------------ */
 const handleAdd = () => {
-    params.value = null;
+    params.value = { 
+        block_id: Number(route.query.block_id),
+        floor_id: Number(route.query.floor_id) 
+    };
+    initialData.value = null;
     formModel.value = true;
 };
 
 /* ------------------ Edit Button ------------------ */
-const handleEdit = (item) => {
-    params.value = { id: item.id };
+const handleEdit = async (item) => {
+    params.value = { id: item.original.id };
+    initialData.value = null;
+    
+    // Load existing data for editing
+    try {
+        const existingItem = data.value.find(d => d.id === item.original.id);
+        if (existingItem) {
+            initialData.value = existingItem;
+        }
+    } catch (err) {
+        console.error('Error loading item data:', err);
+    }
+    
     formModel.value = true;
 };
 

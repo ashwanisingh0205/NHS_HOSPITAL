@@ -26,31 +26,33 @@
     <NuxtPage :key="$route.params" />
     
     
-    <UModal v-model:open="formModel" :title="title">
-        <template #body>
-            <DynamicForm
-                :endPoint="endPoint"
-                :params="params"
-                @submit="handleFormSubmit"
-            />
-        </template>
-    </UModal>
+    <CKFormModal
+        v-model="formModel"
+        :title="params.id ? 'Edit Floor' : 'New Floor'"
+        :endPoint="endPoint"
+        :formCode="'infra_floor_master'"
+        :initialData="initialData"
+        :params="params"
+        @handleFormSubmit="handleFormSubmit"
+    />
 
 </template>
 
 <script setup>
-import axios from 'axios';
-import DynamicForm from "~/components/emr/DynamicForm.vue";
 import CKEdit from "~/components/common/CKEdit.vue";
 import CKCardList from "~/components/common/CKCardList.vue";
+import CKFormModal from "~/components/common/CKFormModal.vue";
+
 const route = useRoute();
+const { $axios } = useNuxtApp();
 
 /* ------------------ Default Variables ------------------ */
 definePageMeta({ layout: 'home' });
 const title = ref("Floor List");
-const endPoint = ref("http://13.200.174.164:3001/v1/masters/infra/floors");
+const endPoint = ref("/masters/infra/floors");
 const params = ref({});
 const formModel = ref(false);
+const initialData = ref(null);
 
 
 /* ------------------ onMounted ------------------ */
@@ -72,7 +74,7 @@ const loadData = async () => {
     loading.value = true;
     error.value = null;
     try {
-        const response = await axios.get(endPoint.value, {
+        const response = await $axios.get(endPoint.value, {
             params: { block_id: route.query.block_id }
         });
         const temp = response.data;
@@ -107,13 +109,31 @@ const filteredData = computed(() => {
 
 /* ------------------ Add Button ------------------ */
 const handleAdd = () => {
-    params.value = null;
+    // Get block_id from route query or default to 1
+    const blockId = route.query.block_id ? Number(route.query.block_id) : 1;
+    
+    // Set params for form submission
+    params.value = { block_id: blockId };
+    // Set initialData to pre-fill the form field
+    initialData.value = { block_id: blockId };
     formModel.value = true;
 };
 
 /* ------------------ Edit Button ------------------ */
-const handleEdit = (item) => {
-    params.value = { id: item.id };
+const handleEdit = async (item) => {
+    params.value = { id: item.original.id };
+    initialData.value = null;
+    
+    // Load existing data for editing
+    try {
+        const existingItem = data.value.find(d => d.id === item.original.id);
+        if (existingItem) {
+            initialData.value = existingItem;
+        }
+    } catch (err) {
+        console.error('Error loading item data:', err);
+    }
+    
     formModel.value = true;
 };
 
