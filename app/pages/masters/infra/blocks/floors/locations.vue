@@ -6,6 +6,9 @@
                 <template v-if="!loading" #empty>
                     <UError :error="{ statusMessage: error || 'No Record Found!!' }" />
                 </template>
+                <template #id-cell="{ row }">
+                        {{ filteredData.findIndex(f => f.id === row.original.id) + 1 }}
+                    </template>
                 <template #action-cell="{ row }">
                     <div class="text-end">
                         <CKEdit @click="handleEdit(row)" />

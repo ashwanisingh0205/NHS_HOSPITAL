@@ -6,6 +6,9 @@
                 <template v-if="!loading" #empty>
                     <UError :error="{ statusMessage: error || 'No Record Found!!' }" />
                 </template>
+                <template #id-cell="{ row }">
+                    {{ filteredData.findIndex(f => f.id === row.original.id) + 1 }}
+                </template>
                 <template #floor_name-cell="{ row }">
                     <ULink
                         :to="{ name: 'masters-infra-blocks-floors-locations', query: { block_id: route.query.block_id, floor_id: row.original.id } }"  class="cursor-pointer">
