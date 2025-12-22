@@ -7,33 +7,22 @@
             </div>
 
             <nav class="flex-1 flex flex-col items-center py-4 space-y-2">
-                <UButton
-                    v-for="item in mainNavItems"
-                    :key="item.id"
-                    @click="handleMainNavClick(item.id)"
-                    variant="primary"
-                    :icon="item.icon"
-                    :ui="getNavButtonUI(item.id)"
-                    :title="item.name"
-                />
+                <UButton v-for="item in mainNavItems" :key="item.id" @click="handleMainNavClick(item.id)"
+                    variant="primary" :icon="item.icon" :ui="getNavButtonUI(item.id)" :title="item.name" />
             </nav>
         </aside>
 
         <!-- Secondary Sidebar -->
         <aside
             class="bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col transition-all duration-300 overflow-hidden"
-            :class="isSidebarCollapsed ? 'w-0' : 'w-64'"
-        >
+            :class="isSidebarCollapsed ? 'w-0' : 'w-64'">
             <template v-if="!isSidebarCollapsed">
                 <div class="h-16 flex items-center justify-between px-4 border-b border-gray-200 dark:border-gray-800">
                     <h2 class="font-semibold text-gray-900 dark:text-gray-100">{{ currentSectionName }}</h2>
                 </div>
 
                 <div class="p-4 border-b border-gray-200 dark:border-gray-800">
-                    <UDashboardSearchButton
-                        v-model:search-term="searchTerm"
-                        :groups="groups"
-                        class="w-full" />
+                    <UDashboardSearchButton v-model:search-term="searchTerm" :groups="groups" class="w-full" />
                     <UDashboardSearch :groups="groups" />
                 </div>
 
@@ -41,51 +30,37 @@
                     <nav class="flex-1 overflow-y-auto p-3">
                         <div class="space-y-1">
                             <template v-for="item in currentNavItems" :key="item.name">
-                                <NuxtLink
-                                    v-if="!item.children"
-                                    :to="item.path"
-                                    class="flex items-center px-3 py-2 rounded-lg text-sm group"
-                                    :class="isActive(item.path)
+                                <NuxtLink v-if="!item.children" :to="item.path"
+                                    class="flex items-center px-3 py-2 rounded-lg text-sm group" :class="isActive(item.path)
                                         ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium'
-                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'"
-                                >
+                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'">
                                     <div class="flex items-center gap-3 flex-1">
                                         <UIcon :name="item.icon" class="w-4 h-4 shrink-0" />
                                         <span class="truncate">{{ item.name }}</span>
                                     </div>
-                                    <UIcon
-                                        v-if="item.count"
-                                        name="lucide:chevron-right"
-                                        class="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 shrink-0"
-                                    />
+                                    <UIcon v-if="item.count" name="lucide:chevron-right"
+                                        class="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 shrink-0" />
                                 </NuxtLink>
 
                                 <div v-else>
-                                    <UButton
-                                        @click="toggleExpanded(item.name)"
-                                        variant="ghost"
-                                        class="w-full justify-between"
-                                    >
+                                    <UButton @click="toggleExpanded(item.name)" variant="ghost"
+                                        class="w-full justify-between">
                                         <div class="flex items-center gap-3 flex-1">
                                             <UIcon :name="item.icon" class="w-4 h-4 shrink-0" />
                                             <span class="truncate">{{ item.name }}</span>
                                         </div>
-                                        <UIcon
-                                            name="lucide:chevron-down"
+                                        <UIcon name="lucide:chevron-down"
                                             class="w-4 h-4 text-gray-400 shrink-0 transition-transform"
-                                            :class="expandedItems.includes(item.name) ? 'rotate-180' : ''"
-                                        />
+                                            :class="expandedItems.includes(item.name) ? 'rotate-180' : ''" />
                                     </UButton>
 
                                     <ul v-if="expandedItems.includes(item.name)" class="ml-8 mt-1 space-y-1">
                                         <li v-for="child in item.children" :key="child.name">
-                                            <NuxtLink
-                                                :to="child.path"
+                                            <NuxtLink :to="child.path"
                                                 class="flex items-center px-3 py-2 rounded-lg text-sm"
                                                 :class="isActive(child.path)
                                                     ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium'
-                                                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'"
-                                            >
+                                                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'">
                                                 {{ child.name }}
                                             </NuxtLink>
                                         </li>
@@ -96,14 +71,8 @@
                     </nav>
 
                     <div class="p-3 pt-2 border-t border-gray-200 dark:border-gray-800 mt-auto">
-                        <UButton
-                            @click="navigateTo('/upgrade')"
-                            variant="soft"
-                            color="neutral"
-                            block
-                            icon="lucide:sparkles"
-                            label="Upgrade"
-                        />
+                        <UButton @click="navigateTo('/upgrade')" variant="soft" color="neutral" block
+                            icon="lucide:sparkles" label="Upgrade" />
                     </div>
                 </div>
             </template>
@@ -111,36 +80,24 @@
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden">
-            <header class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 h-16 flex items-center justify-between px-6">
+            <header
+                class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 h-16 flex items-center justify-between px-6">
                 <div class="flex items-center gap-4 flex-1">
-                    <UButton
-                        @click="isSidebarCollapsed = !isSidebarCollapsed"
-                        variant="ghost"
-                        color="gray"
-                        size="sm"
-                        :icon="isSidebarCollapsed ? 'lucide:panel-left-open' : 'lucide:panel-left-close'"
-                    />
+                    <UButton @click="isSidebarCollapsed = !isSidebarCollapsed" variant="ghost" color="gray" size="sm"
+                        :icon="isSidebarCollapsed ? 'lucide:panel-left-open' : 'lucide:panel-left-close'" />
 
                     <nav class="flex items-center gap-2">
                         <template v-for="(item, index) in breadcrumbItems" :key="index">
-                            <NuxtLink
-                                v-if="item.to"
-                                :to="item.to"
-                                class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-                            >
+                            <NuxtLink v-if="item.to" :to="item.to"
+                                class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
                                 <span>{{ item.label }}</span>
                             </NuxtLink>
-                            <span
-                                v-else
-                                class="flex items-center gap-2 text-sm text-gray-900 dark:text-gray-100 font-medium"
-                            >
+                            <span v-else
+                                class="flex items-center gap-2 text-sm text-gray-900 dark:text-gray-100 font-medium">
                                 {{ item.label }}
                             </span>
-                            <UIcon
-                                v-if="index < breadcrumbItems.length - 1"
-                                name="lucide:chevron-right"
-                                class="w-4 h-4 text-gray-400 dark:text-gray-500"
-                            />
+                            <UIcon v-if="index < breadcrumbItems.length - 1" name="lucide:chevron-right"
+                                class="w-4 h-4 text-gray-400 dark:text-gray-500" />
                         </template>
                     </nav>
                 </div>
@@ -148,26 +105,18 @@
                 <div class="flex items-center gap-3">
                     <!-- Customer Care Button (Account Manager) -->
                     <UButton variant="outline" color="neutral">
-                        <UAvatar
-                            :src="accountManagerAvatar"
-                            :alt="accountManagerName"
-                            size="sm"
-                        />
+                        <UAvatar :src="accountManagerAvatar" :alt="accountManagerName" size="sm" />
                         <div class="flex flex-col items-start ml-2">
                             <span class="text-sm leading-tight">Meet {{ accountManagerName }}</span>
-                            <span class="text-xs leading-tight text-gray-500 dark:text-gray-400">Your Account Manager</span>
+                            <span class="text-xs leading-tight text-gray-500 dark:text-gray-400">Your Account
+                                Manager</span>
                         </div>
                     </UButton>
 
                     <!-- Notification Button -->
                     <div class="relative">
-                        <UButton
-                            variant="soft"
-                            color="neutral"
-                            size="md"
-                            icon="tabler:message"
-                            @click="console.log('Notifications')"
-                        />
+                        <UButton variant="soft" color="neutral" size="md" icon="tabler:message"
+                            @click="console.log('Notifications')" />
                         <!-- <UBadge
                             v-if="notificationCount > 0"
                             :label="notificationCount > 9 ? '9+' : String(notificationCount)"
@@ -178,60 +127,34 @@
 
                     <!-- User Profile Avatar with Dropdown -->
                     <div ref="userMenuRef" class="relative">
-                        <UButton
-                            variant="solid"
-                            color='info'
-                            class="p-0.5 rounded-full"
-                            @click="isUserMenuOpen = !isUserMenuOpen"
-                        >
-                            <UAvatar
-                                :src="userAvatar"
-                                :alt="userName"
-                                :text="!userAvatar ? userInitials : undefined"
-                                size="sm"
-                            />
+                        <UButton variant="solid" color='info' class="p-0.5 rounded-full"
+                            @click="isUserMenuOpen = !isUserMenuOpen">
+                            <UAvatar :src="userAvatar" :alt="userName" :text="!userAvatar ? userInitials : undefined"
+                                size="sm" />
                         </UButton>
 
                         <!-- Dropdown Menu -->
-                        <div
-                            v-if="isUserMenuOpen"
+                        <div v-if="isUserMenuOpen"
                             class="absolute right-0 mt-2 w-72 rounded-lg bg-white dark:bg-gray-800 shadow-lg ring-1 ring-gray-200 dark:ring-gray-700 z-50 overflow-hidden"
-                            @click.stop
-                        >
+                            @click.stop>
                             <div class="px-4 py-4 border-b border-gray-200 dark:border-gray-700">
                                 <div class="flex items-center gap-3">
-                                    <UAvatar
-                                        :src="userAvatar"
-                                        :alt="userName"
-                                        :text="!userAvatar ? userInitials : undefined"
-                                        size="md"
-                                        
-                                    />
+                                    <UAvatar :src="userAvatar" :alt="userName"
+                                        :text="!userAvatar ? userInitials : undefined" size="md" />
                                     <div class="flex-1">
-                                        <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ userName }}</p>
+                                        <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{
+                                            userName }}
+                                        </p>
                                         <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ userEmail }}</p>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="py-2 px-4 space-y-2">
-                                <UButton
-                                    @click="isUserMenuOpen = false; navigateTo('/profile')"
-                                    variant="outline"
-                                    block
-                                    color="neutral"
-                                    icon="lucide:user"
-                                    label="My Profile"
-                                />
-                                <UButton
-                                    @click="isUserMenuOpen = false; navigateTo('/settings')"
-                                    variant="outline"
-                                    color="neutral"
-                                    block
-                                  
-                                    icon="lucide:settings"
-                                    label="Settings"
-                                />
+                                <UButton @click="isUserMenuOpen = false; navigateTo('/profile')" variant="outline" block
+                                    color="neutral" icon="lucide:user" label="My Profile" />
+                                <UButton @click="isUserMenuOpen = false; navigateTo('/settings')" variant="outline"
+                                    color="neutral" block icon="lucide:settings" label="Settings" />
                             </div>
 
                             <div class="border-t border-gray-200 dark:border-gray-700"></div>
@@ -242,21 +165,14 @@
                                         <UIcon name="lucide:moon" class="w-4 h-4" />
                                         <span class="text-sm text-gray-700 dark:text-gray-300">Dark Mode</span>
                                     </div>
-                                    <USwitch
-                                        :model-value="isDarkMode"
-                                        @update:model-value="colorMode.preference = $event ? 'dark' : 'light'"
-                                    />
+                                    <USwitch :model-value="isDarkMode"
+                                        @update:model-value="colorMode.preference = $event ? 'dark' : 'light'" />
                                 </div>
                             </div>
 
                             <div class="px-4 pb-3 pt-2">
-                                <UButton
-                                    @click="isUserMenuOpen = false; navigateTo('/')"
-                                    label="Log out"
-                                    color="error"
-                                    variant="solid"
-                                    block
-                                />
+                                <UButton @click="isUserMenuOpen = false; navigateTo('/')" label="Log out" color="error"
+                                    variant="solid" block />
                             </div>
                         </div>
                     </div>
@@ -470,14 +386,120 @@ const mainNavItems = [
 
 const navSections = {
     dashboard: [
-        { name: 'Overview', path: '/dashboard', icon: 'lucide:home' },
-        {name:"Items",path:'/masters/items/item', icon:'lucide:list-ordered'},
         { name: 'Forms', path: '/masters/forms/form_builder/forms', icon: 'lucide:file-text' },
-        {name:"Infra",path:'/masters/infra/blocks', icon:'lucide:building'},
-        { name: 'Reports', path: '/reports', icon: 'lucide:file-bar-chart' },
-        {name: 'Statistics', path: '/statistics', icon: 'lucide:pie-chart' },
-        {name:'Patient', path: '/patient', icon: 'lucide:user' },
-        {name:'Hr',path:'/hr', icon:'lucide:users'}
+        {
+            name: 'Accounts',
+            icon: 'lucide:file-bar-chart',
+            children: [
+                { name: 'Bank Account Form', path: '/masters/accounts/bank_account_form' },
+                { name: 'Bank Accounts', path: '/masters/accounts/bank_accounts' },
+                { name: 'Bank Form', path: '/masters/accounts/bank_form' },
+                { name: 'Banks', path: '/masters/accounts/banks' },
+                { name: 'Companies', path: '/masters/accounts/companies' },
+                { name: 'Company Form', path: '/masters/accounts/company_form' },
+                { name: 'Financial Year Form', path: '/masters/accounts/financial_year_form' },
+                { name: 'Financial Years', path: '/masters/accounts/financial_years' },
+                { name: 'Gst Form', path: '/masters/accounts/gst_form' },
+                { name: 'Gst List', path: '/masters/accounts/gst_list' },
+                { name: 'Ledger Form', path: '/masters/accounts/ledger_form' },
+                { name: 'Ledger Group Form', path: '/masters/accounts/ledger_group_form' },
+                { name: 'Voucher Type Form', path: '/masters/accounts/voucher_type_form' },
+                { name: 'Voucher Types', path: '/masters/accounts/voucher_types' },
+            ]
+        },
+        {
+            name: 'Communication',
+            icon: 'lucide:megaphone',
+            children: [
+                { name: 'Template Form', path: '/masters/communication/template_form' },
+                { name: 'Templates', path: '/masters/communication/templates' },
+            ]
+        },
+        {
+            name: 'HRM',
+            icon: 'lucide:users',
+            children: [
+                { name: 'Hr Appraisal Master', path: '/masters/hrm/hr_appraisal_master' },
+                { name: 'Hr Department Master', path: '/masters/hrm/hr_department_master' },
+                { name: 'Hr Designation Master', path: '/masters/hrm/hr_designation_master' },
+                { name: 'Hr Document Details', path: '/masters/hrm/hr_document_details' },
+                { name: 'Hr Document Type Master', path: '/masters/hrm/hr_document_type_master' },
+                { name: 'Hr Grade Master', path: '/masters/hrm/hr_grade_master' },
+            ]
+        },
+        {
+            name: 'Infra',
+            icon: 'lucide:building',
+            children: [
+                { name: 'Blocks', path: '/masters/infra/blocks' },
+                { name: 'Location Category Master', path: '/masters/infra/location_category_master' },
+                { name: 'Location Master', path: '/masters/infra/location_master' },
+                { name: 'Location Type Master', path: '/masters/infra/location_type_master' },
+            ]
+        },
+        {
+            name: 'Items',
+            icon: 'lucide:list-ordered',
+            children: [
+                { name: 'Billing Head Mapping', path: '/masters/items/billing_head_mapping' },
+                { name: 'Item Category Master', path: '/masters/items/item_category_master' },
+                { name: 'Item Master', path: '/masters/items/item_master' },
+                { name: 'Lis Reference Range Master', path: '/masters/items/lis_reference_range_master' },
+                { name: 'Lis Template Mapping', path: '/masters/items/lis_template_mapping' },
+                { name: 'Package Mapping', path: '/masters/items/package_mapping' },
+                { name: 'Package Master', path: '/masters/items/package_master' },
+                { name: 'Payer Bed Category', path: '/masters/items/payer_bed_category' },
+                { name: 'Payer Mapping', path: '/masters/items/payer_mapping' },
+                { name: 'Payer Master', path: '/masters/items/payer_master' },
+                { name: 'Service Category Master', path: '/masters/items/service_category_master' },
+                { name: 'Service Master', path: '/masters/items/service_master' },
+            ]
+        },
+        {
+            name: 'Stores',
+            icon: 'lucide:shopping-cart',
+            children: [
+                { name: 'Demand Details', path: '/masters/stores/demand_details' },
+                { name: 'Demand Master', path: '/masters/stores/demand_master' },
+                { name: 'Vendor Item Mapping', path: '/masters/stores/vendor_item_mapping' },
+                { name: 'Vendor Master', path: '/masters/stores/vendor_master' },
+            ]
+        },
+        {
+            name: 'Training',
+            icon: 'lucide:graduation-cap',
+            children: [
+                { name: 'Training Category Master', path: '/masters/training/training_category_master' },
+                { name: 'Training Session Invite', path: '/masters/training/training_session_invite' },
+                { name: 'Training Session Master', path: '/masters/training/training_session_master' },
+                { name: 'Training Topic Master', path: '/masters/training/training_topic_master' },
+                { name: 'Training Video Master', path: '/masters/training/training_video_master' },
+            ]
+        },
+        {
+            name: 'Units',
+            icon: 'lucide:building',
+            children: [
+                { name: 'Unit Corporate Master', path: '/masters/units/unit_corporate_master' },
+                { name: 'Unit Master', path: '/masters/units/unit_master' },
+            ]
+        },
+        {
+            name: 'Users',
+            icon: 'lucide:users',
+            children: [
+                { name: 'User Master', path: '/masters/users/user_master' },
+                { name: 'User Role Master', path: '/masters/users/user_role_master' },
+            ]
+        },
+        {
+            name: 'Visits',
+            icon: 'lucide:ambulance',
+            children: [
+                { name: 'Patient Master', path: '/masters/visits/patient_master' },
+                { name: 'Visit Master', path: '/masters/visits/visit_master' },
+            ]
+        },
     ],
     projects: [
         { name: 'All Projects', path: '/registration', icon: 'lucide:folder-open' },
@@ -495,7 +517,7 @@ const navSections = {
         { name: 'Members', path: '/team/members', icon: 'lucide:users' },
         { name: 'Roles', path: '/team/roles', icon: 'lucide:shield' },
         { name: 'Permissions', path: '/team/permissions', icon: 'lucide:lock' },
-        
+
     ],
     messages: [
         { name: 'Inbox', path: '/messages', icon: 'lucide:inbox' },
