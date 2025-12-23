@@ -8,7 +8,7 @@
 
     <!-- Text Input Types -->
     <UInput
-      v-if="['TEXT', 'EMAIL', 'NUMBER', 'password', 'tel', 'url','date'].includes(field.data_type)"
+      v-if="['TEXT', 'EMAIL', 'NUMBER', 'password', 'tel', 'url','DATE'].includes(field.data_type)"
       v-model="field.value[0]"
       :type="field.data_type"
       :placeholder="field.label"
@@ -76,7 +76,7 @@
 
     <!-- Date -->
     <UInput
-      v-else-if="field.data_type === 'date'"
+      v-else-if="field.data_type === 'DATE'"
       v-model="localValue"
       type="date"
       

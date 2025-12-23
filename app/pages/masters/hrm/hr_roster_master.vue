@@ -10,8 +10,8 @@
                     <template #id-cell="{ row }">
                         {{filteredData.findIndex(f => f.id === row.original.id) + 1}}
                     </template>
-                    <template #appraisal_name-cell="{ row }">
-                        {{ row.original.appraisal_name }}
+                    <template #roster_name-cell="{ row }">
+                        {{ row.original.roster_name }}
                     </template>
                     <template #action-cell="{ row }">
                         <div class="text-end">
@@ -25,8 +25,8 @@
     </div>
 
 
-    <CKFormModal v-model="formModel" :title="params.id ? 'Edit Appraisal' : 'New Appraisal'" :endPoint="endPoint"
-        :formCode="'hr_appraisal_master'" :initialData="initialData" :params="params"
+    <CKFormModal v-model="formModel" :title="params.id ? 'Edit Roster' : 'New Roster'" :endPoint="endPoint"
+        :formCode="'hr_roster_master'" :initialData="initialData" :params="params"
         @handleFormSubmit="handleFormSubmit" />
 
 
@@ -40,8 +40,8 @@ import CKFormModal from "~/components/common/CKFormModal.vue";
 /* ------------------ Default Variables ------------------ */
 definePageMeta({ layout: 'home' });
 const { $axios } = useNuxtApp()
-const title = ref("HR Appraisal Master List");
-const endPoint = ref("/hrm/appraisal");
+const title = ref("Roster List");
+const endPoint = ref("/hrm/roster");
 const params = ref({});
 const formModel = ref(false);
 const initialData = ref(null);
@@ -59,7 +59,7 @@ const error = ref(null);
 const data = ref([]);
 const columns = ref([
     { accessorKey: 'id', header: 'Sr.No.' },
-    { accessorKey: 'appraisal_name', header: 'Appraisal Name' },
+    { accessorKey: 'roster_name', header: 'Roster Name' },
     { id: 'action' }
 ]);
 const loadData = async () => {
@@ -68,13 +68,13 @@ const loadData = async () => {
     try {
         const response = await $axios.get(endPoint.value);
         const temp = response.data;
-        if (temp.success && Array.isArray(temp.appraisals)) {
-            data.value = temp.appraisals;
+        if (temp.success && Array.isArray(temp.rosters)) {
+            data.value = temp.rosters;
         } else {
             error.value = 'Invalid response format from API';
         }
     } catch (err) {
-        error.value = err.response?.data?.message || err.message || 'Failed to load appraisals';
+        error.value = err.response?.data?.message || err.message || 'Failed to load rosters';
     } finally {
         loading.value = false;
     }
@@ -89,7 +89,7 @@ const filteredData = computed(() => {
     }
     const query = searchQuery.value.toLowerCase();
     return data.value.filter(dept =>
-        dept.appraisal_name?.toLowerCase().includes(query)
+        dept.roster_name?.toLowerCase().includes(query)
     );
 });
 

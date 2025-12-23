@@ -423,8 +423,13 @@ const navSections = {
                 { name: 'Hr Department Master', path: '/masters/hrm/hr_department_master' },
                 { name: 'Hr Designation Master', path: '/masters/hrm/hr_designation_master' },
                 { name: 'Hr Document Details', path: '/masters/hrm/hr_document_details' },
+                {name:'Hr Employee Master', path: '/masters/hrm/hr_employee_master'},
                 { name: 'Hr Document Type Master', path: '/masters/hrm/hr_document_type_master' },
                 { name: 'Hr Grade Master', path: '/masters/hrm/hr_grade_master' },
+                {name: 'Hr Holiday Master', path: '/masters/hrm/hr_holiday_master'},
+                {name:'Hr Leave Type Master', path: '/masters/hrm/hr_leave_type_master'},
+                {name: 'Hr Shift Master', path: '/masters/hrm/hr_shift_master'},
+                {name: 'Hr Roster Master', path: '/masters/hrm/hr_roster_master'},
             ]
         },
         {

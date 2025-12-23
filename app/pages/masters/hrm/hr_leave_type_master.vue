@@ -10,8 +10,8 @@
                     <template #id-cell="{ row }">
                         {{filteredData.findIndex(f => f.id === row.original.id) + 1}}
                     </template>
-                    <template #appraisal_name-cell="{ row }">
-                        {{ row.original.appraisal_name }}
+                    <template #leave_type_name-cell="{ row }">
+                        {{ row.original.leave_type_name }}
                     </template>
                     <template #action-cell="{ row }">
                         <div class="text-end">
@@ -25,8 +25,8 @@
     </div>
 
 
-    <CKFormModal v-model="formModel" :title="params.id ? 'Edit Appraisal' : 'New Appraisal'" :endPoint="endPoint"
-        :formCode="'hr_appraisal_master'" :initialData="initialData" :params="params"
+    <CKFormModal v-model="formModel" :title="params.id ? 'Edit Leave Type' : 'New Leave Type'" :endPoint="endPoint"
+        :formCode="'hr_leave_type_master'" :initialData="initialData" :params="params"
         @handleFormSubmit="handleFormSubmit" />
 
 
@@ -40,8 +40,8 @@ import CKFormModal from "~/components/common/CKFormModal.vue";
 /* ------------------ Default Variables ------------------ */
 definePageMeta({ layout: 'home' });
 const { $axios } = useNuxtApp()
-const title = ref("HR Appraisal Master List");
-const endPoint = ref("/hrm/appraisal");
+const title = ref("Leave Type List");
+const endPoint = ref("/hrm/leave_type");
 const params = ref({});
 const formModel = ref(false);
 const initialData = ref(null);
@@ -59,7 +59,7 @@ const error = ref(null);
 const data = ref([]);
 const columns = ref([
     { accessorKey: 'id', header: 'Sr.No.' },
-    { accessorKey: 'appraisal_name', header: 'Appraisal Name' },
+    { accessorKey: 'leave_type_name', header: 'Leave Type Name' },
     { id: 'action' }
 ]);
 const loadData = async () => {
@@ -68,13 +68,13 @@ const loadData = async () => {
     try {
         const response = await $axios.get(endPoint.value);
         const temp = response.data;
-        if (temp.success && Array.isArray(temp.appraisals)) {
-            data.value = temp.appraisals;
+        if (temp.success && Array.isArray(temp.leave_types)) {
+            data.value = temp.leave_types;
         } else {
             error.value = 'Invalid response format from API';
         }
     } catch (err) {
-        error.value = err.response?.data?.message || err.message || 'Failed to load appraisals';
+        error.value = err.response?.data?.message || err.message || 'Failed to load leave types';
     } finally {
         loading.value = false;
     }
@@ -89,7 +89,7 @@ const filteredData = computed(() => {
     }
     const query = searchQuery.value.toLowerCase();
     return data.value.filter(dept =>
-        dept.appraisal_name?.toLowerCase().includes(query)
+        dept.leave_type_name?.toLowerCase().includes(query)
     );
 });
 
