@@ -10,8 +10,8 @@
                     <template #id-cell="{ row }">
                         {{filteredData.findIndex(f => f.id === row.original.id) + 1}}
                     </template>
-                    <template #roster_name-cell="{ row }">
-                        {{ row.original.roster_name }}
+                    <template #roster_date-cell="{ row }">
+                        {{ row.original.roster_date ? new Date(row.original.roster_date).toLocaleDateString() : '' }}
                     </template>
                     <template #action-cell="{ row }">
                         <div class="text-end">
@@ -41,7 +41,7 @@ import CKFormModal from "~/components/common/CKFormModal.vue";
 definePageMeta({ layout: 'home' });
 const { $axios } = useNuxtApp()
 const title = ref("Roster List");
-const endPoint = ref("/hrm/roster");
+const endPoint = ref("/hrm/roster_master");
 const params = ref({});
 const formModel = ref(false);
 const initialData = ref(null);
@@ -59,7 +59,7 @@ const error = ref(null);
 const data = ref([]);
 const columns = ref([
     { accessorKey: 'id', header: 'Sr.No.' },
-    { accessorKey: 'roster_name', header: 'Roster Name' },
+    { accessorKey: 'roster_date', header: 'Roster Date' },
     { id: 'action' }
 ]);
 const loadData = async () => {
@@ -88,9 +88,11 @@ const filteredData = computed(() => {
         return data.value;
     }
     const query = searchQuery.value.toLowerCase();
-    return data.value.filter(dept =>
-        dept.roster_name?.toLowerCase().includes(query)
-    );
+    return data.value.filter(roster => {
+        const dateStr = roster.roster_date ? new Date(roster.roster_date).toLocaleDateString().toLowerCase() : '';
+        const remarks = roster.remarks?.toLowerCase() || '';
+        return dateStr.includes(query) || remarks.includes(query);
+    });
 });
 
 
