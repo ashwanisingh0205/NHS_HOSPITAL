@@ -10,11 +10,8 @@
                     <template #id-cell="{ row }">
                         {{filteredData.findIndex(f => f.id === row.original.id) + 1}}
                     </template>
-                    <template #block_name-cell="{ row }">
-                        <ULink :to="{ name: 'masters-infra-blocks-floors', query: { block_id: row.original.id } }"
-                            class="cursor-pointer">
-                            {{ row.original.block_name }}
-                        </ULink>
+                    <template #item_category_name-cell="{ row }">
+                        {{ row.original.item_category_name }}
                     </template>
                     <template #action-cell="{ row }">
                         <div class="text-end">
@@ -28,8 +25,8 @@
     </div>
 
 
-    <CKFormModal v-model="formModel" :title="params.id ? 'Edit Block' : 'New Block'" :endPoint="endPoint"
-        :formCode="'infra_block_master'" :initialData="initialData" :params="params"
+    <CKFormModal v-model="formModel" :title="params.id ? 'Edit Item Category' : 'New Item Category'"
+        :endPoint="endPoint" :formCode="'item_category_master'" :initialData="initialData" :params="params"
         @handleFormSubmit="handleFormSubmit" />
 
 
@@ -44,7 +41,7 @@ import CKFormModal from "~/components/common/CKFormModal.vue";
 definePageMeta({ layout: 'home' });
 const { $axios } = useNuxtApp()
 const title = ref("Item Category List");
-const endPoint = ref("/masters/infra/blocks");
+const endPoint = ref("/masters/items/category");
 const params = ref({});
 const formModel = ref(false);
 const initialData = ref(null);
@@ -71,13 +68,13 @@ const loadData = async () => {
     try {
         const response = await $axios.get(endPoint.value);
         const temp = response.data;
-        if (temp.success && Array.isArray(temp.block)) {
-            data.value = temp.block;
+        if (temp.success && Array.isArray(temp.categories)) {
+            data.value = temp.categories;
         } else {
             error.value = 'Invalid response format from API';
         }
     } catch (err) {
-        error.value = err.response?.data?.message || err.message || 'Failed to load blocks';
+        error.value = err.response?.data?.message || err.message || 'Failed to load item categories';
     } finally {
         loading.value = false;
     }
@@ -91,8 +88,8 @@ const filteredData = computed(() => {
         return data.value;
     }
     const query = searchQuery.value.toLowerCase();
-    return data.value.filter(block =>
-        block.block_name?.toLowerCase().includes(query)
+    return data.value.filter(item =>
+        item.item_category_name?.toLowerCase().includes(query)
     );
 });
 

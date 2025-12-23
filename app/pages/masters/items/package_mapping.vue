@@ -10,11 +10,8 @@
                     <template #id-cell="{ row }">
                         {{filteredData.findIndex(f => f.id === row.original.id) + 1}}
                     </template>
-                    <template #block_name-cell="{ row }">
-                        <ULink :to="{ name: 'masters-infra-blocks-floors', query: { block_id: row.original.id } }"
-                            class="cursor-pointer">
-                            {{ row.original.block_name }}
-                        </ULink>
+                    <template #package_id-cell="{ row }">
+                        {{ row.original.package_id }}
                     </template>
                     <template #action-cell="{ row }">
                         <div class="text-end">
@@ -28,8 +25,8 @@
     </div>
 
 
-    <CKFormModal v-model="formModel" :title="params.id ? 'Edit Block' : 'New Block'" :endPoint="endPoint"
-        :formCode="'infra_block_master'" :initialData="initialData" :params="params"
+    <CKFormModal v-model="formModel" :title="params.id ? 'Edit Package Mapping' : 'New Package Mapping'"
+        :endPoint="endPoint" :formCode="'item_package_mapping'" :initialData="initialData" :params="params"
         @handleFormSubmit="handleFormSubmit" />
 
 
@@ -44,7 +41,7 @@ import CKFormModal from "~/components/common/CKFormModal.vue";
 definePageMeta({ layout: 'home' });
 const { $axios } = useNuxtApp()
 const title = ref("Package Mapping List");
-const endPoint = ref("/masters/infra/blocks");
+const endPoint = ref("/masters/items/package_mapping");
 const params = ref({});
 const formModel = ref(false);
 const initialData = ref(null);
@@ -62,7 +59,8 @@ const error = ref(null);
 const data = ref([]);
 const columns = ref([
     { accessorKey: 'id', header: 'Sr.No.' },
-    { accessorKey: 'package_mapping_name', header: 'Package Mapping Name' },
+    { accessorKey: 'package_id', header: 'Package ID' },
+    { accessorKey: 'service_id', header: 'Service ID' },
     { id: 'action' }
 ]);
 const loadData = async () => {
@@ -71,13 +69,13 @@ const loadData = async () => {
     try {
         const response = await $axios.get(endPoint.value);
         const temp = response.data;
-        if (temp.success && Array.isArray(temp.block)) {
-            data.value = temp.block;
+        if (temp.success && Array.isArray(temp.data)) {
+            data.value = temp.data;
         } else {
             error.value = 'Invalid response format from API';
         }
     } catch (err) {
-        error.value = err.response?.data?.message || err.message || 'Failed to load blocks';
+        error.value = err.response?.data?.message || err.message || 'Failed to load package mappings';
     } finally {
         loading.value = false;
     }
@@ -91,8 +89,9 @@ const filteredData = computed(() => {
         return data.value;
     }
     const query = searchQuery.value.toLowerCase();
-    return data.value.filter(block =>
-        block.block_name?.toLowerCase().includes(query)
+    return data.value.filter(item =>
+        item.package_id?.toString().includes(query) ||
+        item.service_id?.toString().includes(query)
     );
 });
 

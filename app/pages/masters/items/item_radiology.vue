@@ -10,8 +10,8 @@
                     <template #id-cell="{ row }">
                         {{filteredData.findIndex(f => f.id === row.original.id) + 1}}
                     </template>
-                    <template #service_category_name-cell="{ row }">
-                        {{ row.original.service_category_name }}
+                    <template #item_name-cell="{ row }">
+                        {{ row.original.item_name }}
                     </template>
                     <template #action-cell="{ row }">
                         <div class="text-end">
@@ -25,8 +25,8 @@
     </div>
 
 
-    <CKFormModal v-model="formModel" :title="params.id ? 'Edit Service Category' : 'New Service Category'"
-        :endPoint="endPoint" :formCode="'item_service_category_master'" :initialData="initialData" :params="params"
+    <CKFormModal v-model="formModel" :title="params.id ? 'Edit Item Radiology' : 'New Item Radiology'"
+        :endPoint="endPoint" :formCode="'item_radiology_master'" :initialData="initialData" :params="params"
         @handleFormSubmit="handleFormSubmit" />
 
 
@@ -40,8 +40,8 @@ import CKFormModal from "~/components/common/CKFormModal.vue";
 /* ------------------ Default Variables ------------------ */
 definePageMeta({ layout: 'home' });
 const { $axios } = useNuxtApp()
-const title = ref("Service Category List");
-const endPoint = ref("/masters/items/service_category");
+const title = ref("Item Radiology List");
+const endPoint = ref("/masters/items/radiology");
 const params = ref({});
 const formModel = ref(false);
 const initialData = ref(null);
@@ -59,7 +59,7 @@ const error = ref(null);
 const data = ref([]);
 const columns = ref([
     { accessorKey: 'id', header: 'Sr.No.' },
-    { accessorKey: 'service_category_name', header: 'Service Category Name' },
+    { accessorKey: 'item_name', header: 'Item Name' },
     { id: 'action' }
 ]);
 const loadData = async () => {
@@ -68,13 +68,13 @@ const loadData = async () => {
     try {
         const response = await $axios.get(endPoint.value);
         const temp = response.data;
-        if (temp.success && Array.isArray(temp.data)) {
-            data.value = temp.data;
+        if (temp.success && Array.isArray(temp.items)) {
+            data.value = temp.items;
         } else {
             error.value = 'Invalid response format from API';
         }
     } catch (err) {
-        error.value = err.response?.data?.message || err.message || 'Failed to load service categories';
+        error.value = err.response?.data?.message || err.message || 'Failed to load item radiology items';
     } finally {
         loading.value = false;
     }
@@ -89,7 +89,7 @@ const filteredData = computed(() => {
     }
     const query = searchQuery.value.toLowerCase();
     return data.value.filter(item =>
-        item.service_category_name?.toLowerCase().includes(query)
+        item.item_name?.toLowerCase().includes(query)
     );
 });
 

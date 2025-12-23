@@ -443,23 +443,33 @@ const navSections = {
             ]
         },
         {
-            name: 'Items',
-            icon: 'lucide:list-ordered',
-            children: [
-                { name: 'Billing Head Mapping', path: '/masters/items/billing_head_mapping' },
-                { name: 'Item Category Master', path: '/masters/items/item_category_master' },
-                { name: 'Item Master', path: '/masters/items/item_master' },
-                { name: 'Lis Reference Range Master', path: '/masters/items/lis_reference_range_master' },
-                { name: 'Lis Template Mapping', path: '/masters/items/lis_template_mapping' },
-                { name: 'Package Mapping', path: '/masters/items/package_mapping' },
-                { name: 'Package Master', path: '/masters/items/package_master' },
-                { name: 'Payer Bed Category', path: '/masters/items/payer_bed_category' },
-                { name: 'Payer Mapping', path: '/masters/items/payer_mapping' },
-                { name: 'Payer Master', path: '/masters/items/payer_master' },
-                { name: 'Service Category Master', path: '/masters/items/service_category_master' },
-                { name: 'Service Master', path: '/masters/items/service_master' },
-            ]
-        },
+          name: 'Items',
+          icon: 'lucide:list-ordered',
+          children: [
+              { name: 'Billing Head Mapping', path: '/masters/items/billing_head_mapping' },
+              { name: 'Item Category Master', path: '/masters/items/item_category_master' },
+              { name: 'Lis Reference Range Master', path: '/masters/items/lis_reference_range_master' },
+              { name: 'Lis Template Mapping', path: '/masters/items/lis_template_mapping' },
+              { name: 'Package Mapping', path: '/masters/items/package_mapping' },
+              { name: 'Package Master', path: '/masters/items/package_master' },
+              { name: 'Payer Bed Category', path: '/masters/items/payer_bed_category' },
+              { name: 'Payer Mapping', path: '/masters/items/payer_mapping' },
+              { name: 'Payer Master', path: '/masters/items/payer_master' },
+              { name: 'Service Category Master', path: '/masters/items/service_category_master' },
+              { name: 'Service Master', path: '/masters/items/service_master' },
+              { name: 'Item POS', path: '/masters/items/item_pos' },
+              { name: 'Item Radiology', path: '/masters/items/item_radiology' },
+              { name: 'Item Diet', path: '/masters/items/item_diet' },
+              { name: 'Item Expenses', path: '/masters/items/item_expenses' },
+              { name: 'Item Hospital', path: '/masters/items/item_hospital' },
+              { name: 'Item Inventory', path: '/masters/items/item_inventory' },
+              { name: 'Item Laboratory', path: '/masters/items/item_laboratory' },
+              { name: 'Item Medical Insturment', path: '/masters/items/item_medical_instruments' },
+              { name: 'Item Pharmacy', path: '/masters/items/item_pharmacy' },
+              
+
+          ]
+      },
         {
             name: 'Stores',
             icon: 'lucide:shopping-cart',
