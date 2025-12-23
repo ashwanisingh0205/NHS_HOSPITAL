@@ -26,7 +26,7 @@
 
 
     <CKFormModal v-model="formModel" :title="params.id ? 'Edit Item POS' : 'New Item POS'" :endPoint="endPoint"
-        :formCode="'item_pos_master'" :initialData="initialData" :params="params"
+        :initialData="initialData" :params="params"
         @handleFormSubmit="handleFormSubmit" />
 
 

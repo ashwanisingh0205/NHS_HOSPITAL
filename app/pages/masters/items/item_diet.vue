@@ -26,7 +26,7 @@
 
 
     <CKFormModal v-model="formModel" :title="params.id ? 'Edit Item Diet' : 'New Item Diet'" :endPoint="endPoint"
-        :formCode="'item_diet_master'" :initialData="initialData" :params="params"
+        :initialData="initialData" :params="params"
         @handleFormSubmit="handleFormSubmit" />
 
 

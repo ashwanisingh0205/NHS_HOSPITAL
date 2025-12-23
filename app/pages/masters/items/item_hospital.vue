@@ -26,7 +26,7 @@
 
 
     <CKFormModal v-model="formModel" :title="params.id ? 'Edit Item Hospital' : 'New Item Hospital'"
-        :endPoint="endPoint" :formCode="'item_hospital_master'" :initialData="initialData" :params="params"
+        :endPoint="endPoint" :initialData="initialData" :params="params"
         @handleFormSubmit="handleFormSubmit" />
 
 

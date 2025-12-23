@@ -26,7 +26,7 @@
 
 
     <CKFormModal v-model="formModel" :title="params.id ? 'Edit Document Type' : 'New Document Type'" :endPoint="endPoint"
-        :formCode="'hr_document_type_master'" :initialData="initialData" :params="params"
+        :initialData="initialData" :params="params"
         @handleFormSubmit="handleFormSubmit" />
 
 

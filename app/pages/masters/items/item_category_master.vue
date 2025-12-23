@@ -26,7 +26,7 @@
 
 
     <CKFormModal v-model="formModel" :title="params.id ? 'Edit Item Category' : 'New Item Category'"
-        :endPoint="endPoint" :formCode="'item_category_master'" :initialData="initialData" :params="params"
+        :endPoint="endPoint" :initialData="initialData" :params="params"
         @handleFormSubmit="handleFormSubmit" />
 
 

@@ -26,7 +26,7 @@
 
 
     <CKFormModal v-model="formModel" :title="params.id ? 'Edit Grade' : 'New Grade'" :endPoint="endPoint"
-        :formCode="'hr_grade_master'" :initialData="initialData" :params="params"
+        :initialData="initialData" :params="params"
         @handleFormSubmit="handleFormSubmit" />
 
 

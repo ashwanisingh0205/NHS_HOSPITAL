@@ -26,7 +26,7 @@
 
 
     <CKFormModal v-model="formModel" :title="params.id ? 'Edit Lis Template Mapping' : 'New Lis Template Mapping'"
-        :endPoint="endPoint" :formCode="'item_lis_template_mapping'" :initialData="initialData" :params="params"
+        :endPoint="endPoint" :initialData="initialData" :params="params"
         @handleFormSubmit="handleFormSubmit" />
 
 

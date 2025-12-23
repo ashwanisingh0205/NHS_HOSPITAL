@@ -26,7 +26,7 @@
 
 
     <CKFormModal v-model="formModel" :title="params.id ? 'Edit Billing Head' : 'New Billing Head'" :endPoint="endPoint"
-        :formCode="'item_billing_head_mapping'" :initialData="initialData" :params="params"
+        :initialData="initialData" :params="params"
         @handleFormSubmit="handleFormSubmit" />
 
 

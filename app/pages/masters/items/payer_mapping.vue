@@ -26,7 +26,7 @@
 
 
     <CKFormModal v-model="formModel" :title="params.id ? 'Edit Payer Mapping' : 'New Payer Mapping'"
-        :endPoint="endPoint" :formCode="'item_payer_mapping'" :initialData="initialData" :params="params"
+        :endPoint="endPoint" :initialData="initialData" :params="params"
         @handleFormSubmit="handleFormSubmit" />
 
 

@@ -27,7 +27,7 @@
 
     <CKFormModal v-model="formModel"
         :title="params.id ? 'Edit Item Medical Instruments' : 'New Item Medical Instruments'" :endPoint="endPoint"
-        :formCode="'item_medical_instruments_master'" :initialData="initialData" :params="params"
+        :initialData="initialData" :params="params"
         @handleFormSubmit="handleFormSubmit" />
 
 

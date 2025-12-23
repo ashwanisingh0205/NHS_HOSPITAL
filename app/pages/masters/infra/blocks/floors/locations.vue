@@ -24,7 +24,6 @@
         v-model="formModel"
         :title="params.id ? 'Edit Location' : 'New Location'"
         :endPoint="endPoint"
-        :formCode="'infra_location_master'"
         :initialData="initialData"
         :params="params"
         @handleFormSubmit="handleFormSubmit"

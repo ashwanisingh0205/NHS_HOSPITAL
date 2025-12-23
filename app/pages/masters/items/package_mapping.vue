@@ -26,7 +26,7 @@
 
 
     <CKFormModal v-model="formModel" :title="params.id ? 'Edit Package Mapping' : 'New Package Mapping'"
-        :endPoint="endPoint" :formCode="'item_package_mapping'" :initialData="initialData" :params="params"
+        :endPoint="endPoint" :initialData="initialData" :params="params"
         @handleFormSubmit="handleFormSubmit" />
 
 

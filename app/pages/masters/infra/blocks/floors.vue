@@ -30,7 +30,6 @@
         v-model="formModel"
         :title="params.id ? 'Edit Floor' : 'New Floor'"
         :endPoint="endPoint"
-        :formCode="'infra_floor_master'"
         :initialData="initialData"
         :params="params"
         @handleFormSubmit="handleFormSubmit"

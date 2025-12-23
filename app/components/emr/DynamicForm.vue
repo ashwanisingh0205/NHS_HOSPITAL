@@ -31,7 +31,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['submit', 'close'])
 
-const form = ref({})
+const form = ref({ fields: [] })
 const loading = ref(true)
 const submitting = ref(false)
 
@@ -66,7 +66,30 @@ const loadForm = async () => {
                 Object.assign(params, props.params)
             }
             const response = await $axios.get(props.endPoint, { params })
-            form.value = response.data
+            
+            // Handle different response structures
+            const responseData = response.data
+            
+            // Check if fields exist in response (handle both direct and wrapped in success)
+            const fields = (responseData.fields && Array.isArray(responseData.fields)) 
+                ? responseData.fields 
+                : null
+            
+            if (fields) {
+                // Map fields and set initial values
+                form.value = {
+                    fields: fields.map(field => ({
+                        ...field,
+                        // Set initial value from initialData if provided
+                        value: props.initialData && props.initialData[field.field_code] !== undefined
+                            ? [props.initialData[field.field_code]]
+                            : field.value || []
+                    }))
+                }
+            } else {
+                // Fallback: use response.data as-is (might already have fields structure)
+                form.value = responseData.fields ? responseData : { fields: [] }
+            }
         }
     } catch (err) {
         console.error('Error loading form:', err)
@@ -79,8 +102,8 @@ onMounted(() => {
     loadForm()
 })
 
-// Watch for changes in formCode, initialData, or staticForm to reload form
-watch([() => props.formCode, () => props.initialData, () => props.staticForm], () => {
+// Watch for changes in formCode, initialData, staticForm, endPoint, or params to reload form
+watch([() => props.formCode, () => props.initialData, () => props.staticForm, () => props.endPoint, () => props.params], () => {
     loadForm()
 }, { deep: true })
 

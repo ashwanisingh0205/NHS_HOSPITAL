@@ -29,7 +29,7 @@
 
 
     <CKFormModal v-model="formModel" :title="params.id ? 'Edit Block' : 'New Block'" :endPoint="endPoint"
-        :formCode="'infra_block_master'" :initialData="initialData" :params="params"
+        :initialData="initialData" :params="params"
         @handleFormSubmit="handleFormSubmit" />
 
 
