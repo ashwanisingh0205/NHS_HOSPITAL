@@ -11,7 +11,7 @@
                         {{filteredData.findIndex(f => f.id === row.original.id) + 1}}
                     </template>
                     <template #employee_name-cell="{ row }">
-                        {{ row.original.employee_name }}
+                        {{ [row.original.first_name, row.original.middle_name, row.original.last_name].filter(Boolean).join(' ') || row.original.employee_number }}
                     </template>
                     <template #action-cell="{ row }">
                         <div class="text-end">
@@ -41,7 +41,7 @@ import CKFormModal from "~/components/common/CKFormModal.vue";
 definePageMeta({ layout: 'home' });
 const { $axios } = useNuxtApp()
 const title = ref("Employee List");
-const endPoint = ref("/hrm/employee");
+const endPoint = ref("/hrm/employee_master");
 const params = ref({});
 const formModel = ref(false);
 const initialData = ref(null);
@@ -88,9 +88,11 @@ const filteredData = computed(() => {
         return data.value;
     }
     const query = searchQuery.value.toLowerCase();
-    return data.value.filter(dept =>
-        dept.employee_name?.toLowerCase().includes(query)
-    );
+    return data.value.filter(emp => {
+        const fullName = [emp.first_name, emp.middle_name, emp.last_name].filter(Boolean).join(' ').toLowerCase();
+        const employeeNumber = emp.employee_number?.toLowerCase() || '';
+        return fullName.includes(query) || employeeNumber.includes(query);
+    });
 });
 
 

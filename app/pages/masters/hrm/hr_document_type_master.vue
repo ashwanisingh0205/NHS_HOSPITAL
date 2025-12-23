@@ -68,8 +68,8 @@ const loadData = async () => {
     try {
         const response = await $axios.get(endPoint.value);
         const temp = response.data;
-        if (temp.success && Array.isArray(temp.document_types)) {
-            data.value = temp.document_types;
+        if (temp.success && Array.isArray(temp.documentTypes)) {
+            data.value = temp.documentTypes;
         } else {
             error.value = 'Invalid response format from API';
         }

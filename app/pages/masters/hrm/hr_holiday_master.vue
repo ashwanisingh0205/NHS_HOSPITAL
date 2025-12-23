@@ -41,7 +41,7 @@ import CKFormModal from "~/components/common/CKFormModal.vue";
 definePageMeta({ layout: 'home' });
 const { $axios } = useNuxtApp()
 const title = ref("Holiday List");
-const endPoint = ref("/hrm/holiday");
+const endPoint = ref("/hrm/holiday_master");
 const params = ref({});
 const formModel = ref(false);
 const initialData = ref(null);

@@ -10,8 +10,8 @@
                     <template #id-cell="{ row }">
                         {{filteredData.findIndex(f => f.id === row.original.id) + 1}}
                     </template>
-                    <template #leave_type_name-cell="{ row }">
-                        {{ row.original.leave_type_name }}
+                    <template #leave_name-cell="{ row }">
+                        {{ row.original.leave_name }}
                     </template>
                     <template #action-cell="{ row }">
                         <div class="text-end">
@@ -59,7 +59,7 @@ const error = ref(null);
 const data = ref([]);
 const columns = ref([
     { accessorKey: 'id', header: 'Sr.No.' },
-    { accessorKey: 'leave_type_name', header: 'Leave Type Name' },
+    { accessorKey: 'leave_name', header: 'Leave Name' },
     { id: 'action' }
 ]);
 const loadData = async () => {
@@ -68,8 +68,8 @@ const loadData = async () => {
     try {
         const response = await $axios.get(endPoint.value);
         const temp = response.data;
-        if (temp.success && Array.isArray(temp.leave_types)) {
-            data.value = temp.leave_types;
+        if (temp.success && Array.isArray(temp.leaveTypes)) {
+            data.value = temp.leaveTypes;
         } else {
             error.value = 'Invalid response format from API';
         }
@@ -88,8 +88,8 @@ const filteredData = computed(() => {
         return data.value;
     }
     const query = searchQuery.value.toLowerCase();
-    return data.value.filter(dept =>
-        dept.leave_type_name?.toLowerCase().includes(query)
+    return data.value.filter(leave =>
+        leave.leave_name?.toLowerCase().includes(query)
     );
 });
 

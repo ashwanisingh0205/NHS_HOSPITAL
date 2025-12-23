@@ -8,7 +8,7 @@
 
     <!-- Text Input Types -->
     <UInput
-      v-if="['TEXT', 'EMAIL', 'NUMBER', 'password', 'tel', 'url','DATE'].includes(field.data_type)"
+      v-if="['TEXT', 'EMAIL', 'NUMBER', 'PASSWORD', 'tel', 'url','DATE'].includes(field.data_type)"
       v-model="field.value[0]"
       :type="field.data_type"
       :placeholder="field.label"
@@ -39,13 +39,13 @@
 
     <!-- Single Checkbox (no options) -->
     <UCheckbox
-      v-else-if="field.data_type === 'checkbox' && !field.options"
+      v-else-if="field.data_type === 'CHECKBOX' && !field.options"
       v-model="field.value[0]"
       :label="field.checkboxLabel || field.label"
     />
 
     <!-- Multiple Checkboxes (with options) -->
-    <div v-else-if="field.data_type === 'checkbox' && field.options" class="space-y-2">
+    <div v-else-if="field.data_type === 'CHECKBOX' && field.options" class="space-y-2">
       <UCheckbox
         v-for="option in fieldOptions"
         :key="option.value || option"
@@ -56,7 +56,7 @@
     </div>
 
     <!-- Radio -->
-    <div v-else-if="field.data_type === 'radio'" class="flex gap-4">
+    <div v-else-if="field.data_type === 'RADIO'" class="flex gap-4">
       <label
         v-for="option in fieldOptions"
         :key="option.value || option"
