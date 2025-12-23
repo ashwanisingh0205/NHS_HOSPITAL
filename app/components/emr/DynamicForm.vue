@@ -42,9 +42,9 @@ const loadForm = async () => {
             // Use static form if provided - create deep copy to avoid reference issues
             form.value = structuredClone(props.staticForm)
         } else if (props.formCode) {
-            // Fetch from formdata API using form_code
-            const response = await $axios.get('/form/formdata', {
-                params: { form_code: props.formCode }
+            // Fetch from defaultForm API using form_code
+            const response = await $axios.get('/form/defaultForm', {
+                params: { form_code: props.formCode, form: 'true' }
             })
             
             if (response.data.success && response.data.fields) {

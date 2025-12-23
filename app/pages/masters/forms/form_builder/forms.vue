@@ -16,7 +16,7 @@
                     </template>
                     <template #action-cell="{ row }">
                         <div class="text-end">
-                            <CKEdit @click="handleEdit(row)" />
+                            <CKEdit @click="handleEdit(row.original)" />
                         </div>
                     </template>
                 </UTable>
@@ -44,8 +44,15 @@ definePageMeta({ layout: 'home' });
 
 const { $axios } = useNuxtApp();
 const route = useRoute();
-const title = ref("Form List");
+
+const title = "Form List";
 const endPoint = "/masters/forms/form";
+
+const columns = [
+    { accessorKey: 'id', header: 'Sr.No.' },
+    { accessorKey: 'form_name', header: 'Form Name' },
+    { id: 'action' }
+];
 
 // State
 const loading = ref(true);
@@ -59,12 +66,6 @@ const formData = ref(null);
 // Computed
 const modalTitle = computed(() => params.value?.id ? "Edit Form" : "New Form");
 
-const columns = [
-    { accessorKey: 'id', header: 'Sr.No.' },
-    { accessorKey: 'form_name', header: 'Form Name' },
-    { id: 'action' }
-];
-
 const filteredData = computed(() => {
     if (!searchQuery.value.trim()) return data.value;
     const query = searchQuery.value.toLowerCase();
@@ -75,30 +76,31 @@ const filteredData = computed(() => {
 });
 
 const staticFormConfig = computed(() => {
-    const initialData = (params.value?.id && formData.value) ? formData.value : {};
+    const initial = formData.value || {};
+    
     return {
         fields: [
-            { id: 'corporate_id', field_code: 'corporate_id', data_type: 'NUMBER', label: 'Corporate ID', value: [initialData.corporate_id ?? 1], required: false },
-            { id: 'unit_id', field_code: 'unit_id', data_type: 'NUMBER', label: 'Unit ID', value: [initialData.unit_id ?? 1], required: false },
-            { id: 'category_id', field_code: 'category_id', data_type: 'NUMBER', label: 'Category ID', value: [initialData.category_id ?? 1], required: false },
-            { id: 'form_type', field_code: 'form_type', data_type: 'TEXT', label: 'Form Type', value: [initialData.form_type ?? 'FORM'], required: false },
-            { id: 'form_code', field_code: 'form_code', data_type: 'TEXT', label: 'Form Code', value: [initialData.form_code ?? ''], required: false },
-            { id: 'form_name', field_code: 'form_name', data_type: 'TEXT', label: 'Form Name', value: [initialData.form_name ?? ''], required: false },
-            { id: 'frequency', field_code: 'frequency', data_type: 'TEXT', label: 'Frequency', value: [initialData.frequency ?? 'DAILY'], required: false },
-            { id: 'icon', field_code: 'icon', data_type: 'TEXT', label: 'Icon', value: [initialData.icon ?? 'block'], required: false },
-            { id: 'status_pdf', field_code: 'status_pdf', data_type: 'checkbox', label: 'Status PDF', value: [initialData.status_pdf ?? false], required: false },
-            { id: 'letterhead_id', field_code: 'letterhead_id', data_type: 'NUMBER', label: 'Letterhead ID', value: [initialData.letterhead_id ?? 1], required: false },
-            { id: 'status', field_code: 'status', data_type: 'checkbox', label: 'Status', value: [initialData.status ?? true], required: false }
+            { id: 'corporate_id', field_code: 'corporate_id', data_type: 'NUMBER', label: 'Corporate ID', value: [initial.corporate_id ?? 1], required: false },
+            { id: 'unit_id', field_code: 'unit_id', data_type: 'NUMBER', label: 'Unit ID', value: [initial.unit_id ?? 1], required: false },
+            { id: 'category_id', field_code: 'category_id', data_type: 'NUMBER', label: 'Category ID', value: [initial.category_id ?? 1], required: false },
+            { id: 'form_type', field_code: 'form_type', data_type: 'TEXT', label: 'Form Type', value: [initial.form_type ?? 'FORM'], required: false },
+            { id: 'form_code', field_code: 'form_code', data_type: 'TEXT', label: 'Form Code', value: [initial.form_code ?? ''], required: false },
+            { id: 'form_name', field_code: 'form_name', data_type: 'TEXT', label: 'Form Name', value: [initial.form_name ?? ''], required: false },
+            { id: 'frequency', field_code: 'frequency', data_type: 'TEXT', label: 'Frequency', value: [initial.frequency ?? 'DAILY'], required: false },
+            { id: 'icon', field_code: 'icon', data_type: 'TEXT', label: 'Icon', value: [initial.icon ?? 'block'], required: false },
+            { id: 'status_pdf', field_code: 'status_pdf', data_type: 'checkbox', label: 'Status PDF', value: [initial.status_pdf ?? false], required: false },
+            { id: 'letterhead_id', field_code: 'letterhead_id', data_type: 'NUMBER', label: 'Letterhead ID', value: [initial.letterhead_id ?? 1], required: false },
+            { id: 'status', field_code: 'status', data_type: 'checkbox', label: 'Status', value: [initial.status ?? true], required: false }
         ]
     };
 });
 
 const selectedForm = computed(() => {
     const id = route.query.id;
-    return id ? data.value.find(f => f.id === Number(id)) || null : null;
+    return id ? data.value.find(f => f.id === Number(id)) : null;
 });
 
-// Provide
+// Provide for child components
 provide('forms', data);
 provide('selectedForm', selectedForm);
 
@@ -108,13 +110,9 @@ const loadData = async () => {
     error.value = null;
     try {
         const response = await $axios.get(endPoint);
-        if (response.data.success && Array.isArray(response.data.forms)) {
-            data.value = response.data.forms;
-        } else {
-            error.value = 'Invalid response format from API';
-        }
+        data.value = response.data.success ? response.data.forms : [];
     } catch (err) {
-        error.value = err.response?.data?.message || err.message || 'Failed to load forms';
+        error.value = err.response?.data?.message || 'Failed to load forms';
     } finally {
         loading.value = false;
     }
@@ -126,29 +124,34 @@ const handleAdd = () => {
     formModel.value = true;
 };
 
-const handleEdit = async (row) => {
-    params.value = { id: row.original.id };
+const handleEdit = async (form) => {
+    params.value = { id: form.id };
+    formData.value = null;
+    
     try {
-        const response = await $axios.get('/form/formdata', {
-            params: { form_code: row.original.form_code }
-        });
+        const response = await $axios.get(endPoint, { params: { id: form.id } });
         
-        if (response.data.success && response.data.form) {
+        // Extract form data from various possible response structures
+        const formResponse = response.data.forms?.[0] || response.data.forms || response.data[0];
+        
+        if (formResponse) {
             formData.value = {
-                corporate_id: response.data.form.corporate_id || 1,
-                unit_id: response.data.form.unit_id || 1,
-                category_id: response.data.form.category_id || 1,
-                form_type: response.data.form.form_type || "FORM",
-                form_code: response.data.form.form_code || "",
-                form_name: response.data.form.form_name || "",
-                frequency: response.data.form.frequency || "DAILY",
-                icon: response.data.form.icon || "block",
-                status_pdf: response.data.form.status_pdf || false,
-                letterhead_id: response.data.form.letterhead_id || 1,
-                status: response.data.form.status ?? true
+                corporate_id:  1,
+                unit_id:  1,
+                category_id: formResponse.category_id ?? 1,
+                form_type: formResponse.form_type ?? "FORM",
+                form_code: formResponse.form_code ?? "",
+                form_name: formResponse.form_name ?? "",
+                frequency: formResponse.frequency ?? "DAILY",
+                icon: formResponse.icon ?? "block",
+                status_pdf: formResponse.status_pdf ?? false,
+                letterhead_id: formResponse.letterhead_id ?? 1,
+                status: formResponse.status ?? true
             };
+            
+            await nextTick();
+            formModel.value = true;
         }
-        formModel.value = true;
     } catch (err) {
         console.error('Error loading form data:', err);
     }
