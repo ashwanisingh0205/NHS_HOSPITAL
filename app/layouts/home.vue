@@ -423,13 +423,13 @@ const navSections = {
                 { name: 'Hr Department Master', path: '/masters/hrm/hr_department_master' },
                 { name: 'Hr Designation Master', path: '/masters/hrm/hr_designation_master' },
                 { name: 'Hr Document Details', path: '/masters/hrm/hr_document_details' },
-                {name:'Hr Employee Master', path: '/masters/hrm/hr_employee_master'},
+                { name: 'Hr Employee Master', path: '/masters/hrm/hr_employee_master' },
                 { name: 'Hr Document Type Master', path: '/masters/hrm/hr_document_type_master' },
                 { name: 'Hr Grade Master', path: '/masters/hrm/hr_grade_master' },
-                {name: 'Hr Holiday Master', path: '/masters/hrm/hr_holiday_master'},
-                {name:'Hr Leave Type Master', path: '/masters/hrm/hr_leave_type_master'},
-                {name: 'Hr Shift Master', path: '/masters/hrm/hr_shift_master'},
-                {name: 'Hr Roster Master', path: '/masters/hrm/hr_roster_master'},
+                { name: 'Hr Holiday Master', path: '/masters/hrm/hr_holiday_master' },
+                { name: 'Hr Leave Type Master', path: '/masters/hrm/hr_leave_type_master' },
+                { name: 'Hr Shift Master', path: '/masters/hrm/hr_shift_master' },
+                { name: 'Hr Roster Master', path: '/masters/hrm/hr_roster_master' },
             ]
         },
         {
@@ -443,33 +443,33 @@ const navSections = {
             ]
         },
         {
-          name: 'Items',
-          icon: 'lucide:list-ordered',
-          children: [
-              { name: 'Billing Head Mapping', path: '/masters/items/billing_head_mapping' },
-              { name: 'Item Category Master', path: '/masters/items/item_category_master' },
-              { name: 'Lis Reference Range Master', path: '/masters/items/lis_reference_range_master' },
-              { name: 'Lis Template Mapping', path: '/masters/items/lis_template_mapping' },
-              { name: 'Package Mapping', path: '/masters/items/package_mapping' },
-              { name: 'Package Master', path: '/masters/items/package_master' },
-              { name: 'Payer Bed Category', path: '/masters/items/payer_bed_category' },
-              { name: 'Payer Mapping', path: '/masters/items/payer_mapping' },
-              { name: 'Payer Master', path: '/masters/items/payer_master' },
-              { name: 'Service Category Master', path: '/masters/items/service_category_master' },
-              { name: 'Service Master', path: '/masters/items/service_master' },
-              { name: 'Item POS', path: '/masters/items/item_pos' },
-              { name: 'Item Radiology', path: '/masters/items/item_radiology' },
-              { name: 'Item Diet', path: '/masters/items/item_diet' },
-              { name: 'Item Expenses', path: '/masters/items/item_expenses' },
-              { name: 'Item Hospital', path: '/masters/items/item_hospital' },
-              { name: 'Item Inventory', path: '/masters/items/item_inventory' },
-              { name: 'Item Laboratory', path: '/masters/items/item_laboratory' },
-              { name: 'Item Medical Insturment', path: '/masters/items/item_medical_instruments' },
-              { name: 'Item Pharmacy', path: '/masters/items/item_pharmacy' },
-              
+            name: 'Items',
+            icon: 'lucide:list-ordered',
+            children: [
+                { name: 'Billing Head Mapping', path: '/masters/items/billing_head_mapping' },
+                { name: 'Item Category Master', path: '/masters/items/item_category_master' },
+                { name: 'Lis Reference Range Master', path: '/masters/items/lis_reference_range_master' },
+                { name: 'Lis Template Mapping', path: '/masters/items/lis_template_mapping' },
+                { name: 'Package Mapping', path: '/masters/items/package_mapping' },
+                { name: 'Package Master', path: '/masters/items/package_master' },
+                { name: 'Payer Bed Category', path: '/masters/items/payer_bed_category' },
+                { name: 'Payer Mapping', path: '/masters/items/payer_mapping' },
+                { name: 'Payer Master', path: '/masters/items/payer_master' },
+                { name: 'Service Category Master', path: '/masters/items/service_category_master' },
+                { name: 'Service Master', path: '/masters/items/service_master' },
+                { name: 'Item POS', path: '/masters/items/item_pos' },
+                { name: 'Item Radiology', path: '/masters/items/item_radiology' },
+                { name: 'Item Diet', path: '/masters/items/item_diet' },
+                { name: 'Item Expenses', path: '/masters/items/item_expenses' },
+                { name: 'Item Hospital', path: '/masters/items/item_hospital' },
+                { name: 'Item Inventory', path: '/masters/items/item_inventory' },
+                { name: 'Item Laboratory', path: '/masters/items/item_laboratory' },
+                { name: 'Item Medical Insturment', path: '/masters/items/item_medical_instruments' },
+                { name: 'Item Pharmacy', path: '/masters/items/item_pharmacy' },
 
-          ]
-      },
+
+            ]
+        },
         {
             name: 'Stores',
             icon: 'lucide:shopping-cart',
@@ -515,6 +515,31 @@ const navSections = {
                 { name: 'Visit Master', path: '/masters/visits/visit_master' },
             ]
         },
+        {
+            name: 'Feedback',
+            icon: 'lucide:star',
+            children: [
+                { name: 'About Results of Treatment 1', path: '/masters/feedback/feedback_about_results_of_treatment_1' },
+                { name: 'About Results of Treatment 2', path: '/masters/feedback/feedback_about_results_of_treatment_2' },
+                { name: 'Behaviour', path: '/masters/feedback/feedback_behaviour' },
+                { name: 'Cleanliness', path: '/masters/feedback/feedback_cleanliness' },
+                { name: 'Food and Bevarage', path: '/masters/feedback/feedback_food_and_bevarage' },
+                { name: 'HCAHPS', path: '/masters/feedback/feedback_hcahps' },
+                { name: 'House Keeping', path: '/masters/feedback/feedback_house_keeping' },
+                { name: 'Laundry and Linen', path: '/masters/feedback/feedback_laundry_and_linen' },
+                { name: 'Maintenance', path: '/masters/feedback/feedback_maintenance' },
+                { name: 'Medical Officers', path: '/masters/feedback/feedback_medical_officers' },
+                { name: 'Nursing Care', path: '/masters/feedback/feedback_nursing_care' },
+                { name: 'OPD Cafeteria', path: '/masters/feedback/feedback_opd_cafe' },
+                { name: 'Pharmacy', path: '/masters/feedback/feedback_pharmacy' },
+                { name: 'Radiology', path: '/masters/feedback/feedback_radiology' },
+                { name: 'Reception Staff', path: '/masters/feedback/feedback_reception_staff' },
+                { name: 'Waiting Times', path: '/masters/feedback/feedback_waiting_times' },
+                { name: 'Ward Helpers', path: '/masters/feedback/feedback_ward_helpers' },
+                { name: 'How did you know about the hospital?', path: '/masters/feedback/how_did_you_know_about_the_hospital' },
+                { name: 'What good did you hear about this hospital?', path: '/masters/feedback/what_good_did_you_hear_about_this_hospital' }
+            ]
+        }
     ],
     projects: [
         { name: 'All Projects', path: '/registration', icon: 'lucide:folder-open' },
