@@ -30,7 +30,7 @@
         v-model="formModel"
         :title="params.id ? 'Edit Floor' : 'New Floor'"
         :endPoint="endPoint"
-        :initialData="initialData"
+        :id="id"
         :params="params"
         @handleFormSubmit="handleFormSubmit"
     />
@@ -51,7 +51,7 @@ const title = ref("Floor List");
 const endPoint = ref("/masters/infra/floors");
 const params = ref({});
 const formModel = ref(false);
-const initialData = ref(null);
+const id = ref('');
 
 
 /* ------------------ onMounted ------------------ */
@@ -113,26 +113,13 @@ const handleAdd = () => {
     
     // Set params for form submission
     params.value = { block_id: blockId };
-    // Set initialData to pre-fill the form field
-    initialData.value = { block_id: blockId };
     formModel.value = true;
 };
 
 /* ------------------ Edit Button ------------------ */
 const handleEdit = async (item) => {
     params.value = { id: item.original.id };
-    initialData.value = null;
-    
-    // Load existing data for editing
-    try {
-        const existingItem = data.value.find(d => d.id === item.original.id);
-        if (existingItem) {
-            initialData.value = existingItem;
-        }
-    } catch (err) {
-        console.error('Error loading item data:', err);
-    }
-    
+    id.value = item.original.id;
     formModel.value = true;
 };
 

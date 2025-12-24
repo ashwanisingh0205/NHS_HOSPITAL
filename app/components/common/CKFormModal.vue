@@ -6,7 +6,7 @@
                 :endPoint="endPoint"
                 :staticForm="staticForm"
                 :formCode="formCode"
-                :initialData="initialData"
+                :id="id"
                 :params="params"
                 @submit="handleFormSubmit"
             />
@@ -23,7 +23,7 @@ const props = defineProps({
     endPoint: { type: String, default: "" },
     staticForm: { type: Object, default: null },
     formCode: { type: String, default: "" },
-    initialData: { type: Object, default: null },
+    id: { type: String, default: "" },
     params: { type: Object, default: {} },
 })
 
@@ -31,9 +31,14 @@ const formResetKey = ref(0);
 watch(() => props.params, () => {
     formResetKey.value++;
 }, { deep: true });
-watch(() => props.initialData, () => {
+watch(() => props.id, () => {
     formResetKey.value++;
-}, { deep: true });
+});
+watch(() => props.modelValue, (newVal) => {
+    if (newVal) {
+        formResetKey.value++;
+    }
+});
 
 
 const emit = defineEmits(['update:modelValue', 'handleFormSubmit']);

@@ -23,7 +23,7 @@
 
 
     <CKFormModal v-model="formModel" :title="params.id ? 'Edit Feedback' : 'New Feedback'" :endPoint="endPoint"
-        :formCode="'f17'" :initialData="initialData" :params="params" @handleFormSubmit="handleFormSubmit" />
+        :formCode="'f17'" :id="id" :params="params" @handleFormSubmit="handleFormSubmit" />
 
 
 </template>
@@ -40,7 +40,7 @@ const title = ref("Feedback about results of treatment - 2");
 const endPoint = ref("/form/defaultForm");
 const params = ref({});
 const formModel = ref(false);
-const initialData = ref(null);
+const id = ref('');
 
 
 /* ------------------ onMounted ------------------ */
@@ -111,14 +111,12 @@ const filteredData = computed(() => {
 /* ------------------ Add Button ------------------ */
 const handleAdd = () => {
     params.value = {};
-    initialData.value = null;
     formModel.value = true;
 };
 
 /* ------------------ Edit Button ------------------ */
 const handleEdit = async (item) => {
     params.value = { id: item.original.id };
-    initialData.value = null;
 
     // Load existing data for editing
     try {

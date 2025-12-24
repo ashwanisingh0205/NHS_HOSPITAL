@@ -32,7 +32,7 @@
         v-model="formModel"
         :title="params.id ? 'Edit Block' : 'New Block'"
         :endPoint="endPoint"
-        :initialData="initialData"
+        :id="id"
         :params="params"
         @handleFormSubmit="handleFormSubmit"
     />
@@ -52,7 +52,7 @@ const title = ref("Block List");
 const endPoint = ref("/masters/infra/blocks");
 const params = ref({});
 const formModel = ref(false);
-const initialData = ref(null);
+const id = ref('');
 
 
 /* ------------------ onMounted ------------------ */
@@ -108,25 +108,15 @@ const filteredData = computed(() => {
 /* ------------------ Add Button ------------------ */
 const handleAdd = () => {
     params.value = {};
-    initialData.value = null;
     formModel.value = true;
 };
 
 /* ------------------ Edit Button ------------------ */
 const handleEdit = async (item) => {
     params.value = { id: item.original.id };
-    initialData.value = null;
-    
+    id.value = item.original.id;
     // Load existing data for editing
-    try {
-        const existingItem = data.value.find(d => d.id === item.original.id);
-        if (existingItem) {
-            initialData.value = existingItem;
-        }
-    } catch (err) {
-        console.error('Error loading item data:', err);
-    }
-    
+   
     formModel.value = true;
 };
 

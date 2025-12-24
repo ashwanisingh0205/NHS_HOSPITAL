@@ -7,16 +7,20 @@
                         <UError :error="{ statusMessage: error || 'No Record Found!!' }" />
                     </template>
                     <template #id-cell="{ row }">
-                        {{ filteredData.findIndex(f => f.id === row.original.id) + 1 }}
+                        {{filteredData.findIndex(f => f.id === row.original.id) + 1}}
                     </template>
                     <template #form_name-cell="{ row }">
-                        <ULink :to="{ name: 'masters-forms-form_builder-forms-form_fields', query: { id: row.original.id } }" class="cursor-pointer">
+                        <ULink
+                            :to="{ name: 'masters-forms-form_builder-forms-form_fields', query: { id: row.original.id } }"
+                            class="cursor-pointer">
                             {{ row.original.form_name }}
                         </ULink>
                     </template>
                     <template #action-cell="{ row }">
-                        <div class="text-end">
+                        <div class="flex justify-end items-center gap-1">
                             <CKEdit @click="handleEdit(row.original)" />
+                            <UButton icon="lucide:star" variant="outline" size="sm" color="neutral"
+                                @click="loadDefaultFields(row.original)" />
                         </div>
                     </template>
                 </UTable>
@@ -24,15 +28,13 @@
         </div>
         <NuxtPage :key="$route.fullPath" />
     </div>
-    
-    <CKFormModal
-        v-model="formModel"
-        :title="modalTitle"
-        :endPoint="endPoint"
-        :staticForm="staticFormConfig"
-        :params="params"
-        @handleFormSubmit="handleFormSubmit"
-    />
+
+    <CKFormModal v-model="formModel" :title="modalTitle" :endPoint="endPoint" :staticForm="staticFormConfig"
+        :params="params" @handleFormSubmit="handleFormSubmit" />
+
+    <CKFormModal v-model="showDefaultFields" :fields="defaultFields" :form-id="selectedDefaultForm.id"
+        :form-code="selectedDefaultForm.form_code" />
+
 </template>
 
 <script setup>
@@ -77,7 +79,7 @@ const filteredData = computed(() => {
 
 const staticFormConfig = computed(() => {
     const initial = formData.value || {};
-    
+
     return {
         fields: [
             { id: 'corporate_id', field_code: 'corporate_id', data_type: 'NUMBER', label: 'Corporate ID', value: [initial.corporate_id ?? 1], required: false },
@@ -127,17 +129,17 @@ const handleAdd = () => {
 const handleEdit = async (form) => {
     params.value = { id: form.id };
     formData.value = null;
-    
+
     try {
         const response = await $axios.get(endPoint, { params: { id: form.id } });
-        
+
         // Extract form data from various possible response structures
         const formResponse = response.data.forms?.[0] || response.data.forms || response.data[0];
-        
+
         if (formResponse) {
             formData.value = {
-                corporate_id:  1,
-                unit_id:  1,
+                corporate_id: 1,
+                unit_id: 1,
                 category_id: formResponse.category_id ?? 1,
                 form_type: formResponse.form_type ?? "FORM",
                 form_code: formResponse.form_code ?? "",
@@ -148,7 +150,7 @@ const handleEdit = async (form) => {
                 letterhead_id: formResponse.letterhead_id ?? 1,
                 status: formResponse.status ?? true
             };
-            
+
             await nextTick();
             formModel.value = true;
         }
@@ -161,6 +163,31 @@ const handleFormSubmit = async () => {
     formModel.value = false;
     await loadData();
 };
+
+const showDefaultFields = ref(false)
+const selectedDefaultForm = ref({
+    id: null,
+    form_code: null
+})
+const defaultFields = ref([])
+
+const loadDefaultFields = async (form) => {
+    selectedDefaultForm.value = {
+        id: form.id,
+        form_code: form.form_code
+    }
+
+    const res = await $axios.get('form/defaultForm', {
+        params: {
+            form_code: form.form_code,
+            form: true
+        }
+    })
+
+    defaultFields.value = res.data.fields
+    showDefaultFields.value = true
+}
+
 
 onMounted(loadData);
 </script>

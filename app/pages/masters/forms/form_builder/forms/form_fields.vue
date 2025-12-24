@@ -73,8 +73,9 @@ const staticFormConfig = computed(() => {
             { id: 'field_code', field_code: 'field_code', data_type: 'TEXT', label: 'Field Code', value: [data.field_code || ''], required: true },
             { id: 'label', field_code: 'label', data_type: 'TEXT', label: 'Label', value: [data.label || ''], required: true },
             { id: 'label_position', field_code: 'label_position', data_type: 'TEXT', label: 'Label Position', value: [data.label_position || 'TOP'], required: false },
-            { id: 'status', field_code: 'status', data_type: 'checkbox', label: 'Status', value: [data.status ?? true], required: false },
-            { id: 'priority', field_code: 'priority', data_type: 'NUMBER', label: 'Priority', value: [data.priority || 0], required: false }
+            { id: 'status', field_code: 'status', data_type: 'CHECKBOX', label: 'Status', value: [data.status ?? true], required: false },
+            { id: 'priority', field_code: 'priority', data_type: 'NUMBER', label: 'Priority', value: [data.priority || 0], required: false },
+            {id:'Choise Code', field_code: 'choice_code', data_type: 'TEXT', label: 'Choise Code', value: [data.choice_code || ''], required: false }
         ]
     };
 });

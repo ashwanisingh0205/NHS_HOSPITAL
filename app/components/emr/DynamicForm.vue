@@ -5,11 +5,14 @@
     </div>
     
     <UForm v-else class="space-y-6" @submit.prevent="handleSubmit">
-        <div class="grid gap-6 md:grid-cols-2">
+        <div v-if="form.fields?.length" class="grid gap-6 md:grid-cols-2">
             <Wrapper v-for="field in form.fields" :key="field.id" :field="field" />
         </div>
+        <div v-else class="text-center py-8 text-gray-500 dark:text-gray-400">
+            <p>No form fields available. Please check the API endpoint configuration.</p>
+        </div>
         
-        <div class="flex gap-3 pt-2">
+        <div v-if="form.fields?.length" class="flex gap-3 pt-2">
             <UButton type="submit" label="Submit form" :loading="submitting" :disabled="submitting" />
         </div>
     </UForm>
@@ -25,7 +28,7 @@ const props = defineProps({
     params: { type: Object, default: null },
     staticForm: { type: Object, default: null },
     formCode: { type: String, default: "" },
-    initialData: { type: Object, default: null },
+    id: { type: String, default: "" },
 })
 const emit = defineEmits(['submit'])
 
@@ -33,52 +36,49 @@ const form = ref({ fields: [] })
 const loading = ref(true)
 const submitting = ref(false)
 
-const mapFieldsWithInitialData = (fields) => {
-    return fields.map(field => ({
-        ...field,
-        value: props.initialData?.[field.field_code] !== undefined
-            ? [props.initialData[field.field_code]]
-            : field.value || []
-    }))
-}
-
 const loadForm = async () => {
     loading.value = true
+    
     try {
         if (props.staticForm) {
             form.value = structuredClone(props.staticForm)
             return
         }
         
-        if (props.formCode) {
-            const { data } = await $axios.get('/form/defaultForm', {
-                params: { form_code: props.formCode, form: 'true' }
-            })
-            
-            if (data.success && data.fields) {
-                form.value = { fields: mapFieldsWithInitialData(data.fields) }
-            }
-            return
+        const endpoint = props.endPoint || '/form/defaultForm'
+        
+        // Build request params - always include form=true for form structure
+        const requestParams = { 
+            form: 'true',
+            ...(props.formCode && { form_code: props.formCode, id: props.id }),
+            ...(!props.formCode && props.params || {})
         }
         
-        if (props.endPoint) {
-            const { data } = await $axios.get(props.endPoint, { 
-                params: { form: 'true', ...props.params }
-            })
-            
-            const fields = data.fields || []
-            form.value = { fields: mapFieldsWithInitialData(fields) }
+        const { data } = await $axios.get(endpoint, { params: requestParams })
+        console.log('DATA', data)
+        
+        const fields = data?.success !== false 
+            ? (data.fields || [])
+            : []
+        
+        form.value = { 
+            fields: Array.isArray(fields) ? fields.map(field => ({
+                ...field,
+                value: Array.isArray(field.value) ? field.value : 
+                       (field.value != null ? [field.value] : [''])
+            })) : []
         }
+        
     } catch (err) {
         console.error('Error loading form:', err)
+        form.value = { fields: [] }
     } finally {
         loading.value = false
     }
 }
 
 onMounted(loadForm)
-
-watch([() => props.formCode, () => props.initialData, () => props.staticForm, () => props.endPoint, () => props.params], loadForm, { deep: true })
+watch([() => props.formCode, () => props.staticForm, () => props.endPoint, () => props.params], loadForm, { deep: true })
 
 const handleSubmit = async () => {
     submitting.value = true
@@ -92,12 +92,14 @@ const handleSubmit = async () => {
         
         if (props.endPoint) {
             const isEdit = !!props.params?.id
-            const config = {
-                headers: { 'Content-Type': 'application/json' },
-                ...(isEdit && { params: { id: Number(props.params.id) } })
-            }
-            
-            await $axios[isEdit ? 'patch' : 'post'](props.endPoint, payload, config)
+            await $axios[isEdit ? 'patch' : 'post'](
+                props.endPoint, 
+                payload,
+                {
+                    headers: { 'Content-Type': 'application/json' },
+                    ...(isEdit && { params: { id: Number(props.params.id) } })
+                }
+            )
         }
         
         emit('submit', { form: form.value, payload })
