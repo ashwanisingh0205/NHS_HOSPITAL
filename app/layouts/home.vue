@@ -387,7 +387,7 @@ const mainNavItems = [
 const navSections = {
     dashboard: [
         { name: 'Forms', path: '/masters/forms/form_builder/forms', icon: 'lucide:file-text' },
-        {
+         {
             name: 'Accounts',
             icon: 'lucide:file-bar-chart',
             children: [
@@ -513,6 +513,17 @@ const navSections = {
             children: [
                 { name: 'Patient Master', path: '/masters/visits/patient_master' },
                 { name: 'Visit Master', path: '/masters/visits/visit_master' },
+            ]
+        },
+        {
+            name: 'Billings',
+            icon: 'lucide:credit-card',
+            children: [
+                { name: 'Billing Master', path: '/masters/billing/billing_master' },
+                { name: 'Slip Details', path: '/masters/billing/slip_details' },
+                { name: 'Slip Master', path: '/masters/billing/slip_master' },
+                { name: 'Slip Payment Master', path: '/masters/billing/slip_payment_master' },
+                { name: 'Slip Report Master', path: '/masters/billing/slip_report_master' },
             ]
         },
         {

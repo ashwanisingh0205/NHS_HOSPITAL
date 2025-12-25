@@ -10,12 +10,6 @@
                     <template #id-cell="{ row }">
                         {{filteredData.findIndex(f => f.id === row.original.id) + 1}}
                     </template>
-                    <template #block_name-cell="{ row }">
-                        <ULink :to="{ name: 'masters-infra-blocks-floors', query: { block_id: row.original.id } }"
-                            class="cursor-pointer">
-                            {{ row.original.block_name }}
-                        </ULink>
-                    </template>
                     <template #action-cell="{ row }">
                         <div class="text-end">
                             <CKEdit @click="handleEdit(row)" />
@@ -28,8 +22,8 @@
     </div>
 
 
-    <CKFormModal v-model="formModel" :title="params.id ? 'Edit Block' : 'New Block'" :endPoint="endPoint"
-        :formCode="'infra_block_master'" :initialData="initialData" :params="params"
+    <CKFormModal v-model="formModel" :title="params.original?.id ? 'Edit Voucher Type' : 'New Voucher Type'"
+        :endPoint="endPoint" formCode="account_voucher_type_master" :initialData="initialData" :params="params"
         @handleFormSubmit="handleFormSubmit" />
 
 
@@ -43,8 +37,8 @@ import CKFormModal from "~/components/common/CKFormModal.vue";
 /* ------------------ Default Variables ------------------ */
 definePageMeta({ layout: 'home' });
 const { $axios } = useNuxtApp()
-const title = ref("Voucher Type Form List");
-const endPoint = ref("/masters/infra/blocks");
+const title = ref("Account Voucher Type Master");
+const endPoint = ref("form/defaultForm");
 const params = ref({});
 const formModel = ref(false);
 const initialData = ref(null);
@@ -62,22 +56,43 @@ const error = ref(null);
 const data = ref([]);
 const columns = ref([
     { accessorKey: 'id', header: 'Sr.No.' },
-    { accessorKey: 'voucher_type_name', header: 'Voucher Type Form Name' },
+    { accessorKey: 'name', header: 'Name' }, // Use 'name' to match field_code
     { id: 'action' }
 ]);
 const loadData = async () => {
     loading.value = true;
     error.value = null;
     try {
-        const response = await $axios.get(endPoint.value);
+        const response = await $axios.get(endPoint.value, {
+            params: { form_code: 'account_voucher_type_master', }
+        });
         const temp = response.data;
-        if (temp.success && Array.isArray(temp.block)) {
-            data.value = temp.block;
+        if (temp.success && Array.isArray(temp.response_values)) {
+            // Transform EAV to Rows
+            const grouped = {};
+            temp.response_values.forEach(item => {
+                const rowId = item.form_response_id;
+                if (!grouped[rowId]) {
+                    grouped[rowId] = { id: rowId };
+                }
+
+                let val = item.value;
+                try {
+                    const parsed = JSON.parse(val);
+                    if (Array.isArray(parsed) && parsed.length === 1) val = parsed[0];
+                    else val = parsed;
+                } catch (e) { /* keep original */ }
+
+                if (val === null) val = "";
+
+                grouped[rowId][item.field_code] = val;
+            });
+            data.value = Object.values(grouped);
         } else {
-            error.value = 'Invalid response format from API';
+            data.value = [];
         }
     } catch (err) {
-        error.value = err.response?.data?.message || err.message || 'Failed to load blocks';
+        error.value = err.response?.data?.message || err.message || 'Failed to load voucher types';
     } finally {
         loading.value = false;
     }
@@ -91,8 +106,9 @@ const filteredData = computed(() => {
         return data.value;
     }
     const query = searchQuery.value.toLowerCase();
-    return data.value.filter(block =>
-        block.block_name?.toLowerCase().includes(query)
+    return data.value.filter(item =>
+        item.name?.toLowerCase().includes(query) ||
+        item.code?.toLowerCase().includes(query)
     );
 });
 
@@ -102,26 +118,15 @@ const filteredData = computed(() => {
 
 /* ------------------ Add Button ------------------ */
 const handleAdd = () => {
-    params.value = {};
+    params.value = { form_code: 'account_voucher_type_master' };
     initialData.value = null;
     formModel.value = true;
 };
 
 /* ------------------ Edit Button ------------------ */
 const handleEdit = async (item) => {
-    params.value = { id: item.original.id };
-    initialData.value = null;
-
-    // Load existing data for editing
-    try {
-        const existingItem = data.value.find(d => d.id === item.original.id);
-        if (existingItem) {
-            initialData.value = existingItem;
-        }
-    } catch (err) {
-        console.error('Error loading item data:', err);
-    }
-
+    params.value = { id: item.original.id, form_code: 'account_voucher_type_master' };
+    initialData.value = item.original;
     formModel.value = true;
 };
 

@@ -10,12 +10,6 @@
                     <template #id-cell="{ row }">
                         {{filteredData.findIndex(f => f.id === row.original.id) + 1}}
                     </template>
-                    <template #block_name-cell="{ row }">
-                        <ULink :to="{ name: 'masters-infra-blocks-floors', query: { block_id: row.original.id } }"
-                            class="cursor-pointer">
-                            {{ row.original.block_name }}
-                        </ULink>
-                    </template>
                     <template #action-cell="{ row }">
                         <div class="text-end">
                             <CKEdit @click="handleEdit(row)" />
@@ -28,9 +22,8 @@
     </div>
 
 
-    <CKFormModal v-model="formModel" :title="params.id ? 'Edit Block' : 'New Block'" :endPoint="endPoint"
-        :formCode="'infra_block_master'" :initialData="initialData" :params="params"
-        @handleFormSubmit="handleFormSubmit" />
+    <CKFormModal v-model="formModel" :title="params.id ? 'Edit Bank Account' : 'New Bank Account'" :endPoint="endPoint"
+        formCode="bank_account" :id="id" :params="params" @handleFormSubmit="handleFormSubmit" />
 
 
 </template>
@@ -43,11 +36,11 @@ import CKFormModal from "~/components/common/CKFormModal.vue";
 /* ------------------ Default Variables ------------------ */
 definePageMeta({ layout: 'home' });
 const { $axios } = useNuxtApp()
-const title = ref("Bank Accounts List");
-const endPoint = ref("/masters/infra/blocks");
+const title = ref("Bank Account List");
+const endPoint = ref("/masters/accounts/bank_account");
 const params = ref({});
 const formModel = ref(false);
-const initialData = ref(null);
+const id = ref('');
 
 
 /* ------------------ onMounted ------------------ */
@@ -62,7 +55,8 @@ const error = ref(null);
 const data = ref([]);
 const columns = ref([
     { accessorKey: 'id', header: 'Sr.No.' },
-    { accessorKey: 'bank_account_name', header: 'Bank Account Name' },
+    { accessorKey: 'account_holder_name', header: 'Account Holder Name' },
+    { accessorKey: 'account_number', header: 'Account Number' },
     { id: 'action' }
 ]);
 const loadData = async () => {
@@ -71,13 +65,13 @@ const loadData = async () => {
     try {
         const response = await $axios.get(endPoint.value);
         const temp = response.data;
-        if (temp.success && Array.isArray(temp.block)) {
-            data.value = temp.block;
+        if (temp.success && Array.isArray(temp.accounts)) {
+            data.value = temp.accounts;
         } else {
             error.value = 'Invalid response format from API';
         }
     } catch (err) {
-        error.value = err.response?.data?.message || err.message || 'Failed to load blocks';
+        error.value = err.response?.data?.message || err.message || 'Failed to load accounts';
     } finally {
         loading.value = false;
     }
@@ -91,8 +85,9 @@ const filteredData = computed(() => {
         return data.value;
     }
     const query = searchQuery.value.toLowerCase();
-    return data.value.filter(block =>
-        block.block_name?.toLowerCase().includes(query)
+    return data.value.filter(item =>
+        item.account_holder_name?.toLowerCase().includes(query) ||
+        item.account_number?.toLowerCase().includes(query)
     );
 });
 
@@ -103,25 +98,13 @@ const filteredData = computed(() => {
 /* ------------------ Add Button ------------------ */
 const handleAdd = () => {
     params.value = {};
-    initialData.value = null;
     formModel.value = true;
 };
 
 /* ------------------ Edit Button ------------------ */
 const handleEdit = async (item) => {
     params.value = { id: item.original.id };
-    initialData.value = null;
-
-    // Load existing data for editing
-    try {
-        const existingItem = data.value.find(d => d.id === item.original.id);
-        if (existingItem) {
-            initialData.value = existingItem;
-        }
-    } catch (err) {
-        console.error('Error loading item data:', err);
-    }
-
+    id.value = item.original.id;
     formModel.value = true;
 };
 

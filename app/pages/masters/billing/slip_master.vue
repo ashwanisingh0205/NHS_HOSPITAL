@@ -22,9 +22,8 @@
     </div>
 
 
-    <CKFormModal v-model="formModel" :title="params.original?.id ? 'Edit Bank Account' : 'New Bank Account'"
-        :endPoint="endPoint" formCode="bank_account_master" :initialData="initialData" :params="params"
-        @handleFormSubmit="handleFormSubmit" />
+    <CKFormModal v-model="formModel" :title="params.id ? 'Edit Slip' : 'New Slip'" :endPoint="endPoint"
+        formCode="slip_master" :id="id" :params="params" @handleFormSubmit="handleFormSubmit" />
 
 
 </template>
@@ -37,11 +36,11 @@ import CKFormModal from "~/components/common/CKFormModal.vue";
 /* ------------------ Default Variables ------------------ */
 definePageMeta({ layout: 'home' });
 const { $axios } = useNuxtApp()
-const title = ref("Bank Account Master");
-const endPoint = ref("form/defaultForm");
+const title = ref("Slip List");
+const endPoint = ref("/masters/billings/slip_master");
 const params = ref({});
 const formModel = ref(false);
-const initialData = ref(null);
+const id = ref('');
 
 
 /* ------------------ onMounted ------------------ */
@@ -56,43 +55,23 @@ const error = ref(null);
 const data = ref([]);
 const columns = ref([
     { accessorKey: 'id', header: 'Sr.No.' },
-    { accessorKey: 'account_holder_name', header: 'Account Holder Name' },
-    { accessorKey: 'account_number', header: 'Account Number' },
-    { accessorKey: 'account_type', header: 'Account Type' },
+    { accessorKey: 'slip_number_string', header: 'Slip Number' },
+    { accessorKey: 'client_name', header: 'Client Name' },
     { id: 'action' }
 ]);
 const loadData = async () => {
     loading.value = true;
     error.value = null;
     try {
-        const response = await $axios.get(endPoint.value, {
-            params: { form_code: 'bank_account_master' }
-        });
+        const response = await $axios.get(endPoint.value);
         const temp = response.data;
-        if (temp.success && Array.isArray(temp.response_values)) {
-            const grouped = {};
-            temp.response_values.forEach(item => {
-                const rowId = item.form_response_id;
-                if (!grouped[rowId]) {
-                    grouped[rowId] = { id: rowId };
-                }
-                let val = item.value;
-                try {
-                    const parsed = JSON.parse(val);
-                    if (Array.isArray(parsed) && parsed.length === 1) val = parsed[0];
-                    else val = parsed;
-                } catch (e) {  }
-
-                if (val === null) val = "";
-
-                grouped[rowId][item.field_code] = val;
-            });
-            data.value = Object.values(grouped);
+        if (temp.success && Array.isArray(temp.slip)) {
+            data.value = temp.slip;
         } else {
-            data.value = [];
+            error.value = 'Invalid response format from API';
         }
     } catch (err) {
-        error.value = err.response?.data?.message || err.message || 'Failed to load bank accounts';
+        error.value = err.response?.data?.message || err.message || 'Failed to load slips';
     } finally {
         loading.value = false;
     }
@@ -107,8 +86,8 @@ const filteredData = computed(() => {
     }
     const query = searchQuery.value.toLowerCase();
     return data.value.filter(item =>
-        item.account_holder_name?.toLowerCase().includes(query) ||
-        item.account_number?.toLowerCase().includes(query)
+        item.slip_number_string?.toLowerCase().includes(query) ||
+        item.client_name?.toLowerCase().includes(query)
     );
 });
 
@@ -118,15 +97,14 @@ const filteredData = computed(() => {
 
 /* ------------------ Add Button ------------------ */
 const handleAdd = () => {
-    params.value = { form_code: 'bank_account_master' };
-    initialData.value = null;
+    params.value = {};
     formModel.value = true;
 };
 
 /* ------------------ Edit Button ------------------ */
 const handleEdit = async (item) => {
-    params.value = { id: item.original.id, form_code: 'bank_account_master' };
-    initialData.value = item.original;
+    params.value = { id: item.original.id };
+    id.value = item.original.id;
     formModel.value = true;
 };
 

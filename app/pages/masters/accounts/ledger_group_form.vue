@@ -10,12 +10,6 @@
                     <template #id-cell="{ row }">
                         {{filteredData.findIndex(f => f.id === row.original.id) + 1}}
                     </template>
-                    <template #block_name-cell="{ row }">
-                        <ULink :to="{ name: 'masters-infra-blocks-floors', query: { block_id: row.original.id } }"
-                            class="cursor-pointer">
-                            {{ row.original.block_name }}
-                        </ULink>
-                    </template>
                     <template #action-cell="{ row }">
                         <div class="text-end">
                             <CKEdit @click="handleEdit(row)" />
@@ -28,9 +22,8 @@
     </div>
 
 
-    <CKFormModal v-model="formModel" :title="params.id ? 'Edit Block' : 'New Block'" :endPoint="endPoint"
-        :formCode="'infra_block_master'" :initialData="initialData" :params="params"
-        @handleFormSubmit="handleFormSubmit" />
+    <CKFormModal v-model="formModel" :title="params.id ? 'Edit Ledger Group' : 'New Ledger Group'" :endPoint="endPoint"
+        formCode="ledger_group" :id="id" :params="params" @handleFormSubmit="handleFormSubmit" />
 
 
 </template>
@@ -43,11 +36,11 @@ import CKFormModal from "~/components/common/CKFormModal.vue";
 /* ------------------ Default Variables ------------------ */
 definePageMeta({ layout: 'home' });
 const { $axios } = useNuxtApp()
-const title = ref("Ledger Group Form List");
-const endPoint = ref("/masters/infra/blocks");
+const title = ref("Ledger Group List");
+const endPoint = ref("/masters/accounts/ledger_group");
 const params = ref({});
 const formModel = ref(false);
-const initialData = ref(null);
+const id = ref('');
 
 
 /* ------------------ onMounted ------------------ */
@@ -62,7 +55,7 @@ const error = ref(null);
 const data = ref([]);
 const columns = ref([
     { accessorKey: 'id', header: 'Sr.No.' },
-    { accessorKey: 'ledger_group_form_name', header: 'Ledger Group Form Name' },
+    { accessorKey: 'group_name', header: 'Group Name' },
     { id: 'action' }
 ]);
 const loadData = async () => {
@@ -71,13 +64,13 @@ const loadData = async () => {
     try {
         const response = await $axios.get(endPoint.value);
         const temp = response.data;
-        if (temp.success && Array.isArray(temp.block)) {
-            data.value = temp.block;
+        if (temp.success && Array.isArray(temp.groups)) {
+            data.value = temp.groups;
         } else {
             error.value = 'Invalid response format from API';
         }
     } catch (err) {
-        error.value = err.response?.data?.message || err.message || 'Failed to load blocks';
+        error.value = err.response?.data?.message || err.message || 'Failed to load ledger groups';
     } finally {
         loading.value = false;
     }
@@ -91,8 +84,8 @@ const filteredData = computed(() => {
         return data.value;
     }
     const query = searchQuery.value.toLowerCase();
-    return data.value.filter(block =>
-        block.block_name?.toLowerCase().includes(query)
+    return data.value.filter(item =>
+        item.group_name?.toLowerCase().includes(query)
     );
 });
 
@@ -103,25 +96,13 @@ const filteredData = computed(() => {
 /* ------------------ Add Button ------------------ */
 const handleAdd = () => {
     params.value = {};
-    initialData.value = null;
     formModel.value = true;
 };
 
 /* ------------------ Edit Button ------------------ */
 const handleEdit = async (item) => {
     params.value = { id: item.original.id };
-    initialData.value = null;
-
-    // Load existing data for editing
-    try {
-        const existingItem = data.value.find(d => d.id === item.original.id);
-        if (existingItem) {
-            initialData.value = existingItem;
-        }
-    } catch (err) {
-        console.error('Error loading item data:', err);
-    }
-
+    id.value = item.original.id;
     formModel.value = true;
 };
 
