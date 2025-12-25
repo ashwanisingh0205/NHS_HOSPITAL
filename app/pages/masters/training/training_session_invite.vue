@@ -10,8 +10,8 @@
                     <template #id-cell="{ row }">
                         {{filteredData.findIndex(f => f.id === row.original.id) + 1}}
                     </template>
-                    <template #invite_name-cell="{ row }">
-                        {{ row.original.invite_name }}
+                    <template #employee_id-cell="{ row }">
+                        Session: {{ row.original.session_id }} - Employee: {{ row.original.employee_id }}
                     </template>
                     <template #action-cell="{ row }">
                         <div class="text-end">
@@ -59,7 +59,7 @@ const error = ref(null);
 const data = ref([]);
 const columns = ref([
     { accessorKey: 'id', header: 'Sr.No.' },
-    { accessorKey: 'invite_name', header: 'Invite Name' },
+    { accessorKey: 'employee_id', header: 'Session - Employee' },
     { id: 'action' }
 ]);
 const loadData = async () => {
@@ -68,8 +68,8 @@ const loadData = async () => {
     try {
         const response = await $axios.get(endPoint.value);
         const temp = response.data;
-        if (temp.success && Array.isArray(temp.data)) {
-            data.value = temp.data;
+        if (temp.success && Array.isArray(temp.trainingInvite)) {
+            data.value = temp.trainingInvite;
         } else {
             error.value = 'Invalid response format from API';
         }
@@ -88,9 +88,11 @@ const filteredData = computed(() => {
         return data.value;
     }
     const query = searchQuery.value.toLowerCase();
-    return data.value.filter(invite =>
-        invite.invite_name?.toLowerCase().includes(query)
-    );
+    return data.value.filter(invite => {
+        const sessionId = String(invite.session_id || '').toLowerCase();
+        const employeeId = String(invite.employee_id || '').toLowerCase();
+        return sessionId.includes(query) || employeeId.includes(query);
+    });
 });
 
 
