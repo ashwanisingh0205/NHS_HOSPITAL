@@ -100,6 +100,23 @@
       type="date"
     />
 
+    <!-- Date Range -->
+    <div v-else-if="field.data_type === 'DATE_RANGE'" class="flex items-center gap-2 w-full">
+      <UInput 
+        v-model="field.value[0]" 
+        type="date"
+        :placeholder="field.placeholderFrom || 'Date from'"
+        class="flex-1 min-w-0"
+      />
+      <UIcon name="lucide:arrow-left-right" class="w-4 h-4 text-gray-400 shrink-0" />
+      <UInput 
+        v-model="field.value[1]" 
+        type="date"
+        :placeholder="field.placeholderTo || 'Date to'"
+        class="flex-1 min-w-0"
+      />
+    </div>
+
     <!-- Nested Fields -->
     <div
       v-else-if="field.data_type === 'group' && field.fields"
