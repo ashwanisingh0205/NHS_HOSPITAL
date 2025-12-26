@@ -1,5 +1,5 @@
 <template>
-    <UModal v-model:open="localValue" :dismissible="false" :title="title">
+    <UModal v-model:open="localValue" :dismissible="true" :title="title">
         <template #body>
             <DynamicForm
                 :key="formResetKey"

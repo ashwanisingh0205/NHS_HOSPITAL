@@ -7,28 +7,24 @@
 
 <template>
     <template v-for="field in fields" :key="field.id">
-       
         <Group 
             v-if="field.data_type === 'GROUP'" 
             :field="field" 
             :cols="cols"
-            class="mb-2"
         />
         
-        <Table 
-            v-else-if="field.data_type === 'TABLE'" 
-            :field="field" 
-            class="mb-2"
-        />
+        <div v-else-if="field.data_type === 'TABLE'" class="col-span-full">
+            <Table 
+                :field="field" 
+            />
+        </div>
         <Card 
             v-else-if="field.data_type === 'CARD'" 
             :field="field" 
-            class="mb-2"
         />
         <FormWrapper 
             v-else 
             :field="field" 
-            class="mb-2"
         />
     </template>
 </template>

@@ -3,12 +3,12 @@
         <div class="flex flex-col items-center text-center">
             <!-- Avatar -->
             <div 
-                class="w-16 h-16 rounded-full mb-3 flex items-center justify-center text-white font-semibold text-lg"
+                class="w-16 h-16 rounded-full mb-3 flex items-center justify-center text-white font-semibold text-lg overflow-hidden"
                 :class="avatarBgClass"
             >
                 <img 
-                    v-if="employee.profileImage" 
-                    :src="employee.profileImage" 
+                    v-if="employee.url_profile" 
+                    :src="employee.url_profile" 
                     :alt="employeeName"
                     class="w-full h-full rounded-full object-cover"
                 />
@@ -19,7 +19,7 @@
             <h3 class="font-semibold text-gray-900 dark:text-white mb-1">{{ employeeName }}</h3>
             
             <!-- Department -->
-            <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">{{ employee.department_name || 'N/A' }}</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">{{ employee.department || 'N/A' }}</p>
             
             <!-- Birthday -->
             <div class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-500">
@@ -36,7 +36,7 @@ const props = defineProps({
 })
 
 const employeeName = computed(() => {
-    const parts = [props.employee.title, props.employee.first_name, props.employee.middle_name, props.employee.last_name]
+    const parts = [props.employee.first_name, props.employee.middle_name, props.employee.last_name]
     return parts.filter(Boolean).join(' ') || 'Unknown'
 })
 
@@ -54,7 +54,7 @@ const formattedDate = computed(() => {
 
 const avatarBgClass = computed(() => {
     const colors = ['bg-blue-500', 'bg-pink-500', 'bg-purple-500', 'bg-yellow-500', 'bg-green-500', 'bg-orange-500']
-    const index = (props.employee.id || 0) % colors.length
+    const index = (props.employee.employee_id || 0) % colors.length
     return colors[index]
 })
 </script>

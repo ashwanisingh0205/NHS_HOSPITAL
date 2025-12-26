@@ -1,18 +1,17 @@
 <template>
-    <div class="w-full ">
-        <div v-if="field.label || field.title" :style="field.label_style" class="mb-2">
-            <span class="text-lg font-semibold text-gray-900 dark:text-white">
-                {{ field.label || field.title }}
-            </span>
-        </div>
-        <div class="border border-gray-200 rounded-lg p-5 bg-white dark:bg-gray-800 dark:border-gray-800 dark:rounded-2xl">
-            <div :class="getGridClass()">
+    <div class="w-full">
+        <UCard class="h-full">
+            <template v-if="field.label || field.title" #header>
+                <div :style="field.label_style">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                        {{ field.label || field.title }}
+                    </h3>
+                </div>
+            </template>
+            <div class="space-y-4">
                 <FormRenderer :fields="field.fields" :cols="cols" />
             </div>
-            
-                
-            
-        </div>
+        </UCard>
     </div>
 </template>
 
