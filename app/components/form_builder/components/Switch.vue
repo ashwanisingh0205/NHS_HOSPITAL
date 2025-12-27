@@ -6,6 +6,7 @@
         />
     </UFormField>
 </template>
+
 <script setup>
 import { onMounted } from 'vue'
 
@@ -13,24 +14,26 @@ const props = defineProps({
     field: { type: Object, required: true },
 });
 
+// Ensure field.value is an array first
 onMounted(() => {
     if (!Array.isArray(props.field.value)) {
         props.field.value = [props.field.value || false]
     }
 })
 
+// Use computed with getter/setter for field.value[0]
 const fieldValue = computed({
     get: () => {
         if (!Array.isArray(props.field.value)) {
-            props.field.value = [props.field.value || false]
+            props.field.value = [false]
         }
-        return props.field.value[0] || false
+        return props.field.value[0] ?? false
     },
-    set: (newValue) => {
+    set: (val) => {
         if (!Array.isArray(props.field.value)) {
             props.field.value = []
         }
-        props.field.value[0] = newValue
+        props.field.value[0] = val
     }
 })
 </script>

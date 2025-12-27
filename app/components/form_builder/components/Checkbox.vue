@@ -4,8 +4,7 @@
             <!-- Single checkbox (boolean) -->
             <UCheckbox
                 v-if="!field.choices || field.choices.length === 0"
-                :model-value="field.value === true || field.value === 'true' || field.value === 1"
-                @update:model-value="field.value = $event"
+                v-model="fieldValue"
                 :label="field.label"
             />
             
@@ -24,7 +23,7 @@
 </template>
 
 <script setup>
-import { watch } from 'vue'
+import { watch, onMounted } from 'vue'
 
 const props = defineProps({
     field: {
@@ -33,7 +32,33 @@ const props = defineProps({
     }
 })
 
+// For single checkbox (boolean)
+const fieldValue = computed({
+    get: () => {
+        if (!Array.isArray(props.field.value)) {
+            props.field.value = [props.field.value || false]
+        }
+        return props.field.value[0] ?? false
+    },
+    set: (val) => {
+        if (!Array.isArray(props.field.value)) {
+            props.field.value = []
+        }
+        props.field.value[0] = val
+    }
+})
+
 // Initialize value as array if it's not already (for multiple checkboxes)
+onMounted(() => {
+    if (props.field.choices && props.field.choices.length > 0) {
+        if (!Array.isArray(props.field.value)) {
+            props.field.value = []
+        }
+    } else if (!Array.isArray(props.field.value)) {
+        props.field.value = [props.field.value || false]
+    }
+})
+
 watch(() => props.field.choices, (choices) => {
     if (choices && choices.length > 0 && !Array.isArray(props.field.value)) {
         props.field.value = []

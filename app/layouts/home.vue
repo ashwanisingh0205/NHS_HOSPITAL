@@ -554,8 +554,8 @@ const navSections = {
     ],
     projects: [
         {name :"HRM", path: '/hrm/profile/employees', icon: 'lucide:users'},
-        { name: 'All Projects', path: '/registration', icon: 'lucide:folder-open' },
-        { name: 'Active', path: '/projects/active', icon: 'lucide:zap' },
+        { name: 'Application Status', path: '/hrm/recruitment/applications', icon: 'lucide:file-text' },
+        { name: 'Joining Status', path: '/hrm/recruitment/joining', icon: 'lucide:user-check' },
         { name: 'Archived', path: '/projects/archived', icon: 'lucide:archive' },
         { name: 'Templates', path: '/projects/templates', icon: 'lucide:layout-template' },
     ],

@@ -1,216 +1,212 @@
 <template>
-    <div class="p-6 space-y-6">
-        <!-- Show parent content only when not on child route -->
+    <div class="p-4 space-y-6">
         <template v-if="!isChildRoute">
             <!-- Header -->
             <div class="flex items-center justify-between">
                 <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Employee Management</h1>
-                
             </div>
 
-        <!-- Summary Statistics and Right Panel Section -->
-        <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
-            <!-- Left Side: Summary Statistics (4 cards) -->
-            <div class="lg:col-span-4 grid grid-cols-2 gap-4">
-                <StaticCard 
-                    label="Total Employees" 
-                    :value="summaryStats.total"
-                    icon="lucide:users"
-                    color="blue"
-                />
-                <StaticCard 
-                    label="Today's Birthdays" 
-                    :value="todayBirthdays.length"
-                    icon="lucide:cake"
-                    color="pink"
-                />
-                <StaticCard 
-                    label="With Privileges" 
-                    :value="summaryStats.withPrivileges"
-                    icon="lucide:shield-check"
-                    color="green"
-                />
-                <StaticCard 
-                    label="With Designation" 
-                    :value="summaryStats.withDesignation"
-                    icon="lucide:briefcase"
-                    color="purple"
-                />
-            </div>
-
-            <!-- Right Side: Quick Search and Today's Birthdays (stacked) -->
-            <div class="lg:col-span-1 space-y-4">
-                <!-- Filter Card -->
-                <FilterCard 
-                    :filterData="filterData"
-                    @search="handleQuickSearch"
-                    @filter="handleAdvancedFilter"
-                />
-
-                <!-- Today's Birthdays -->
-                <UCard>
-                    <template #header>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <UIcon name="lucide:cake" class="w-4 h-4" />
-                                <h2 class="text-lg font-semibold">Today's Birthdays</h2>
-                                <UBadge :label="todayBirthdays.length" color="primary" />
-                            </div>
-                            <div class="flex gap-2">
-                                <UButton 
-                                    variant="ghost" 
-                                    icon="lucide:chevron-left"
-                                    size="sm"
-                                    @click="scrollBirthdays('left')"
-                                />
-                                <UButton 
-                                    variant="ghost" 
-                                    icon="lucide:chevron-right"
-                                    size="sm"
-                                    @click="scrollBirthdays('right')"
-                                />
-                            </div>
-                        </div>
-                    </template>
-                    <div 
-                        ref="birthdaysContainer"
-                        class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide"
-                        style="scroll-behavior: smooth;"
-                    >
-                        <ProfileCard 
-                            v-for="employee in todayBirthdays" 
-                            :key="employee.employee_id"
-                            :employee="employee"
-                        />
-                        <div v-if="todayBirthdays.length === 0" class="text-center py-8 text-gray-500 w-full">
-                            No birthdays today
-                        </div>
-                    </div>
-                </UCard>
-            </div>
-        </div>
-
-        <!-- Employee Table -->
-        <UCard>
-            <template #header>
-                <div class="flex items-center justify-between">
-                    <div class="text-lg font-semibold">Employee List</div>
-                    <UButton icon="lucide:plus" variant="solid" color="primary" size="sm" @click="openAddEmployeeModal">Add Employee</UButton>
+            <!-- Summary Statistics and Right Panel Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
+                <!-- Left Side: Summary Statistics (4 cards) -->
+                <div class="lg:col-span-4 grid grid-cols-2 gap-4">
+                    <StaticCard 
+                        label="Total Employees" 
+                        :value="summaryStats.total"
+                        icon="lucide:users"
+                        color="blue"
+                    />
+                    <StaticCard 
+                        label="Today's Birthdays" 
+                        :value="todayBirthdays.length"
+                        icon="lucide:cake"
+                        color="pink"
+                    />
+                    <StaticCard 
+                        label="With Privileges" 
+                        :value="summaryStats.withPrivileges"
+                        icon="lucide:shield-check"
+                        color="green"
+                    />
+                    <StaticCard 
+                        label="With Designation" 
+                        :value="summaryStats.withDesignation"
+                        icon="lucide:briefcase"
+                        color="purple"
+                    />
                 </div>
-            </template>
-            <div class="overflow-x-auto">
-                <UTable 
-                    :loading="loading" 
-                    :data="filteredEmployees" 
-                    :columns="columns"
-                    class="min-w-full"
-                >
-                <template v-if="!loading" #empty>
-                    <UError :error="{ statusMessage: error || 'No Record Found!!' }" />
-                </template>
 
-                <!-- Employee Info Column -->
-                <template #employee_info-cell="{ row }">
-                    <div class="flex items-center gap-3">
-                        <div 
-                            class="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm overflow-hidden"
-                            :class="getAvatarClass(row.original)"
-                        >
-                            <img 
-                                v-if="row.original.url_profile" 
-                                :src="row.original.url_profile" 
-                                :alt="getEmployeeName(row.original)"
-                                class="w-full h-full object-cover"
-                            />
-                            <span v-else>{{ getInitials(row.original) }}</span>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-2">
-                                <p class="font-medium text-gray-900 dark:text-white truncate">
-                                    {{ getEmployeeName(row.original) }}
-                                </p>
-                                <UIcon name="lucide:external-link" class="w-4 h-4 text-gray-400 shrink-0" />
+                <!-- Right Side: Quick Search and Today's Birthdays -->
+                <div class="lg:col-span-1 space-y-4">
+                    <FilterCard 
+                        :filterData="filterData"
+                        @search="quickSearchQuery = $event"
+                        @filter="advancedFilters = $event"
+                    />
+
+                    <!-- Today's Birthdays -->
+                    <UCard>
+                        <template #header>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <UIcon name="lucide:cake" class="w-4 h-4" />
+                                    <h2 class="text-lg font-semibold">Today's Birthdays</h2>
+                                    <UBadge :label="todayBirthdays.length" color="primary" />
+                                </div>
+                                <div class="flex gap-2">
+                                    <UButton 
+                                        variant="ghost" 
+                                        icon="lucide:chevron-left"
+                                        size="sm"
+                                        @click="scrollBirthdays('left')"
+                                    />
+                                    <UButton 
+                                        variant="ghost" 
+                                        icon="lucide:chevron-right"
+                                        size="sm"
+                                        @click="scrollBirthdays('right')"
+                                    />
+                                </div>
                             </div>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">
-                                {{ getAge(row.original) }} years old
-                            </p>
+                        </template>
+                        <div 
+                            ref="birthdaysContainer"
+                            class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide"
+                        >
+                            <ProfileCard 
+                                v-for="employee in todayBirthdays" 
+                                :key="employee.employee_id"
+                                :employee="employee"
+                            />
+                            <div v-if="!todayBirthdays.length" class="text-center py-8 text-gray-500 w-full">
+                                No birthdays today
+                            </div>
                         </div>
-                    </div>
-                </template>
-
-                <!-- Phone Number Column -->
-                <template #phone_number-cell="{ row }">
-                    <span class="text-sm whitespace-nowrap">{{ row.original.phone_number || 'N/A' }}</span>
-                </template>
-
-                <!-- Patient Number Column -->
-                <template #patient_number-cell="{ row }">
-                    <span class="text-sm whitespace-nowrap">{{ row.original.patient_number || 'N/A' }}</span>
-                </template>
-
-                <!-- Privileges Column -->
-                <template #privileges-cell="{ row }">
-                    <div class="flex flex-wrap gap-1">
-                        <UBadge 
-                            v-for="(priv, index) in getPrivilegesList(row.original.privileges)" 
-                            :key="index"
-                            :label="priv"
-                            color="primary"
-                            variant="soft"
-                            size="xs"
-                        />
-                        <span v-if="!row.original.privileges" class="text-gray-500 dark:text-gray-400">N/A</span>
-                    </div>
-                </template>
-
-                <!-- Languages Column -->
-                <template #languages-cell="{ row }">
-                    <div class="flex flex-wrap gap-1">
-                        <UBadge 
-                            v-for="(lang, index) in getLanguagesList(row.original.languages)" 
-                            :key="index"
-                            :label="lang"
-                            color="gray"
-                            variant="soft"
-                            size="xs"
-                        />
-                        <span v-if="!row.original.languages" class="text-gray-500 dark:text-gray-400">N/A</span>
-                    </div>
-                </template>
-
-                <!-- Designation Column -->
-                <template #designation-cell="{ row }">
-                    <span class="text-sm">{{ row.original.designation || 'N/A' }}</span>
-                </template>
-
-                <!-- Department Column -->
-                <template #department-cell="{ row }">
-                    <span class="text-sm">{{ row.original.department || 'N/A' }}</span>
-                </template>
-
-                <!-- Actions Column -->
-                <template #View-cell="{ row }">
-                    <div class="flex items-center gap-2">
-                        <UButton 
-                            variant="ghost" 
-                            icon="lucide:eye"
-                            size="sm"
-                            @click="handleView(row.original)"
-                        />
-                        
-                       
-                    </div>
-                </template>
-                </UTable>
+                    </UCard>
+                </div>
             </div>
-        </UCard>
+
+            <!-- Employee Table -->
+            <UCard>
+                <template #header>
+                    <div class="flex items-center justify-between">
+                        <div class="text-lg font-semibold">Employee List</div>
+                        <UButton 
+                            icon="lucide:plus" 
+                            variant="solid" 
+                            color="primary" 
+                            size="sm" 
+                            @click="addEmployeeModalOpen = true"
+                        >
+                            Add Employee
+                        </UButton>
+                    </div>
+                </template>
+                <div class="overflow-x-auto">
+                    <UTable 
+                        :loading="loading" 
+                        :data="filteredEmployees" 
+                        :columns="columns"
+                        class="min-w-full"
+                    >
+                        <template v-if="!loading" #empty>
+                            <UError :error="{ statusMessage: error || 'No Record Found!!' }" />
+                        </template>
+
+                        <!-- Employee Info Column -->
+                        <template #employee_info-cell="{ row }">
+                            <div class="flex items-center gap-3">
+                                <div 
+                                    class="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm overflow-hidden"
+                                    :class="getAvatarClass(row.original.employee_id)"
+                                >
+                                    <img 
+                                        v-if="row.original.url_profile" 
+                                        :src="row.original.url_profile" 
+                                        :alt="getEmployeeName(row.original)"
+                                        class="w-full h-full object-cover"
+                                    />
+                                    <span v-else>{{ getInitials(row.original) }}</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2">
+                                        <p class="font-medium text-gray-900 dark:text-white truncate">
+                                            {{ getEmployeeName(row.original) }}
+                                        </p>
+                                        <UIcon name="lucide:external-link" class="w-4 h-4 text-gray-400 shrink-0" />
+                                    </div>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                                        {{ getAge(row.original) }} years old
+                                    </p>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Simple Text Columns -->
+                        <template #phone_number-cell="{ row }">
+                            <span class="text-sm whitespace-nowrap">{{ row.original.phone_number || 'N/A' }}</span>
+                        </template>
+
+                        <template #patient_number-cell="{ row }">
+                            <span class="text-sm whitespace-nowrap">{{ row.original.patient_number || 'N/A' }}</span>
+                        </template>
+
+                        <template #designation-cell="{ row }">
+                            <span class="text-sm">{{ row.original.designation || 'N/A' }}</span>
+                        </template>
+
+                        <template #department-cell="{ row }">
+                            <span class="text-sm">{{ row.original.department || 'N/A' }}</span>
+                        </template>
+
+                        <!-- Badge Columns -->
+                        <template #privileges-cell="{ row }">
+                            <div class="flex flex-wrap gap-1">
+                                <UBadge 
+                                    v-for="(priv, index) in splitCommaString(row.original.privileges)" 
+                                    :key="index"
+                                    :label="priv"
+                                    color="primary"
+                                    variant="soft"
+                                    size="xs"
+                                />
+                                <span v-if="!row.original.privileges" class="text-gray-500 dark:text-gray-400">N/A</span>
+                            </div>
+                        </template>
+
+                        <template #languages-cell="{ row }">
+                            <div class="flex flex-wrap gap-1">
+                                <UBadge 
+                                    v-for="(lang, index) in splitCommaString(row.original.languages)" 
+                                    :key="index"
+                                    :label="lang"
+                                    color="gray"
+                                    variant="soft"
+                                    size="xs"
+                                />
+                                <span v-if="!row.original.languages" class="text-gray-500 dark:text-gray-400">N/A</span>
+                            </div>
+                        </template>
+
+                        <!-- Actions Column -->
+                        <template #View-cell="{ row }">
+                            <UButton 
+                                variant="ghost" 
+                                icon="lucide:eye"
+                                size="sm"
+                                @click="navigateTo(`/hrm/profile/employees/${row.original.employee_id}`)"
+                            />
+                        </template>
+                    </UTable>
+                </div>
+            </UCard>
 
             <!-- New Employee Modal -->
             <EmployeeModal 
                 v-model="addEmployeeModalOpen"
-                @newCV="handleNewCV"
-                @newProvisional="handleNewProvisional"
-                @newEmployee="handleNewEmployee"
+                @newCV="navigateToNew('newCV')"
+                @newProvisional="navigateToNew('newProvisional')"
+                @newEmployee="navigateToNew('newEmployee')"
             />
         </template>
         
@@ -225,13 +221,12 @@ import FilterCard from '~/components/common/FilterCard.vue'
 import ProfileCard from '~/components/common/ProfileCard.vue'
 import EmployeeModal from '~/components/common/EmployeeModal.vue'
 
-const route = useRoute()
-const isChildRoute = computed(() => route.path.includes('/employees/new'))
-
 definePageMeta({
     layout: 'home'
 })
 
+const route = useRoute()
+const router = useRouter()
 const { $axios } = useNuxtApp()
 
 // State
@@ -242,42 +237,31 @@ const filterData = ref({})
 const quickSearchQuery = ref('')
 const advancedFilters = ref({})
 const addEmployeeModalOpen = ref(false)
+const birthdaysContainer = ref(null)
 
-// Summary Statistics
-const summaryStats = computed(() => {
-    const total = employees.value.length
-    const withPrivileges = employees.value.filter(emp => emp.privileges && emp.privileges.trim()).length
-    const withDesignation = employees.value.filter(emp => emp.designation && emp.designation.trim()).length
-    
-    return { total, withPrivileges, withDesignation }
-})
+// Computed
+const isChildRoute = computed(() => route.path.includes('/employees/new'))
 
-// Today's Birthdays
+const summaryStats = computed(() => ({
+    total: employees.value.length,
+    withPrivileges: employees.value.filter(emp => emp.privileges?.trim()).length,
+    withDesignation: employees.value.filter(emp => emp.designation?.trim()).length
+}))
+
 const todayBirthdays = computed(() => {
     const today = new Date()
     const todayMonth = today.getMonth()
     const todayDay = today.getDate()
     
-    return employees.value.filter(emp => {
-        if (!emp.date_of_birth) return false
-        const dob = new Date(emp.date_of_birth)
-        return dob.getMonth() === todayMonth && dob.getDate() === todayDay
-    }).slice(0, 4)
+    return employees.value
+        .filter(emp => {
+            if (!emp.date_of_birth) return false
+            const dob = new Date(emp.date_of_birth)
+            return dob.getMonth() === todayMonth && dob.getDate() === todayDay
+        })
+        .slice(0, 4)
 })
 
-// Table Columns
-const columns = ref([
-    { accessorKey: 'employee_info', header: 'EMPLOYEE INFO' },
-    { accessorKey: 'phone_number', header: 'PHONE NUMBER' },
-    { accessorKey: 'patient_number', header: 'PATIENT NUMBER' },
-    { accessorKey: 'privileges', header: 'PRIVILEGES' },
-    { accessorKey: 'department', header: 'DEPARTMENT' },
-    { accessorKey: 'designation', header: 'DESIGNATION' },
-    { accessorKey: 'languages', header: 'LANGUAGES' },
-    { id: 'View', header: 'View' }
-])
-
-// Filtered Employees
 const filteredEmployees = computed(() => {
     let filtered = employees.value
 
@@ -285,19 +269,23 @@ const filteredEmployees = computed(() => {
     if (quickSearchQuery.value) {
         const query = quickSearchQuery.value.toLowerCase()
         filtered = filtered.filter(emp => {
-            const name = getEmployeeName(emp).toLowerCase()
-            const phone = (emp.phone_number || '').toLowerCase()
-            const empId = (emp.employee_id || '').toString().toLowerCase()
-            const patientNumber = (emp.patient_number || '').toLowerCase()
-            return name.includes(query) || phone.includes(query) || empId.includes(query) || patientNumber.includes(query)
+            const searchFields = [
+                getEmployeeName(emp),
+                emp.phone_number,
+                emp.employee_id?.toString(),
+                emp.patient_number
+            ].map(field => (field || '').toLowerCase())
+            
+            return searchFields.some(field => field.includes(query))
         })
     }
 
     // Advanced filters
     if (advancedFilters.value.employee_number) {
+        const num = advancedFilters.value.employee_number
         filtered = filtered.filter(emp => 
-            (emp.employee_id || '').toString().includes(advancedFilters.value.employee_number) ||
-            (emp.patient_number || '').includes(advancedFilters.value.employee_number)
+            emp.employee_id?.toString().includes(num) ||
+            emp.patient_number?.includes(num)
         )
     }
 
@@ -311,36 +299,17 @@ const filteredEmployees = computed(() => {
     return filtered
 })
 
-// Load Filter Data
-const loadFilterData = async () => {
-    try {
-        const response = await $axios.get('/v1/hrm/employee_master/filters')
-        if (response.data.success) {
-            filterData.value = response.data
-        }
-    } catch (err) {
-        console.error('Error loading filter data:', err)
-    }
-}
-
-// Load Employees
-const loadEmployees = async () => {
-    loading.value = true
-    error.value = null
-    try {
-        const response = await $axios.get('/hrm/employee')
-        const temp = response.data
-        if (temp.success && Array.isArray(temp.employees)) {
-            employees.value = temp.employees
-        } else {
-            error.value = 'Invalid response format from API'
-        }
-    } catch (err) {
-        error.value = err.response?.data?.message || err.message || 'Failed to load employees'
-    } finally {
-        loading.value = false
-    }
-}
+// Table Columns
+const columns = [
+    { accessorKey: 'employee_info', header: 'EMPLOYEE INFO' },
+    { accessorKey: 'phone_number', header: 'PHONE NUMBER' },
+    { accessorKey: 'patient_number', header: 'PATIENT NUMBER' },
+    { accessorKey: 'privileges', header: 'PRIVILEGES' },
+    { accessorKey: 'department', header: 'DEPARTMENT' },
+    { accessorKey: 'designation', header: 'DESIGNATION' },
+    { accessorKey: 'languages', header: 'LANGUAGES' },
+    { id: 'View', header: 'View' }
+]
 
 // Helper Functions
 const getEmployeeName = (employee) => {
@@ -358,131 +327,70 @@ const getAge = (employee) => {
     if (!employee.date_of_birth) return 'N/A'
     const dob = new Date(employee.date_of_birth)
     const today = new Date()
-    const age = today.getFullYear() - dob.getFullYear()
+    let age = today.getFullYear() - dob.getFullYear()
     const monthDiff = today.getMonth() - dob.getMonth()
-    return monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate()) ? age - 1 : age
-}
-
-const getTenure = (employee) => {
-    if (!employee.date_of_joining) return 'N/A'
-    const joinDate = new Date(employee.date_of_joining)
-    const today = new Date()
-    const years = today.getFullYear() - joinDate.getFullYear()
-    const monthDiff = today.getMonth() - joinDate.getMonth()
-    const actualYears = monthDiff < 0 || (monthDiff === 0 && today.getDate() < joinDate.getDate()) ? years - 1 : years
-    const months = monthDiff < 0 ? 12 + monthDiff : monthDiff
-    if (actualYears === 0) {
-        return `${months} months`
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+        age--
     }
-    return `${actualYears} year${actualYears > 1 ? 's' : ''}`
+    return age
 }
 
-const getAvatarClass = (employee) => {
+const getAvatarClass = (employeeId) => {
     const colors = ['bg-blue-500', 'bg-pink-500', 'bg-purple-500', 'bg-yellow-500', 'bg-green-500', 'bg-orange-500']
-    const index = (employee.employee_id || 0) % colors.length
-    return colors[index]
+    return colors[(employeeId || 0) % colors.length]
 }
 
-const getPrivilegesList = (privileges) => {
-    if (!privileges) return []
-    return privileges.split(',').map(p => p.trim()).filter(Boolean)
-}
-
-const getLanguagesList = (languages) => {
-    if (!languages) return []
-    return languages.split(',').map(l => l.trim()).filter(Boolean)
-}
-
-const formatDate = (dateString) => {
-    if (!dateString) return 'N/A'
-    const date = new Date(dateString)
-    if (Number.isNaN(date.getTime())) return dateString
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
-}
-
-// Handlers
-const handleQuickSearch = (query) => {
-    quickSearchQuery.value = query
-}
-
-const handleAdvancedFilter = (payload) => {
-    advancedFilters.value = payload
+const splitCommaString = (str) => {
+    if (!str) return []
+    return str.split(',').map(s => s.trim()).filter(Boolean)
 }
 
 const scrollBirthdays = (direction) => {
-    const container = birthdaysContainer.value
-    if (container) {
-        const scrollAmount = 220
-        container.scrollLeft += direction === 'right' ? scrollAmount : -scrollAmount
+    if (birthdaysContainer.value) {
+        const scrollAmount = direction === 'right' ? 220 : -220
+        birthdaysContainer.value.scrollLeft += scrollAmount
     }
 }
 
-const handleView = (employee) => {
-    console.log('View employee:', employee)
-    // Navigate to employee detail page
-    // navigateTo(`/hrm/profile/employees/${employee.id}`)
-}
-
-const handleEdit = (employee) => {
-    console.log('Edit employee:', employee)
-    // Open edit modal
-    // editModal.value = true
-    // selectedEmployee.value = employee
-}
-
-const openAddEmployeeModal = () => {
-    addEmployeeModalOpen.value = true
-}
-
-const router = useRouter()
-
-const handleNewCV = () => {
+const navigateToNew = (type) => {
     addEmployeeModalOpen.value = false
     nextTick(() => {
-        router.push({ path: '/hrm/profile/employees/new', query: { type: 'newCV' } })
+        router.push({ path: '/hrm/profile/employees/new', query: { type } })
     })
 }
 
-const handleNewProvisional = () => {
-    addEmployeeModalOpen.value = false
-    nextTick(() => {
-        router.push({ path: '/hrm/profile/employees/new', query: { type: 'newProvisional' } })
-    })
+// API Calls
+const loadFilterData = async () => {
+    try {
+        const response = await $axios.get('/v1/hrm/employee_master/filters')
+        if (response.data.success) {
+            filterData.value = response.data
+        }
+    } catch (err) {
+        console.error('Error loading filter data:', err)
+    }
 }
 
-const handleNewEmployee = () => {
-    addEmployeeModalOpen.value = false
-    nextTick(() => {
-        router.push({ path: '/hrm/profile/employees/new', query: { type: 'newEmployee' } })
-    })
+const loadEmployees = async () => {
+    loading.value = true
+    error.value = null
+    try {
+        const response = await $axios.get('/hrm/employee')
+        if (response.data.success && Array.isArray(response.data.employees)) {
+            employees.value = response.data.employees
+        } else {
+            error.value = 'Invalid response format from API'
+        }
+    } catch (err) {
+        error.value = err.response?.data?.message || err.message || 'Failed to load employees'
+    } finally {
+        loading.value = false
+    }
 }
-
-const actionItems = (employee) => [
-    [{
-        label: 'View Details',
-        icon: 'lucide:eye',
-        click: () => handleView(employee)
-    }],
-    [{
-        label: 'Edit',
-        icon: 'lucide:pencil',
-        click: () => handleEdit(employee)
-    }],
-    [{
-        label: 'Delete',
-        icon: 'lucide:trash',
-        click: () => console.log('Delete:', employee)
-    }]
-]
-
-const birthdaysContainer = ref(null)
 
 // Lifecycle
-onMounted(async () => {
-    await Promise.all([
-        loadFilterData(),
-        loadEmployees()
-    ])
+onMounted(() => {
+    Promise.all([loadFilterData(), loadEmployees()])
 })
 </script>
 

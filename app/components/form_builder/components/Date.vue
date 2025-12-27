@@ -1,9 +1,11 @@
 <template>
     <UFormField :label="field.label">
-        <UTextarea 
+        <UInput 
+            :type="inputType"
             v-model="fieldValue"
-            :placeholder="field.label" 
-            :icon="field.icon" 
+            :placeholder="field.label"
+            :icon="field.icon"
+            class="w-full"
         />
     </UFormField>
 </template>
@@ -14,6 +16,11 @@ import { onMounted } from 'vue'
 const props = defineProps({
     field: { type: Object, required: true },
 });
+
+// Determine input type based on data_type
+const inputType = computed(() => {
+    return props.field.data_type === 'DATETIME' ? 'datetime-local' : 'date'
+})
 
 // Ensure field.value is an array first
 onMounted(() => {

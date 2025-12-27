@@ -1,7 +1,7 @@
 <template>
   <UFormField :label="field.label">
     <USelectMenu
-      v-model="selectedValue"
+      v-model="fieldValue"
       :options="options"
       :loading="loading"
       :searchable="true"
@@ -10,7 +10,6 @@
       :icon="field.icon"
       searchable-placeholder="Type to search..."
       @search="handleSearch"
-      @update:model-value="handleSelect"
     >
       <template #option="{ option }">
         <span>{{ getDisplayText(option) }}</span>
@@ -28,30 +27,54 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  index: {
-    type: Number,
-    default: 0,
-  },
 })
 
 const emit = defineEmits(['event'])
 
 // State
-const selectedValue = ref(null)
 const loading = ref(false)
 const options = ref([])
 const searchQuery = ref('')
 
 // Computed
 const apiEndpoint = computed(() => {
-  return props.field.data_endpoint || props.field.endpoint || 'http://localhost:4000/marc/patient_info'
+  return props.field.data_endpoint || props.field.endpoint || ''
 })
 
-// Initialize selected value on mount
+// Ensure field.value is an array first
 onMounted(() => {
-  const initialValue = props.field.value?.[props.index]
-  if (initialValue) {
-    selectedValue.value = initialValue
+  if (!Array.isArray(props.field.value)) {
+    props.field.value = [props.field.value || '']
+  }
+})
+
+// Use computed with getter/setter for field.value[0]
+const fieldValue = computed({
+  get: () => {
+    if (!Array.isArray(props.field.value)) {
+      props.field.value = ['']
+    }
+    return props.field.value[0] ?? ''
+  },
+  set: (val) => {
+    if (!Array.isArray(props.field.value)) {
+      props.field.value = []
+    }
+    props.field.value[0] = val
+    
+    // Update raw value if field has value_raw
+    if (props.field.value_raw) {
+      if (!Array.isArray(props.field.value_raw)) {
+        props.field.value_raw = []
+      }
+      props.field.value_raw[0] = val
+    }
+
+    // Trigger server event if needed
+    if (props.field.serverTrigger || props.field.server_trigger) {
+      props.field.trigger = 1
+      emit('event')
+    }
   }
 })
 
@@ -71,6 +94,11 @@ async function handleSearch(query) {
     return
   }
 
+  if (!apiEndpoint.value) {
+    console.warn('No API endpoint configured for DropdownSearch')
+    return
+  }
+
   clearTimeout(debounceTimer)
   debounceTimer = setTimeout(async () => {
     await fetchOptions(query)
@@ -79,7 +107,7 @@ async function handleSearch(query) {
 
 // Fetch options from API (lazy loading)
 async function fetchOptions(query) {
-  if (!query) return
+  if (!query || !apiEndpoint.value) return
 
   loading.value = true
   
@@ -109,33 +137,6 @@ async function fetchOptions(query) {
     options.value = []
   } finally {
     loading.value = false
-  }
-}
-
-// Handle selection
-function handleSelect(value) {
-  if (!value) return
-
-  const displayText = getDisplayText(value)
-  
-  // Update field value
-  if (!Array.isArray(props.field.value)) {
-    props.field.value = []
-  }
-  props.field.value[props.index] = displayText
-
-  // Update raw value if field has value_raw
-  if (props.field.value_raw) {
-    if (!Array.isArray(props.field.value_raw)) {
-      props.field.value_raw = []
-    }
-    props.field.value_raw[props.index] = value
-  }
-
-  // Trigger server event if needed
-  if (props.field.serverTrigger) {
-    props.field.trigger = 1
-    emit('event')
   }
 }
 </script>
