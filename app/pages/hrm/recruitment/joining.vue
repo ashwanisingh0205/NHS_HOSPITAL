@@ -197,62 +197,45 @@ const columns = ref([
 const loadData = async () => {
     loading.value = true;
     error.value = null;
+    
     try {
-        const response = await $axios.get(endPoint.value, {
-            params: { 
-                form_code: 'hr_joining'
-            }
+        const { data: res } = await $axios.get(endPoint.value, {
+            params: { form_code: 'hr_joining' }
         });
-        const temp = response.data;
         
-        // Handle API response structure with response_values
-        if (temp.success && Array.isArray(temp.response_values)) {
-            // Helper function to parse JSON string values
-            const parseValue = (valueStr) => {
-                if (!valueStr) return '';
-                try {
-                    const valueArray = JSON.parse(valueStr);
-                    return Array.isArray(valueArray) ? valueArray[0] : valueArray;
-                } catch {
-                    return valueStr;
-                }
-            };
-            
-            // Group fields by form_response_id
-            const groupedByResponseId = {};
-            
-            temp.response_values.forEach(item => {
-                const responseId = item.form_response_id;
-                
-                if (!groupedByResponseId[responseId]) {
-                    groupedByResponseId[responseId] = {
-                        id: responseId,
-                        form_response_id: responseId
-                    };
-                }
-                
-                // Parse the value field (it's a JSON string like "[\"value\"]")
-                const parsedValue = parseValue(item.value);
-                
-                // Map field_code to property name
-                const fieldCode = item.field_code;
-                groupedByResponseId[responseId][fieldCode] = parsedValue;
-            });
-            
-            // Convert to array and map to display fields
-            data.value = Object.values(groupedByResponseId).map(joining => {
-                return {
-                    id: joining.form_response_id,
-                    form_response_id: joining.form_response_id,
-                    name: joining.name || joining.employee_name_lang1 || '-',
-                    designation: joining.designation || '-',
-                    department: joining.department || joining.department_id || '-',
-                    phone_number: joining.phone_number || '-'
-                };
-            });
-        } else {
-            error.value = temp.message || 'Invalid response format from API';
+        if (!res.success || !Array.isArray(res.response_values)) {
+            error.value = res.message || 'Invalid response format';
+            return;
         }
+        
+        const parseValue = (val) => {
+            if (!val) return '';
+            try {
+                const parsed = JSON.parse(val);
+                return Array.isArray(parsed) ? parsed[0] : parsed;
+            } catch {
+                return val;
+            }
+        };
+        
+        const grouped = {};
+        
+        res.response_values.forEach(({ form_response_id, field_code, value }) => {
+            if (!grouped[form_response_id]) {
+                grouped[form_response_id] = { form_response_id };
+            }
+            grouped[form_response_id][field_code] = parseValue(value);
+        });
+        
+        data.value = Object.values(grouped).map(j => ({
+            id: j.form_response_id,
+            form_response_id: j.form_response_id,
+            name: j.name || j.employee_name_lang1 || '-',
+            designation: j.designation || '-',
+            department: j.department || j.department_id || '-',
+            phone_number: j.phone_number || '-'
+        }));
+        
     } catch (err) {
         error.value = err.response?.data?.message || err.message || 'Failed to load joining data';
         console.error('Error loading joining data:', err);
