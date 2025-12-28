@@ -387,6 +387,7 @@ const mainNavItems = [
 const navSections = {
     dashboard: [
         { name: 'Forms', path: '/masters/forms/form_builder/forms', icon: 'lucide:file-text' },
+        {name:"Choices", path: '/masters/forms/choices/choice_master', icon: 'lucide:list-ordered'},
          {
             name: 'Accounts',
             icon: 'lucide:file-bar-chart',

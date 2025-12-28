@@ -58,7 +58,7 @@ Move to Employee Register
                         
                         <!-- Interview Buttons -->
                         <UButton 
-                            v-for="round in [2, 3]" 
+                            v-for="round in [1, 2]" 
                             :key="round"
                             size="xs" 
                             variant="solid" 
