@@ -75,7 +75,7 @@ const staticFormConfig = computed(() => {
             { id: 'label_position', field_code: 'label_position', data_type: 'TEXT', label: 'Label Position', value: [data.label_position || 'TOP'], required: false },
             { id: 'status', field_code: 'status', data_type: 'CHECKBOX', label: 'Status', value: [data.status ?? true], required: false },
             { id: 'priority', field_code: 'priority', data_type: 'NUMBER', label: 'Priority', value: [data.priority || 0], required: false },
-            {id:'Choise Code', field_code: 'choice_code', data_type: 'TEXT', label: 'Choise Code', value: [data.choice_code || ''], required: false }
+            {id:'choice_code', field_code: 'choice_code', data_type: 'TEXT', label: 'Choice Code', value: [data.choice_code || ''], required: false }
         ]
     };
 });
@@ -142,12 +142,25 @@ const handleFormSubmit = async (submitData) => {
     try {
         const payload = submitData.payload;
         
+        console.log('Form submit payload:', payload);
+        
         if (editingField.value) {
-            await $axios.patch('/masters/forms/field', payload, {
+            // Ensure choice_code is included in PATCH payload
+            // Use payload.choice_code directly (don't convert empty string to null)
+            const patchPayload = {
+                ...payload,
+                choice_code: payload.choice_code !== undefined ? payload.choice_code : null
+            };
+            console.log('PATCH payload:', patchPayload);
+            console.log('PATCH request URL:', `/masters/forms/field?id=${editingField.value.id}`);
+            
+            const response = await $axios.patch('/masters/forms/field', patchPayload, {
                 params: { id: editingField.value.id }
             });
+            
+            console.log('PATCH response:', response.data);
         } else {
-            await $axios.post('/masters/forms/field', {
+            const postPayload = {
                 fields: [{
                     form_id: Number(payload.form_id),
                     data_type: payload.data_type,
@@ -155,14 +168,18 @@ const handleFormSubmit = async (submitData) => {
                     label: payload.label,
                     label_position: payload.label_position,
                     status: payload.status,
-                    priority: Number(payload.priority)
+                    priority: Number(payload.priority),
+                    choice_code: payload.choice_code || null
                 }]
-            });
+            };
+            console.log('POST payload:', postPayload);
+            await $axios.post('/masters/forms/field', postPayload);
         }
         
         formModel.value = false;
         await loadFormFields();
     } catch (err) {
+        console.error('Form submit error:', err);
         alert(err.response?.data?.message || 'Failed to submit form field');
     }
 };

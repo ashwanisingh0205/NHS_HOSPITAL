@@ -46,9 +46,19 @@ Move to Employee Register
                 </template>
                 <template #action-cell="{ row }">
                     <div class="flex gap-1 flex-wrap">
+                        <!-- HR Associate Verify Button -->
+                        <UButton 
+                            size="xs" 
+                            variant="solid" 
+                            color="info"
+                            @click="handleAssociateVerify(row.original)"
+                        >
+                            HR Associate Verify
+                        </UButton>
+                        
                         <!-- Interview Buttons -->
                         <UButton 
-                            v-for="round in [1, 2, 3]" 
+                            v-for="round in [2, 3]" 
                             :key="round"
                             size="xs" 
                             variant="solid" 
@@ -95,6 +105,7 @@ Move to Employee Register
             v-model="formModel"
             :title="params.id ? 'Edit Application' : 'New Application'"
             :endPoint="'/form/defaultForm'"
+            :submitEndPoint="'/hrm/job_application'"
             :formCode="'hr_job_application'"
             :id="id"
             :params="params"
@@ -105,11 +116,23 @@ Move to Employee Register
         <CKFormModal
             v-model="cvEvaluationModel"
             title="CV Evaluation"
-            :endPoint="'/form/defaultForm'"
+            :endPoint="'/hrm/job_application'"
             :formCode="'hr_cv_evaluation'"
             :id="cvEvaluationId"
             :params="cvEvaluationParams"
             @handleFormSubmit="handleCVEvaluationSubmit"
+        />
+
+        <!-- HR Associate Verify Form Modal -->
+        <CKFormModal
+            v-model="associateVerifyModel"
+            title="HR Associate Verify"
+            :endPoint="'/hrm/job_application'"
+            :submitEndPoint="'/hrm/job_application'"
+            :formCode="'hr_associate_verify'"
+            :id="associateVerifyId"
+            :params="associateVerifyParams"
+            @handleFormSubmit="handleAssociateVerifySubmit"
         />
 
         <!-- Interview Remark Modal -->
@@ -151,7 +174,7 @@ import CKFormModal from "~/components/common/CKFormModal.vue";
 definePageMeta({ layout: 'home' });
 const { $axios } = useNuxtApp()
 const title = ref("Job Applications");
-const endPoint = ref("/form/defaultForm");
+const endPoint = ref("/hrm/job_application");
 const params = ref({});
 const formModel = ref(false);
 const id = ref('');
@@ -160,6 +183,11 @@ const id = ref('');
 const cvEvaluationModel = ref(false);
 const cvEvaluationId = ref('');
 const cvEvaluationParams = ref({});
+
+// HR Associate Verify Modal
+const associateVerifyModel = ref(false);
+const associateVerifyId = ref('');
+const associateVerifyParams = ref({});
 
 // Interview Remark Modal
 const interviewRemarkModel = ref(false);
@@ -193,43 +221,41 @@ const loadData = async () => {
     error.value = null;
     
     try {
-        const { data: res } = await $axios.get(endPoint.value, {
-            params: { form_code: 'hr_job_application' }
-        });
+        const { data: res } = await $axios.get(endPoint.value);
         
-        if (!res.success || !Array.isArray(res.response_values)) {
-            error.value = res.message || 'Invalid response format';
+        console.log('API Response:', res);
+        
+        if (!res.success) {
+            error.value = res.message || 'Failed to load applications';
+            console.error('API returned unsuccessful response:', res);
             return;
         }
         
-        const parseValue = (val) => {
-            if (!val) return '';
-            try {
-                const parsed = JSON.parse(val);
-                return Array.isArray(parsed) ? parsed[0] : parsed;
-            } catch {
-                return val;
-            }
-        };
+        if (!Array.isArray(res.rows)) {
+            error.value = res.message || 'Invalid response format - rows is not an array';
+            console.error('Invalid response format:', res);
+            return;
+        }
         
-        const grouped = {};
+        if (res.rows.length === 0) {
+            error.value = 'No applications found';
+            data.value = [];
+            return;
+        }
         
-        res.response_values.forEach(({ form_response_id, field_code, value }) => {
-            if (!grouped[form_response_id]) {
-                grouped[form_response_id] = { form_response_id };
-            }
-            grouped[form_response_id][field_code] = parseValue(value);
-        });
-        
-        data.value = Object.values(grouped).map(app => ({
-            id: app.form_response_id,
-            form_response_id: app.form_response_id,
-            name: [app.title, app.first_name, app.last_name]
+        // Map the direct object structure to table format
+        data.value = res.rows.map(app => ({
+            id: app.id,
+            form_response_id: app.id,
+            name: [app.title, app.first_name, app.middle_name, app.last_name]
                 .filter(Boolean).join(' ').trim() || '-',
-            date_of_application: app.date_of_application || '-',
+            date_of_application: app.created_at_date || app.created_at || '-',
             phone_number: app.phone_number || '-',
-            address: app.address || '-',
-            post_applied: app.post_applied_for || '-',
+            address: app.local_address_line1 
+                ? [app.local_address_line1, app.local_address_line2, app.local_city]
+                    .filter(Boolean).join(', ')
+                : '-',
+            post_applied: app.designation_id || '-', // You might want to fetch designation name
             application_status: app.application_status || 'Pending'
         }));
         
@@ -349,6 +375,24 @@ const handleCVEvaluation = (application) => {
 
 const handleCVEvaluationSubmit = async () => {
     cvEvaluationModel.value = false;
+    await loadData();
+};
+
+/* ------------------ HR Associate Verify Handler ------------------ */
+const handleAssociateVerify = (application) => {
+    const responseId = application.form_response_id || application.id;
+    // Set id in params so DynamicForm uses PATCH method
+    associateVerifyParams.value = { 
+        id: responseId,
+        application_id: responseId,
+        form_response_id: responseId
+    };
+    associateVerifyId.value = responseId;
+    associateVerifyModel.value = true;
+};
+
+const handleAssociateVerifySubmit = async () => {
+    associateVerifyModel.value = false;
     await loadData();
 };
 

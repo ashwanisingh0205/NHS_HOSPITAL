@@ -25,6 +25,7 @@ const { $axios } = useNuxtApp()
 
 const props = defineProps({
     endPoint: { type: String, default: "" },
+    submitEndPoint: { type: String, default: "" }, // Separate endpoint for submission
     params: { type: Object, default: null },
     staticForm: { type: Object, default: null },
     formCode: { type: String, default: "" },
@@ -83,27 +84,62 @@ watch([() => props.formCode, () => props.staticForm, () => props.endPoint, () =>
 const handleSubmit = async () => {
     submitting.value = true
     try {
-        const payload = Object.fromEntries(
-            form.value.fields.map(field => [
-                field.field_code || field.id,
-                field.value?.[0] ?? ''
-            ])
-        )
+        // Build payload from form fields
+        const payload = {}
+        form.value.fields.forEach(field => {
+            const fieldCode = field.field_code || field.id
+            if (fieldCode) {
+                const fieldValue = field.value?.[0]
+                // Include all fields, even if empty (null/undefined/empty string)
+                // This ensures choice_code and other optional fields are sent
+                payload[fieldCode] = fieldValue !== undefined && fieldValue !== null ? fieldValue : ''
+            }
+        })
         
-        if (props.endPoint) {
-            const isEdit = !!props.params?.id
-            await $axios[isEdit ? 'patch' : 'post'](
-                props.endPoint, 
-                payload,
-                {
-                    headers: { 'Content-Type': 'application/json' },
-                    ...(isEdit && { params: { id: Number(props.params.id) } })
+        // Merge params into payload (except 'id' which is handled separately for edit mode)
+        if (props.params) {
+            Object.keys(props.params).forEach(key => {
+                if (key !== 'id' && props.params[key] !== undefined && props.params[key] !== null) {
+                    payload[key] = props.params[key]
                 }
+            })
+        }
+        
+        // Use submitEndPoint if provided, otherwise use endPoint
+        const submitEndpoint = props.submitEndPoint || props.endPoint
+        
+        if (submitEndpoint) {
+            const isEdit = !!props.params?.id || !!props.id
+            const requestConfig = {
+                headers: { 'Content-Type': 'application/json' }
+            }
+            
+            // For PATCH requests, add id and form_code as query params
+            if (isEdit) {
+                requestConfig.params = { 
+                    id: Number(props.params?.id || props.id)
+                }
+                // Add form_code to query params if provided
+                if (props.formCode) {
+                    requestConfig.params.form_code = props.formCode
+                }
+            }
+            
+            console.log('Submitting to:', submitEndpoint)
+            console.log('Payload:', payload)
+            console.log('Request Config:', requestConfig)
+            
+            await $axios[isEdit ? 'patch' : 'post'](
+                submitEndpoint, 
+                payload,
+                requestConfig
             )
         }
         
         emit('submit', { form: form.value, payload })
     } catch (err) {
+        console.error('Form submission error:', err)
+        console.error('Error response:', err.response?.data)
         alert(err.response?.data?.message || err.message || 'Failed to submit form')
         emit('submit', { error: err.response?.data || err.message })
     } finally {

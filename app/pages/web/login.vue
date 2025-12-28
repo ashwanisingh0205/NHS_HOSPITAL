@@ -164,9 +164,16 @@
                   }"
                 />
 
+                <!-- Error Message -->
+                <div v-if="errorMessage" class="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                  <p class="text-sm text-red-600 dark:text-red-400">{{ errorMessage }}</p>
+                </div>
+
                 <!-- Submit Button -->
                 <UButton
                   type="submit"
+                  :loading="isLoading"
+                  :disabled="isLoading || !username || !password"
                   class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold py-2.5 sm:py-3 px-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 group text-sm sm:text-base"
                 >
                   <span class="flex w-full items-center justify-center gap-2">
@@ -231,6 +238,11 @@ const password = ref("");
 const showPassword = ref(false);
 const keepSignedIn = ref(false);
 const isModalOpen = ref(false);
+const isLoading = ref(false);
+const errorMessage = ref("");
+
+const authStore = useAuthStore();
+const router = useRouter();
 
 const features = [
   "Patient Record Management",
@@ -245,13 +257,34 @@ const stats = [
   { value: "99.9%", label: "Uptime" }
 ];
 
-const handleSignIn = () => {
-  console.log("Sign in attempted", {
-    // username: username.value,
-    // keepSignedIn: keepSignedIn.value,
-  });
-  // Open the modal
-  isModalOpen.value = true;
+const handleSignIn = async () => {
+  // Reset error message
+  errorMessage.value = "";
+  
+  // Validate inputs
+  if (!username.value || !password.value) {
+    errorMessage.value = "Please enter both username and password";
+    return;
+  }
+
+  isLoading.value = true;
+
+  try {
+    // Call login API
+    await authStore.login({
+      username: username.value,
+      password: password.value
+    });
+
+    // Login successful - open role selection modal or redirect
+    isModalOpen.value = true;
+  } catch (error) {
+    // Handle login error
+    errorMessage.value = error.response?.data?.message || error.message || "Login failed. Please check your credentials.";
+    console.error("Login error:", error);
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 const handleContinue = async (roleTitle) => {
@@ -263,17 +296,7 @@ const handleContinue = async (roleTitle) => {
   // Wait a bit for modal to close smoothly
   await new Promise(resolve => setTimeout(resolve, 200));
   
-  // Get router instance
-  const router = useRouter();
-  
-  
-    console.log('Attempting navigation to /dashboard...');
-    
-    // Try navigateTo first (Nuxt 3 recommended)
-    router.push('/panel/dashboard');
-    
-    
-  
-  
+  // Redirect to dashboard
+  await router.push('/panel/dashboard');
 };
 </script>

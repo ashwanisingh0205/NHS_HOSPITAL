@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-2">
-    <!-- Field Label -->
-    <div v-if="field.label" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+    <!-- Field Label (for non-dropdown fields) -->
+    <div v-if="field.label && field.data_type !== 'DROPDOWN'" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
       {{ field.label }}
       <span v-if="field.required" class="text-red-500">*</span>
     </div>
@@ -9,23 +9,23 @@
     <!-- Text Input Types -->
     <UInput
       v-if="isTextInput"
-      v-model="field.value[0]"
+      v-model="textInputValue"
       :type="field.data_type.toLowerCase()"
       :placeholder="field.label"
       :icon="field.icon"
       class="w-full"
     />
 
-    <!-- Select -->
-    <USelectMenu
-      v-else-if="field.data_type === 'DROPDOWN'"
-      v-model="field.value[0]"
-      :items="selectItems"
-      :placeholder="field.label"
-      searchable
-      :icon="field.icon"
-      class="w-full"
-    />
+    <!-- Select Dropdown -->
+    <UFormField v-else-if="field.data_type === 'DROPDOWN'" :label="field.label">
+      <USelectMenu
+        v-model="dropdownValue"
+        :items="selectOptions"
+        :icon="field.icon"
+        class="w-full"
+        :placeholder="field.label"
+      />
+    </UFormField>
 
     <!-- Textarea -->
     <UTextarea
@@ -43,7 +43,7 @@
     />
 
     <!-- Multiple Checkboxes -->
-    <div v-else-if="field.data_type === 'CHECKBOX' && field.options" class="space-y-2">
+    <div v-else-if="field.data_type === 'CHECKBOX' && (field.choices || field.options)" class="space-y-2">
       <UCheckbox
         v-for="opt in normalizedOptions"
         :key="opt.value"
@@ -144,6 +144,8 @@
 </template>
 
 <script setup>
+import { ref, computed, onMounted, watch, toRaw } from 'vue'
+
 const props = defineProps({
   field: { type: Object, required: true },
   modelValue: { type: [String, Number, Boolean, Object, Array], default: '' },
@@ -151,6 +153,15 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue'])
+
+// Initialize field.value as array for dropdown
+onMounted(() => {
+  if (props.field.data_type === 'DROPDOWN') {
+    if (!Array.isArray(props.field.value)) {
+      props.field.value = [props.field.value || '']
+    }
+  }
+})
 
 // Field type checks
 const isTextInput = computed(() => 
@@ -161,18 +172,119 @@ const isStarRating = computed(() =>
   ['STAR', 'star'].includes(props.field.data_type)
 )
 
-// Select items (simple strings for USelectMenu)
-const selectItems = computed(() => {
-  const opts = props.field.options || []
-  return opts.map(opt => typeof opt === 'object' ? opt.value || opt.label : opt)
+// Select options for dropdown - display label, send data value
+const selectOptions = computed(() => {
+  // Check for choices first (from API), then fallback to options
+  if (!props.field.choices || !Array.isArray(props.field.choices)) {
+    return []
+  }
+  
+  return props.field.choices.map(choice => {
+    if (typeof choice === 'string') {
+      return { label: choice, value: choice }
+    }
+    // Display label, send data value
+    // Priority: label for display, data for value (what gets sent to API)
+    return {
+      label: choice.label || choice.name || choice.value || choice.data || '',
+      value: choice.data || choice.value || choice.label || choice.name || ''
+    }
+  })
 })
 
-// Normalized options for checkboxes/radio
+// Dropdown value - handle object from USelectMenu :items
+const dropdownValue = computed({
+  get: () => {
+    if (!Array.isArray(props.field.value)) {
+      props.field.value = ['']
+    }
+    const currentValue = props.field.value[0] ?? ''
+    
+    // If current value is a string, find matching option object for USelectMenu
+    if (typeof currentValue === 'string' && currentValue !== '') {
+      const matchingOption = selectOptions.value.find(opt => opt.value === currentValue)
+      return matchingOption || currentValue
+    }
+    
+    // If current value is an object, return it
+    if (typeof currentValue === 'object' && currentValue !== null) {
+      return currentValue
+    }
+    
+    return ''
+  },
+  set: (val) => {
+    if (!Array.isArray(props.field.value)) {
+      props.field.value = []
+    }
+    
+    // USelectMenu with :items returns the entire object, extract the value
+    if (typeof val === 'object' && val !== null) {
+      // Store only the value property (data value) as string
+      props.field.value[0] = val.value || val.label || ''
+    } else {
+      // Store the value directly if it's already a string
+      props.field.value[0] = val || ''
+    }
+  }
+})
+
+// Text input value - handle number conversion and prevent NaN
+const textInputValue = computed({
+  get: () => {
+    if (!Array.isArray(props.field.value)) {
+      props.field.value = ['']
+    }
+    const val = props.field.value[0]
+    
+    // For number fields, ensure we return a valid number or empty string
+    if (props.field.data_type === 'NUMBER') {
+      if (val === null || val === undefined || val === '') {
+        return ''
+      }
+      const num = Number(val)
+      return isNaN(num) ? '' : String(num)
+    }
+    
+    return val ?? ''
+  },
+  set: (val) => {
+    if (!Array.isArray(props.field.value)) {
+      props.field.value = []
+    }
+    
+    // For number fields, convert to number or null (never NaN)
+    if (props.field.data_type === 'NUMBER') {
+      if (val === '' || val === null || val === undefined) {
+        props.field.value[0] = null
+      } else {
+        const num = Number(val)
+        // Store null instead of NaN to prevent validation errors
+        props.field.value[0] = isNaN(num) ? null : num
+      }
+    } else {
+      props.field.value[0] = val
+    }
+  }
+})
+
+// Normalized options for checkboxes/radio - display label, send data value
 const normalizedOptions = computed(() => {
-  const opts = props.field.options || []
-  return opts.map(opt => 
-    typeof opt === 'object' ? opt : { label: opt, value: opt }
-  )
+  // Check for choices first (from API), then fallback to options
+  const choices = props.field.choices || props.field.options || []
+  
+  return choices.map(choice => {
+    // Handle string choices
+    if (typeof choice === 'string') {
+      return { label: choice, value: choice }
+    }
+    
+    // Handle object choices - display label, send data value
+    return {
+      label: choice.label || choice.name || choice.value || choice.data || '',
+      value: choice.data || choice.value || choice.label || choice.name || ''
+    }
+  })
 })
 
 // Main v-model handler

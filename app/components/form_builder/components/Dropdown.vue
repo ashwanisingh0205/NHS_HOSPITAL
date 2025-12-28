@@ -2,7 +2,7 @@
     <UFormField :label="field.label">
         <USelectMenu 
             v-model="fieldValue"
-            :options="fieldOptions"
+            :items="fieldOptions"
             :icon="field.icon" 
             class="w-full"
             :placeholder="field.label"
@@ -26,9 +26,11 @@ const fieldOptions = computed(() => {
         if (typeof choice === 'string') {
             return { label: choice, value: choice }
         }
+        // Display label, send data value
+        // Priority: label for display, data for value (what gets sent to API)
         return {
             label: choice.label || choice.name || choice.value || choice.data || '',
-            value: choice.value || choice.data || choice.label || choice.name || ''
+            value: choice.data || choice.value || choice.label || choice.name || ''
         }
     })
 })
@@ -41,18 +43,40 @@ onMounted(() => {
 })
 
 // Use computed with getter/setter for field.value[0]
+// Handle object from USelectMenu :items
 const fieldValue = computed({
     get: () => {
         if (!Array.isArray(props.field.value)) {
             props.field.value = ['']
         }
-        return props.field.value[0] ?? ''
+        const currentValue = props.field.value[0] ?? ''
+        
+        // If current value is a string, find matching option object for USelectMenu
+        if (typeof currentValue === 'string' && currentValue !== '') {
+            const matchingOption = fieldOptions.value.find(opt => opt.value === currentValue)
+            return matchingOption || currentValue
+        }
+        
+        // If current value is an object, return it
+        if (typeof currentValue === 'object' && currentValue !== null) {
+            return currentValue
+        }
+        
+        return ''
     },
     set: (val) => {
         if (!Array.isArray(props.field.value)) {
             props.field.value = []
         }
-        props.field.value[0] = val
+        
+        // USelectMenu with :items returns the entire object, extract the value
+        if (typeof val === 'object' && val !== null) {
+            // Store only the value property (data value) as string
+            props.field.value[0] = val.value || val.label || ''
+        } else {
+            // Store the value directly if it's already a string
+            props.field.value[0] = val || ''
+        }
     }
 })
 </script>

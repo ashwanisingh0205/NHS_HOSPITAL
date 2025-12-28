@@ -4,6 +4,7 @@
             <DynamicForm
                 :key="formResetKey"
                 :endPoint="endPoint"
+                :submitEndPoint="submitEndPoint"
                 :staticForm="staticForm"
                 :formCode="formCode"
                 :id="id"
@@ -21,6 +22,7 @@ const props = defineProps({
     modelValue: { type: Boolean, default: false },
     title: { type: String, default: "Form" },
     endPoint: { type: String, default: "" },
+    submitEndPoint: { type: String, default: "" },
     staticForm: { type: Object, default: null },
     formCode: { type: String, default: "" },
     id: { type: String, default: "" },
