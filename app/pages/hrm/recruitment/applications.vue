@@ -56,6 +56,46 @@ Move to Employee Register
                             HR Associate Verify
                         </UButton>
                         
+                        <!-- HR Character Verify Button -->
+                        <UButton 
+                            size="xs" 
+                            variant="solid" 
+                            color="info"
+                            @click="handleCharacterVerify(row.original)"
+                        >
+                            HR Character Verify
+                        </UButton>
+                        
+                        <!-- HR Qualification Verify Button -->
+                        <UButton 
+                            size="xs" 
+                            variant="solid" 
+                            color="info"
+                            @click="handleQualificationVerify(row.original)"
+                        >
+                            HR Qualification Verify
+                        </UButton>
+                        
+                        <!-- HR Registration Verify Button -->
+                        <UButton 
+                            size="xs" 
+                            variant="solid" 
+                            color="info"
+                            @click="handleRegistrationVerify(row.original)"
+                        >
+                            HR Registration Verify
+                        </UButton>
+                        
+                        <!-- HR Application Status Button -->
+                        <UButton 
+                            size="xs" 
+                            variant="solid" 
+                            color="info"
+                            @click="handleApplicationStatus(row.original)"
+                        >
+                            HR Application Status
+                        </UButton>
+                        
                         <!-- Interview Buttons -->
                         <UButton 
                             v-for="round in [1, 2]" 
@@ -135,6 +175,54 @@ Move to Employee Register
             @handleFormSubmit="handleAssociateVerifySubmit"
         />
 
+        <!-- HR Character Verify Form Modal -->
+        <CKFormModal
+            v-model="characterVerifyModel"
+            title="HR Character Verify"
+            :endPoint="'/hrm/job_application'"
+            :submitEndPoint="'/hrm/job_application'"
+            :formCode="'hr_character_verify'"
+            :id="characterVerifyId"
+            :params="characterVerifyParams"
+            @handleFormSubmit="handleCharacterVerifySubmit"
+        />
+
+        <!-- HR Qualification Verify Form Modal -->
+        <CKFormModal
+            v-model="qualificationVerifyModel"
+            title="HR Qualification Verify"
+            :endPoint="'/hrm/job_application'"
+            :submitEndPoint="'/hrm/job_application'"
+            :formCode="'hr_qualification_verify'"
+            :id="qualificationVerifyId"
+            :params="qualificationVerifyParams"
+            @handleFormSubmit="handleQualificationVerifySubmit"
+        />
+
+        <!-- HR Registration Verify Form Modal -->
+        <CKFormModal
+            v-model="registrationVerifyModel"
+            title="HR Registration Verify"
+            :endPoint="'/hrm/job_application'"
+            :submitEndPoint="'/hrm/job_application'"
+            :formCode="'hr_registration_verify'"
+            :id="registrationVerifyId"
+            :params="registrationVerifyParams"
+            @handleFormSubmit="handleRegistrationVerifySubmit"
+        />
+
+        <!-- HR Application Status Form Modal -->
+        <CKFormModal
+            v-model="applicationStatusModel"
+            title="HR Application Status"
+            :endPoint="'/hrm/job_application'"
+            :submitEndPoint="'/hrm/job_application'"
+            :formCode="'hr_application_status'"
+            :id="applicationStatusId"
+            :params="applicationStatusParams"
+            @handleFormSubmit="handleApplicationStatusSubmit"
+        />
+
         <!-- Interview Remark Modal -->
         <UModal v-model:open="interviewRemarkModel" :title="`Interview ${selectedInterviewRound} - Remarks`">
             <template #body>
@@ -188,6 +276,26 @@ const cvEvaluationParams = ref({});
 const associateVerifyModel = ref(false);
 const associateVerifyId = ref('');
 const associateVerifyParams = ref({});
+
+// HR Character Verify Modal
+const characterVerifyModel = ref(false);
+const characterVerifyId = ref('');
+const characterVerifyParams = ref({});
+
+// HR Qualification Verify Modal
+const qualificationVerifyModel = ref(false);
+const qualificationVerifyId = ref('');
+const qualificationVerifyParams = ref({});
+
+// HR Registration Verify Modal
+const registrationVerifyModel = ref(false);
+const registrationVerifyId = ref('');
+const registrationVerifyParams = ref({});
+
+// HR Application Status Modal
+const applicationStatusModel = ref(false);
+const applicationStatusId = ref('');
+const applicationStatusParams = ref({});
 
 // Interview Remark Modal
 const interviewRemarkModel = ref(false);
@@ -393,6 +501,74 @@ const handleAssociateVerify = (application) => {
 
 const handleAssociateVerifySubmit = async () => {
     associateVerifyModel.value = false;
+    await loadData();
+};
+
+/* ------------------ HR Character Verify Handler ------------------ */
+const handleCharacterVerify = (application) => {
+    const responseId = application.form_response_id || application.id;
+    characterVerifyParams.value = { 
+        id: responseId,
+        application_id: responseId,
+        form_response_id: responseId
+    };
+    characterVerifyId.value = responseId;
+    characterVerifyModel.value = true;
+};
+
+const handleCharacterVerifySubmit = async () => {
+    characterVerifyModel.value = false;
+    await loadData();
+};
+
+/* ------------------ HR Qualification Verify Handler ------------------ */
+const handleQualificationVerify = (application) => {
+    const responseId = application.form_response_id || application.id;
+    qualificationVerifyParams.value = { 
+        id: responseId,
+        application_id: responseId,
+        form_response_id: responseId
+    };
+    qualificationVerifyId.value = responseId;
+    qualificationVerifyModel.value = true;
+};
+
+const handleQualificationVerifySubmit = async () => {
+    qualificationVerifyModel.value = false;
+    await loadData();
+};
+
+/* ------------------ HR Registration Verify Handler ------------------ */
+const handleRegistrationVerify = (application) => {
+    const responseId = application.form_response_id || application.id;
+    registrationVerifyParams.value = { 
+        id: responseId,
+        application_id: responseId,
+        form_response_id: responseId
+    };
+    registrationVerifyId.value = responseId;
+    registrationVerifyModel.value = true;
+};
+
+const handleRegistrationVerifySubmit = async () => {
+    registrationVerifyModel.value = false;
+    await loadData();
+};
+
+/* ------------------ HR Application Status Handler ------------------ */
+const handleApplicationStatus = (application) => {
+    const responseId = application.form_response_id || application.id;
+    applicationStatusParams.value = { 
+        id: responseId,
+        application_id: responseId,
+        form_response_id: responseId
+    };
+    applicationStatusId.value = responseId;
+    applicationStatusModel.value = true;
+};
+
+const handleApplicationStatusSubmit = async () => {
+    applicationStatusModel.value = false;
     await loadData();
 };
 

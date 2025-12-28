@@ -139,12 +139,7 @@ const loadChoiceDetails = async () => {
     } catch (err) {
         const errorMessage = err.response?.data?.message || err.message || 'Failed to load choice details';
         error.value = errorMessage;
-        console.error('Error loading choice details:', err);
-        console.error('Error response:', err.response?.data);
-        console.error('Error status:', err.response?.status);
-        console.error('Request URL:', err.config?.url);
-        console.error('Request params:', err.config?.params);
-        details.value = [];
+        
     } finally {
         loading.value = false;
     }
