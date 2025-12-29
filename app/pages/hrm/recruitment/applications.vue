@@ -7,7 +7,8 @@ Move to Employee Register
 -->
 <template>
     <div>
-        <CKCardList :loading="loading" :title="title" @handleAdd="handleAdd" v-model="searchQuery">
+        <template v-if="!isChildRoute">
+            <CKCardList :loading="loading" :title="title" @handleAdd="handleAdd" v-model="searchQuery">
             <UTable :loading="loading" :data="filteredData" :columns="columns">
                 <!-- Empty message -->
                 <template v-if="!loading" #empty>
@@ -141,18 +142,10 @@ Move to Employee Register
                 </template>
             </UTable>
         </CKCardList>
-
-        <!-- New Application Form Modal -->
-        <CKFormModal
-            v-model="formModel"
-            :title="params.id ? 'Edit Application' : 'New Application'"
-            :endPoint="'/form/defaultForm'"
-            :submitEndPoint="'/hrm/job_application'"
-            :formCode="'hr_job_application'"
-            :id="id"
-            :params="params"
-            @handleFormSubmit="handleFormSubmit"
-        />
+        </template>
+        
+        <!-- Child Route Renderer -->
+        <NuxtPage />
 
         <!-- CV Evaluation Form Modal -->
         <CKFormModal
@@ -263,11 +256,16 @@ import CKFormModal from "~/components/common/CKFormModal.vue";
 /* ------------------ Default Variables ------------------ */
 definePageMeta({ layout: 'home' });
 const { $axios } = useNuxtApp()
+const route = useRoute()
+const router = useRouter()
 const title = ref("Job Applications");
 const endPoint = ref("/hrm/job_application");
 const params = ref({});
 const formModel = ref(false);
 const id = ref('');
+
+// Check if we're on a child route
+const isChildRoute = computed(() => route.path.includes('/applications/new'))
 
 // CV Evaluation Modal
 const cvEvaluationModel = ref(false);
@@ -425,9 +423,7 @@ const getStatusColor = (status) => {
 
 /* ------------------ Add Button ------------------ */
 const handleAdd = () => {
-    params.value = {};
-    id.value = '';
-    formModel.value = true;
+    router.push('/hrm/recruitment/applications/new');
 };
 
 /* ------------------ Form Submit ------------------ */

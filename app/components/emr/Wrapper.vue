@@ -13,6 +13,8 @@
       :type="field.data_type.toLowerCase()"
       :placeholder="field.label"
       :icon="field.icon"
+      :maxlength="field.data_type === 'NUMBER' ? 10 : undefined"
+      @input="handleNumberInput"
       class="w-full"
     />
 
@@ -144,7 +146,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch, toRaw } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 
 const props = defineProps({
   field: { type: Object, required: true },
@@ -243,7 +245,7 @@ const textInputValue = computed({
         return ''
       }
       const num = Number(val)
-      return isNaN(num) ? '' : String(num)
+      return Number.isNaN(num) ? '' : String(num)
     }
     
     return val ?? ''
@@ -258,9 +260,19 @@ const textInputValue = computed({
       if (val === '' || val === null || val === undefined) {
         props.field.value[0] = null
       } else {
-        const num = Number(val)
-        // Store null instead of NaN to prevent validation errors
-        props.field.value[0] = isNaN(num) ? null : num
+        // Remove any non-numeric characters
+        const numericValue = String(val).replaceAll(/\D/g, '')
+        
+        // Limit to 10 digits
+        const limitedValue = numericValue.slice(0, 10)
+        
+        if (limitedValue === '') {
+          props.field.value[0] = null
+        } else {
+          const num = Number(limitedValue)
+          // Store null instead of NaN to prevent validation errors
+          props.field.value[0] = Number.isNaN(num) ? null : num
+        }
       }
     } else {
       props.field.value[0] = val
@@ -292,7 +304,12 @@ const localValue = computed({
   get: () => props.field.data_type === 'group' ? nestedValues.value : props.modelValue,
   set: val => {
     if (props.field.data_type === 'group') return
-    emit('update:modelValue', props.field.data_type === 'number' ? (val === '' ? null : Number(val)) : val)
+    
+    let processedVal = val
+    if (props.field.data_type === 'number') {
+      processedVal = val === '' ? null : Number(val)
+    }
+    emit('update:modelValue', processedVal)
   }
 })
 
@@ -334,8 +351,8 @@ const starRating = computed(() => {
   if (typeof val === 'number') return Math.max(0, val)
   
   if (typeof val === 'string') {
-    const num = parseInt(val, 10)
-    return isNaN(num) || num <= 0 ? 0 : num
+    const num = Number.parseInt(val, 10)
+    return Number.isNaN(num) || num <= 0 ? 0 : num
   }
   
   return 0
@@ -358,6 +375,30 @@ const setStarRating = (rating) => {
   
   // Clear hover state
   hoveredStar.value = null
+}
+
+// Handle number input validation
+const handleNumberInput = (event) => {
+  if (props.field.data_type === 'NUMBER') {
+    const input = event.target
+    let value = input.value
+    
+    // Remove any non-numeric characters
+    value = value.replaceAll(/\D/g, '')
+    
+    // Limit to 10 digits
+    if (value.length > 10) {
+      value = value.slice(0, 10)
+    }
+    
+    // Update the input value
+    if (input.value !== value) {
+      input.value = value
+    }
+    
+    // Update the field value
+    textInputValue.value = value
+  }
 }
 
 // Error message

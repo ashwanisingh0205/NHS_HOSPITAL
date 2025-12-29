@@ -1,13 +1,15 @@
 <template>
     <UFormField :label="field.label">
         <UInput 
-            type="number"
             v-model="fieldValue"
+            :type="field.data_type === 'NUMBER' ? 'number' : 'text'"
             :placeholder="field.label"
             :icon="field.icon"
             class="w-full"
             :min="field.min_value"
             :max="field.max_value"
+            maxlength="10"
+            @input="handleNumberInput"
         />
     </UFormField>
 </template>
