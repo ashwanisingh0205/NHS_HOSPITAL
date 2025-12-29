@@ -60,6 +60,7 @@ const modalTitle = computed(() => editingField.value ? "Edit Form Field" : "New 
 const columns = [
     { accessorKey: 'id', header: 'Sr.No.' },
     { accessorKey: 'label', header: 'Label' },
+    { accessorKey: 'field_code', header: 'Field Code' },
     { id: 'action' }
 ];
 

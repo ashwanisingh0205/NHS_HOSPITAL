@@ -29,7 +29,9 @@ Move to Employee Register
                     {{ row.original.phone_number || '-' }}
                 </template>
                 <template #address-cell="{ row }">
-                    {{ row.original.address || '-' }}
+                    <div class="max-w-xs whitespace-normal break-words text-sm">
+                        {{ row.original.address || '-' }}
+                    </div>
                 </template>
                 <template #post_applied-cell="{ row }">
                     <UBadge variant="soft" color="primary">

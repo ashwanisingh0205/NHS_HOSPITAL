@@ -2,7 +2,11 @@
     <div class="flex gap-2">
         <div class="w-1/2">
             <CKCardList :loading="loading" :title="title" @handleAdd="handleAdd" v-model="searchQuery">
-                <UTable :loading="loading" :data="filteredData" :columns="columns">
+                <UTable :loading="loading" :data="filteredData" :columns="columns" :ui="{
+                    table: 'table-fixed',
+                    th: { base: 'px-2 py-2 text-sm whitespace-nowrap' },
+                    td: { base: 'px-2 py-2 text-sm whitespace-nowrap' }
+                }">
                     <template v-if="!loading" #empty>
                         <UError :error="{ statusMessage: error || 'No Record Found!!' }" />
                     </template>
@@ -12,9 +16,14 @@
                     <template #form_name-cell="{ row }">
                         <ULink
                             :to="{ name: 'masters-forms-form_builder-forms-form_fields', query: { id: row.original.id } }"
-                            class="cursor-pointer">
+                             class="cursor-pointer block max-w-[180px] truncate">
                             {{ row.original.form_name }}
                         </ULink>
+                    </template>
+                    <template #form_code-cell="{ row }">
+                        <span class="block max-w-[140px] truncate">
+                            {{ row.original.form_code }}
+                        </span>
                     </template>
                     <template #action-cell="{ row }">
                         <div class="flex justify-end items-center gap-1">
@@ -51,9 +60,10 @@ const title = "Form List";
 const endPoint = "/masters/forms/form";
 
 const columns = [
-    { accessorKey: 'id', header: 'Sr.No.' },
-    { accessorKey: 'form_name', header: 'Form Name' },
-    { id: 'action' }
+    { accessorKey: 'id', header: 'Sr.No.', size: 50 },
+    { accessorKey: 'form_name', header: 'Form Name', size: 180 },
+    { accessorKey: 'form_code', header: 'Form Code', size: 140 },
+    { id: 'action', size: 70 }
 ];
 
 // State
