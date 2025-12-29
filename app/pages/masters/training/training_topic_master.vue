@@ -10,8 +10,8 @@
                     <template #id-cell="{ row }">
                         {{filteredData.findIndex(f => f.id === row.original.id) + 1}}
                     </template>
-                    <template #training_topic_name-cell="{ row }">
-                        {{ row.original.training_topic_name }}
+                    <template #topic_title-cell="{ row }">
+                        {{ row.original.topic_title }}
                     </template>
                     <template #action-cell="{ row }">
                         <div class="text-end">
@@ -59,7 +59,7 @@ const error = ref(null);
 const data = ref([]);
 const columns = ref([
     { accessorKey: 'id', header: 'Sr.No.' },
-    { accessorKey: 'training_topic_name', header: 'Training Topic Name' },
+    { accessorKey: 'topic_title', header: 'Topic Title' },
     { id: 'action' }
 ]);
 const loadData = async () => {
@@ -89,7 +89,7 @@ const filteredData = computed(() => {
     }
     const query = searchQuery.value.toLowerCase();
     return data.value.filter(topic =>
-        topic.training_topic_name?.toLowerCase().includes(query)
+        topic.topic_title?.toLowerCase().includes(query)
     );
 });
 
