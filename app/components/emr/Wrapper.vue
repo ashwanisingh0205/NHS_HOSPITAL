@@ -18,13 +18,13 @@
 
     <!-- Select Dropdown -->
     <UFormField v-else-if="field.data_type === 'DROPDOWN'" :label="field.label">
-      <USelectMenu
+    <USelectMenu
         v-model="dropdownValue"
         :items="selectOptions"
-        :icon="field.icon"
-        class="w-full"
+      :icon="field.icon"
+      class="w-full"
         :placeholder="field.label"
-      />
+    />
     </UFormField>
 
     <!-- Textarea -->

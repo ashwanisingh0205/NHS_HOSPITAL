@@ -343,7 +343,7 @@ const loadData = async () => {
             error.value = res.message || 'Invalid response format - rows is not an array';
             console.error('Invalid response format:', res);
             return;
-        }
+            }
         
         if (res.rows.length === 0) {
             error.value = 'No applications found';

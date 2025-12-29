@@ -274,10 +274,10 @@ const handleSignIn = async () => {
     await authStore.login({
       username: username.value,
       password: password.value
-    });
+  });
 
     // Login successful - open role selection modal or redirect
-    isModalOpen.value = true;
+  isModalOpen.value = true;
   } catch (error) {
     // Handle login error
     errorMessage.value = error.response?.data?.message || error.message || "Login failed. Please check your credentials.";

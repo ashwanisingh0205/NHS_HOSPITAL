@@ -77,7 +77,9 @@ const staticFormConfig = computed(() => {
     const data = editingDetail.value || { 
         choice_id: selectedChoice.value?.id,
         corporate_id: 1,
-        unit_id: 1
+        unit_id: 1,
+        status: true,
+        status_universal: false
     };
     
     return {
@@ -168,10 +170,14 @@ const handleFormSubmit = async (submitData) => {
         if (editingDetail.value) {
             // PATCH request for editing
             const patchPayload = {
-                ...payload,
+                id: Number(editingDetail.value.id),
                 corporate_id: Number(payload.corporate_id),
                 unit_id: Number(payload.unit_id),
-                choice_id: Number(payload.choice_id)
+                choice_id: Number(payload.choice_id),
+                choice_title: payload.choice_title,
+                choice_data: payload.choice_data,
+                status: payload.status ?? editingDetail.value.status ?? true,
+                status_universal: payload.status_universal ?? editingDetail.value.status_universal ?? false
             };
             console.log('PATCH payload:', patchPayload);
             

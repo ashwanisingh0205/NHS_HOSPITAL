@@ -73,12 +73,21 @@ const filteredData = computed(() => {
 });
 
 const staticFormConfig = computed(() => {
-    const initial = formData.value || {};
+    const initial = formData.value || {
+        corporate_id: 1,
+        unit_id: 1,
+        status: true,
+        status_universal: false
+    };
 
     return {
         fields: [
+            { id: 'corporate_id', field_code: 'corporate_id', data_type: 'NUMBER', label: 'Corporate ID', value: [initial.corporate_id ?? 1], required: true },
+            { id: 'unit_id', field_code: 'unit_id', data_type: 'NUMBER', label: 'Unit ID', value: [initial.unit_id ?? 1], required: true },
             { id: 'choice_code', field_code: 'choice_code', data_type: 'TEXT', label: 'Choice Code', value: [initial.choice_code ?? ''], required: true },
-            { id: 'choice_name', field_code: 'choice_name', data_type: 'TEXT', label: 'Choice Name', value: [initial.choice_name ?? ''], required: true }
+            { id: 'choice_name', field_code: 'choice_name', data_type: 'TEXT', label: 'Choice Name', value: [initial.choice_name ?? ''], required: true },
+            { id: 'status', field_code: 'status', data_type: 'CHECKBOX', label: 'Status', value: [initial.status ?? true], required: false },
+            { id: 'status_universal', field_code: 'status_universal', data_type: 'CHECKBOX', label: 'Status Universal', value: [initial.status_universal ?? false], required: false }
         ]
     };
 });
@@ -109,15 +118,24 @@ const loadData = async () => {
 
 const handleAdd = () => {
     params.value = null;
-    formData.value = null;
+    formData.value = {
+        corporate_id: 1,
+        unit_id: 1,
+        status: true,
+        status_universal: false
+    };
     formModel.value = true;
 };
 
 const handleEdit = async (choice) => {
-    params.value = { id: choice.choice_id };
+    params.value = { id: choice.id };
     formData.value = {
+        corporate_id: choice.corporate_id ?? 1,
+        unit_id: choice.unit_id ?? 1,
         choice_code: choice.choice_code ?? "",
-        choice_name: choice.choice_name ?? ""
+        choice_name: choice.choice_name ?? "",
+        status: choice.status ?? true,
+        status_universal: choice.status_universal ?? false
     };
 
     await nextTick();
