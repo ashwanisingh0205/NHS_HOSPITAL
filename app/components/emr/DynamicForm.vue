@@ -1,31 +1,39 @@
 <template>
-    <div v-if="loading" class="flex items-center justify-center py-12">
-        <UIcon name="lucide:loader-2" class="w-6 h-6 animate-spin text-gray-400 dark:text-gray-500" />
-        <span class="ml-3 text-gray-600 dark:text-gray-400">Loading form...</span>
-    </div>
+    <CKLoader v-if="loading" />
     
-    <UForm v-else class="space-y-6" @submit.prevent="handleSubmit">
-        <div v-if="form.fields?.length" class="grid gap-6 md:grid-cols-2">
-            <Wrapper v-for="field in form.fields" :key="field.id" :field="field" />
-        </div>
+    <UForm v-else @submit.prevent="handleSubmit">
+        <template v-if="form.fields?.length">
+            <div  class="grid gap-6 md:grid-cols-2">
+                <Wrapper
+                    v-for="field in form.fields"
+                    :key="field.id"
+                    :field="field" />
+            </div>
+            <div class="flex gap-3 pt-2">
+                <UButton
+                    type="submit"
+                    label="Submit"
+                    :loading="submitting"
+                    :disabled="submitting" />
+            </div>
+        </template>
+        
         <div v-else class="text-center py-8 text-gray-500 dark:text-gray-400">
             <p>No form fields available. Please check the API endpoint configuration.</p>
         </div>
         
-        <div v-if="form.fields?.length" class="flex gap-3 pt-2">
-            <UButton type="submit" label="Submit form" :loading="submitting" :disabled="submitting" />
-        </div>
+        
     </UForm>
 </template>
 
 <script setup>
 import Wrapper from '~/components/emr/Wrapper.vue'
+import CKLoader from "~/components/common/CKLoader.vue";
 
 const { $axios } = useNuxtApp()
 
 const props = defineProps({
     endPoint: { type: String, default: "" },
-    submitEndPoint: { type: String, default: "" }, // Separate endpoint for submission
     params: { type: Object, default: null },
     staticForm: { type: Object, default: null },
     formCode: { type: String, default: "" },
@@ -56,16 +64,13 @@ const loadForm = async () => {
         }
         
         const { data } = await $axios.get(endpoint, { params: requestParams })
-        console.log('DATA', data)
         
-        const fields = data?.success !== false 
-            ? (data.fields || [])
-            : []
+        const fields = data?.success ? (data.fields || []) : []
         
-        form.value = { 
+        form.value = {
             fields: Array.isArray(fields) ? fields.map(field => ({
                 ...field,
-                value: Array.isArray(field.value) ? field.value : 
+                value: Array.isArray(field.value) ? field.value :
                        (field.value != null ? [field.value] : [''])
             })) : []
         }
@@ -85,30 +90,28 @@ const handleSubmit = async () => {
     submitting.value = true
     try {
         // Build payload from form fields
-        const payload = {}
-        form.value.fields.forEach(field => {
-            const fieldCode = field.field_code || field.id
-            if (fieldCode) {
-                const fieldValue = field.value?.[0]
-                // Include all fields, even if empty (null/undefined/empty string)
-                // This ensures choice_code and other optional fields are sent
-                payload[fieldCode] = fieldValue !== undefined && fieldValue !== null ? fieldValue : ''
-            }
-        })
+        // const payload = {}
+        // form.value.fields.forEach(field => {
+        //     const fieldCode = field.field_code || field.id
+        //     if (fieldCode) {
+        //         const fieldValue = field.value?.[0]
+        //         // Include all fields, even if empty (null/undefined/empty string)
+        //         // This ensures choice_code and other optional fields are sent
+        //         payload[fieldCode] = fieldValue !== undefined && fieldValue !== null ? fieldValue : ''
+        //     }
+        // })
+        //
+        // // Merge params into payload (except 'id' which is handled separately for edit mode)
+        // if (props.params) {
+        //     Object.keys(props.params).forEach(key => {
+        //         if (key !== 'id' && props.params[key] !== undefined && props.params[key] !== null) {
+        //             payload[key] = props.params[key]
+        //         }
+        //     })
+        // }
+        //
         
-        // Merge params into payload (except 'id' which is handled separately for edit mode)
-        if (props.params) {
-            Object.keys(props.params).forEach(key => {
-                if (key !== 'id' && props.params[key] !== undefined && props.params[key] !== null) {
-                    payload[key] = props.params[key]
-                }
-            })
-        }
         
-        // Use submitEndPoint if provided, otherwise use endPoint
-        const submitEndpoint = props.submitEndPoint || props.endPoint
-        
-        if (submitEndpoint) {
             const isEdit = !!props.params?.id || !!props.id
             const requestConfig = {
                 headers: { 'Content-Type': 'application/json' }
@@ -125,16 +128,11 @@ const handleSubmit = async () => {
                 }
             }
             
-            console.log('Submitting to:', submitEndpoint)
-            console.log('Payload:', payload)
-            console.log('Request Config:', requestConfig)
-            
             await $axios[isEdit ? 'patch' : 'post'](
-                submitEndpoint, 
-                payload,
+                end,
+                form,
                 requestConfig
             )
-        }
         
         emit('submit', { form: form.value, payload })
     } catch (err) {

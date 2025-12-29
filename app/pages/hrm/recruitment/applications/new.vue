@@ -24,6 +24,17 @@
         </UCard>
 
         <div v-else-if="formConfig?.fields?.length" class="space-y-6">
+            
+            
+            <DynamicForm
+                key="hr_job_application"
+                :formCode="formCode"
+                :id="id"
+                :params="params"
+                @submit="handleFormSubmit"
+            />
+            
+            
             <UForm @submit.prevent="handleSubmit" class="space-y-6">
                 <div class="grid grid-cols-3 lg:grid-cols-3 gap-6">
                     <FormRenderer 
@@ -54,6 +65,7 @@
 
 <script setup>
 import FormRenderer from '~/components/form_builder/FormRenderer.vue'
+import DynamicForm from "~/components/emr/DynamicForm.vue";
 
 definePageMeta({
     layout: 'home'

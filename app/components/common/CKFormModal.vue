@@ -2,14 +2,13 @@
     <UModal v-model:open="localValue" :dismissible="true" :title="title">
         <template #body>
             <DynamicForm
-                :key="formResetKey"
-                :endPoint="endPoint"
-                :submitEndPoint="submitEndPoint"
-                :staticForm="staticForm"
                 :formCode="formCode"
-                :id="id"
+                :endPoint="endPoint"
                 :params="params"
                 @submit="handleFormSubmit"
+                
+                
+                :staticForm="staticForm"
             />
         </template>
     </UModal>
@@ -22,25 +21,11 @@ const props = defineProps({
     modelValue: { type: Boolean, default: false },
     title: { type: String, default: "Form" },
     endPoint: { type: String, default: "" },
-    submitEndPoint: { type: String, default: "" },
     staticForm: { type: Object, default: null },
     formCode: { type: String, default: "" },
     id: { type: String, default: "" },
     params: { type: Object, default: {} },
 })
-
-const formResetKey = ref(0);
-watch(() => props.params, () => {
-    formResetKey.value++;
-}, { deep: true });
-watch(() => props.id, () => {
-    formResetKey.value++;
-});
-watch(() => props.modelValue, (newVal) => {
-    if (newVal) {
-        formResetKey.value++;
-    }
-});
 
 
 const emit = defineEmits(['update:modelValue', 'handleFormSubmit']);

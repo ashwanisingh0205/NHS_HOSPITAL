@@ -20,11 +20,8 @@ Move to Employee Register
                 <template #name-cell="{ row }">
                     <div class="flex items-center gap-3">
                         <UAvatar size="sm" />
-                        <span class="font-medium">{{ row.original.name || '-' }}</span>
+                        <b>{{ row.original.name || '-' }}</b>
                     </div>
-                </template>
-                <template #date_of_application-cell="{ row }">
-                    {{ formatDate(row.original.date_of_application) }}
                 </template>
                 <template #phone_number-cell="{ row }">
                     {{ row.original.phone_number || '-' }}

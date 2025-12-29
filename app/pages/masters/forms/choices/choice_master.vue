@@ -1,19 +1,17 @@
 <template>
     <div class="flex gap-2">
-        <div class="w-1/2">
+        <div class="w-1/3">
             <CKCardList :loading="loading" :title="title" @handleAdd="handleAdd" v-model="searchQuery">
                 <UTable :loading="loading" :data="filteredData" :columns="columns">
                     <template v-if="!loading" #empty>
                         <UError :error="{ statusMessage: error || 'No Record Found!!' }" />
                     </template>
-                    <template #id-cell="{ row }">
-                        {{ filteredData.findIndex(f => f.id === row.original.id) + 1 }}
-                    </template>
-                    <template #choice_name-cell="{ row }">
+                    <template #choice_code-cell="{ row }">
                         <ULink
                             :to="{ path: '/masters/forms/choices/choice_master/choice_details', query: { id: row.original.id } }"
                             class="cursor-pointer">
-                            {{ row.original.choice_name }}
+                            <b>{{ row.original.choice_name }}</b><br>
+                            <small>{{ row.original.choice_code }}</small>
                         </ULink>
                     </template>
                     <template #action-cell="{ row }">
@@ -46,8 +44,7 @@ const endPoint = "/masters/forms/choice_master";
 
 const columns = [
     { accessorKey: 'id', header: 'Sr.No.' },
-    { accessorKey: 'choice_name', header: 'Choice Name' },
-    { accessorKey: 'choice_code', header: 'Choice Code' },
+    { accessorKey: 'choice_code', header: 'Choice' },
     { id: 'action' }
 ];
 
@@ -82,12 +79,9 @@ const staticFormConfig = computed(() => {
 
     return {
         fields: [
-            { id: 'corporate_id', field_code: 'corporate_id', data_type: 'NUMBER', label: 'Corporate ID', value: [initial.corporate_id ?? 1], required: true },
-            { id: 'unit_id', field_code: 'unit_id', data_type: 'NUMBER', label: 'Unit ID', value: [initial.unit_id ?? 1], required: true },
-            { id: 'choice_code', field_code: 'choice_code', data_type: 'TEXT', label: 'Choice Code', value: [initial.choice_code ?? ''], required: true },
             { id: 'choice_name', field_code: 'choice_name', data_type: 'TEXT', label: 'Choice Name', value: [initial.choice_name ?? ''], required: true },
+            { id: 'choice_code', field_code: 'choice_code', data_type: 'TEXT', label: 'Choice Code', value: [initial.choice_code ?? ''], required: true },
             { id: 'status', field_code: 'status', data_type: 'CHECKBOX', label: 'Status', value: [initial.status ?? true], required: false },
-            { id: 'status_universal', field_code: 'status_universal', data_type: 'CHECKBOX', label: 'Status Universal', value: [initial.status_universal ?? false], required: false }
         ]
     };
 });

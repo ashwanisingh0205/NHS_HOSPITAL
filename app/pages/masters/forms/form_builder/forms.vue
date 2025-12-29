@@ -1,29 +1,22 @@
 <template>
     <div class="flex gap-2">
-        <div class="w-1/2">
-            <CKCardList :loading="loading" :title="title" @handleAdd="handleAdd" v-model="searchQuery">
-                <UTable :loading="loading" :data="filteredData" :columns="columns" :ui="{
-                    table: 'table-fixed',
-                    th: { base: 'px-2 py-2 text-sm whitespace-nowrap' },
-                    td: { base: 'px-2 py-2 text-sm whitespace-nowrap' }
-                }">
-                    <template v-if="!loading" #empty>
+        <div class="w-1/3">
+            <CKCardList :title="title" @handleAdd="handleAdd" v-model="searchQuery">
+                <UTable :loading="loading" :data="filteredData" :columns="columns">
+                    <template #loading>
+                        <CKLoader />
+                    </template>
+                    <template #empty>
                         <UError :error="{ statusMessage: error || 'No Record Found!!' }" />
                     </template>
-                    <template #id-cell="{ row }">
-                        {{filteredData.findIndex(f => f.id === row.original.id) + 1}}
-                    </template>
+                    
                     <template #form_name-cell="{ row }">
                         <ULink
                             :to="{ name: 'masters-forms-form_builder-forms-form_fields', query: { id: row.original.id } }"
                              class="cursor-pointer block max-w-[180px] truncate">
-                            {{ row.original.form_name }}
+                            <b>{{ row.original.form_name }}</b> <br>
+                            <small>{{ row.original.form_code }}</small>
                         </ULink>
-                    </template>
-                    <template #form_code-cell="{ row }">
-                        <span class="block max-w-[140px] truncate">
-                            {{ row.original.form_code }}
-                        </span>
                     </template>
                     <template #action-cell="{ row }">
                         <div class="flex justify-end items-center gap-1">
@@ -38,7 +31,8 @@
         <NuxtPage :key="$route.fullPath" />
     </div>
 
-    <CKFormModal v-model="formModel" :title="modalTitle" :endPoint="endPoint" :staticForm="staticFormConfig"
+    <CKFormModal
+        v-model="formModel" :title="modalTitle" :endPoint="endPoint" :staticForm="staticFormConfig"
         :params="params" @handleFormSubmit="handleFormSubmit" />
 
     <CKFormModal v-model="showDefaultFields" :fields="defaultFields" :form-id="selectedDefaultForm.id"
@@ -50,6 +44,7 @@
 import CKEdit from "~/components/common/CKEdit.vue";
 import CKCardList from "~/components/common/CKCardList.vue";
 import CKFormModal from "~/components/common/CKFormModal.vue";
+import CKLoader from "~/components/common/CKLoader.vue";
 
 definePageMeta({ layout: 'home' });
 
@@ -62,7 +57,6 @@ const endPoint = "/masters/forms/form";
 const columns = [
     { accessorKey: 'id', header: 'Sr.No.', size: 50 },
     { accessorKey: 'form_name', header: 'Form Name', size: 180 },
-    { accessorKey: 'form_code', header: 'Form Code', size: 140 },
     { id: 'action', size: 70 }
 ];
 
@@ -89,19 +83,19 @@ const filteredData = computed(() => {
 
 const staticFormConfig = computed(() => {
     const initial = formData.value || {};
+    
+    const formTypeArray = [
+        { key: "FORM", value: "Data entry form" },
+        { key: "SURVEY", value: "Survey/Feedback/Checklist" },
+        { key: "WORKFLOW", value: "Workflow Initializer" },
+    ]
 
     return {
         fields: [
-            { id: 'corporate_id', field_code: 'corporate_id', data_type: 'NUMBER', label: 'Corporate ID', value: [initial.corporate_id ?? 1], required: false },
-            { id: 'unit_id', field_code: 'unit_id', data_type: 'NUMBER', label: 'Unit ID', value: [initial.unit_id ?? 1], required: false },
-            { id: 'category_id', field_code: 'category_id', data_type: 'NUMBER', label: 'Category ID', value: [initial.category_id ?? 1], required: false },
-            { id: 'form_type', field_code: 'form_type', data_type: 'TEXT', label: 'Form Type', value: [initial.form_type ?? 'FORM'], required: false },
+            { id: 'form_type', field_code: 'form_type', data_type: 'DROPDOWN', choices: formTypeArray, label: 'Form Type', value: [initial.form_type ?? 'FORM'], required: false },
             { id: 'form_code', field_code: 'form_code', data_type: 'TEXT', label: 'Form Code', value: [initial.form_code ?? ''], required: false },
             { id: 'form_name', field_code: 'form_name', data_type: 'TEXT', label: 'Form Name', value: [initial.form_name ?? ''], required: false },
-            { id: 'frequency', field_code: 'frequency', data_type: 'TEXT', label: 'Frequency', value: [initial.frequency ?? 'DAILY'], required: false },
-            { id: 'icon', field_code: 'icon', data_type: 'TEXT', label: 'Icon', value: [initial.icon ?? 'block'], required: false },
             { id: 'status_pdf', field_code: 'status_pdf', data_type: 'CHECKBOX', label: 'Status PDF', value: [initial.status_pdf ?? false], required: false },
-            { id: 'letterhead_id', field_code: 'letterhead_id', data_type: 'NUMBER', label: 'Letterhead ID', value: [initial.letterhead_id ?? 1], required: false },
             { id: 'status', field_code: 'status', data_type: 'CHECKBOX', label: 'Status', value: [initial.status ?? true], required: false }
         ]
     };

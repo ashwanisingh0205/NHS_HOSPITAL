@@ -1,23 +1,21 @@
 <template>
-    <div class="flex gap-2">
-        <div class="w-full">
-            <CKCardList :loading="loading" :title="title" @handleAdd="handleAdd" v-model="searchQuery">
-                <UTable :loading="loading" :data="filteredDetails" :columns="columns">
-                    <template v-if="!loading" #empty>
-                        <UError :error="{ statusMessage: error || 'No Record Found!!' }" />
-                    </template>
-                    <template #id-cell="{ row }">
-                        {{ filteredDetails.findIndex(f => f.id === row.original.id) + 1 }}
-                    </template>
-                    <template #action-cell="{ row }">
-                        <div class="text-end">
-                            <CKEdit @click="handleEdit(row)" />
-                        </div>
-                    </template>
-                </UTable>
-            </CKCardList>
-        </div>
-    </div>
+    <CKCardList
+        class="w-full"
+        :loading="loading" :title="title" @handleAdd="handleAdd" v-model="searchQuery">
+        <UTable :loading="loading" :data="filteredDetails" :columns="columns">
+            <template v-if="!loading" #empty>
+                <UError :error="{ statusMessage: error || 'No Record Found!!' }" />
+            </template>
+            <template #id-cell="{ row }">
+                {{ filteredDetails.findIndex(f => f.id === row.original.id) + 1 }}
+            </template>
+            <template #action-cell="{ row }">
+                <div class="text-end">
+                    <CKEdit @click="handleEdit(row)" />
+                </div>
+            </template>
+        </UTable>
+    </CKCardList>
     
     <UModal v-model:open="formModel" :title="modalTitle">
         <template #body>
@@ -69,7 +67,7 @@ const modalTitle = computed(() => editingDetail.value ? "Edit Choice Detail" : "
 const columns = [
     { accessorKey: 'id', header: 'Sr.No.' },
     { accessorKey: 'choice_title', header: 'Choice Title' },
-    { accessorKey: 'choice_data', header: 'Choice Data' },
+    { accessorKey: 'choice_code', header: 'Choice Code' },
     { id: 'action' }
 ];
 
@@ -84,18 +82,15 @@ const staticFormConfig = computed(() => {
     
     return {
         fields: [
-            { id: 'corporate_id', field_code: 'corporate_id', data_type: 'NUMBER', label: 'Corporate ID', value: [data.corporate_id ?? 1], required: true },
-            { id: 'unit_id', field_code: 'unit_id', data_type: 'NUMBER', label: 'Unit ID', value: [data.unit_id ?? 1], required: true },
-            { id: 'choice_id', field_code: 'choice_id', data_type: 'NUMBER', label: 'Choice ID', value: [data.choice_id], required: true },
             { id: 'choice_title', field_code: 'choice_title', data_type: 'TEXT', label: 'Choice Title', value: [data.choice_title || ''], required: true },
-            { id: 'choice_data', field_code: 'choice_data', data_type: 'TEXT', label: 'Choice Data', value: [data.choice_data || ''], required: true }
+            { id: 'choice_code', field_code: 'choice_code', data_type: 'TEXT', label: 'Choice Code', value: [data.choice_code || ''], required: true },
+            { id: 'choice_data', field_code: 'choice_data', data_type: 'TEXT', label: 'Choice Data', value: [data.choice_data || ''] }
         ]
     };
 });
 
 const filteredDetails = computed(() => {
     if (!searchQuery.value.trim()) return details.value;
-    
     const query = searchQuery.value.toLowerCase();
     return details.value.filter(d => 
         d.choice_title?.toLowerCase().includes(query) || 
