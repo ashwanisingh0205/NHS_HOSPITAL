@@ -1,6 +1,10 @@
+<!--
+Salary Slip Files for selected patient
+Payslip & Form-16 generation
+-->
 <template>
     <div>
-        <h1>Ledgers</h1>
+        <h1></h1>
     </div>
 </template>
 

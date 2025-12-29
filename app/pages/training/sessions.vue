@@ -1,0 +1,21 @@
+<!--
+    list of sessions expired/upcoming/ongoing
+    Internal/External programs
+    Doctor/Nurse/admin staff training categorization
+    
+-->
+<template>
+  <Form />
+</template>
+
+<script setup>
+definePageMeta({
+  layout: 'home'
+})
+
+import Form from '~/components/form_builder/Form.vue'
+const handleSubmit = (data) => {
+  console.log('Form submitted:', data)
+  alert('Form submitted successfully!')
+}
+</script>
