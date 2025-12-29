@@ -100,9 +100,9 @@ const staticFormConfig = computed(() => {
             { id: 'form_name', field_code: 'form_name', data_type: 'TEXT', label: 'Form Name', value: [initial.form_name ?? ''], required: false },
             { id: 'frequency', field_code: 'frequency', data_type: 'TEXT', label: 'Frequency', value: [initial.frequency ?? 'DAILY'], required: false },
             { id: 'icon', field_code: 'icon', data_type: 'TEXT', label: 'Icon', value: [initial.icon ?? 'block'], required: false },
-            { id: 'status_pdf', field_code: 'status_pdf', data_type: 'checkbox', label: 'Status PDF', value: [initial.status_pdf ?? false], required: false },
+            { id: 'status_pdf', field_code: 'status_pdf', data_type: 'CHECKBOX', label: 'Status PDF', value: [initial.status_pdf ?? false], required: false },
             { id: 'letterhead_id', field_code: 'letterhead_id', data_type: 'NUMBER', label: 'Letterhead ID', value: [initial.letterhead_id ?? 1], required: false },
-            { id: 'status', field_code: 'status', data_type: 'checkbox', label: 'Status', value: [initial.status ?? true], required: false }
+            { id: 'status', field_code: 'status', data_type: 'CHECKBOX', label: 'Status', value: [initial.status ?? true], required: false }
         ]
     };
 });
