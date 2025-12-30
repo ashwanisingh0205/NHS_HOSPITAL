@@ -44,6 +44,7 @@ const emit = defineEmits(['submit'])
 const form = ref({ fields: [] })
 const loading = ref(true)
 const submitting = ref(false)
+const backendFields = ref([]) // Store original backend field structure
 
 const loadForm = async () => {
     loading.value = true
@@ -51,6 +52,8 @@ const loadForm = async () => {
     try {
         if (props.staticForm) {
             form.value = structuredClone(props.staticForm)
+            // Store static form fields as backend structure
+            backendFields.value = props.staticForm.fields || []
             return
         }
         
@@ -66,6 +69,9 @@ const loadForm = async () => {
         const { data } = await $axios.get(endpoint, { params: requestParams })
         
         const fields = data?.success ? (data.fields || []) : []
+        
+        // Store original backend field structure
+        backendFields.value = fields
         
         form.value = {
             fields: Array.isArray(fields) ? fields.map(field => ({
@@ -89,11 +95,17 @@ watch([() => props.formCode, () => props.staticForm, () => props.endPoint, () =>
 const handleSubmit = async () => {
     submitting.value = true
     try {
-        // Collect form data directly from fields
-        const formData = form.value.fields.reduce((acc, field) => {
-            const fieldCode = field.field_code || field.id
+        // Use backend field structure directly to build formData
+        // Get current values from reactive form state to preserve user modifications
+        const formData = (backendFields.value.length > 0 ? backendFields.value : form.value.fields).reduce((acc, backendField) => {
+            const fieldCode = backendField.field_code || backendField.id
             if (fieldCode) {
-                const fieldValue = field.value?.[0]
+                // Find the corresponding field in reactive form to get current value
+                const currentField = form.value.fields.find(f => 
+                    (f.field_code || f.id) === fieldCode
+                )
+                // Use current value from reactive form (includes user modifications)
+                const fieldValue = currentField?.value?.[0]
                 acc[fieldCode] = fieldValue !== undefined && fieldValue !== null ? fieldValue : ''
             }
             return acc
