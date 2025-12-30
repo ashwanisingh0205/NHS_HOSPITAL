@@ -26,8 +26,9 @@
         :error="field.error"
         :label="field.label">
         <USelectMenu
-            v-model="dropdownValue"
-            :items="dropdownOptions"
+            :model-value="dropdownItems.find(item => item.value === field.value[0])"
+            @update:model-value="field.value[0] = $event?.value ?? ''"
+            :items="dropdownItems"
             :icon="field.icon"
             class="w-full"
             :placeholder="field.label"
@@ -75,8 +76,7 @@
             <UCheckbox
                 v-for="opt in options"
                 :key="opt.id || opt.key || opt.value"
-                :model-value="isSelected(opt.id || opt.key || opt.value)"
-                @update:model-value="toggleCheckbox(opt.id || opt.key || opt.value, $event)"
+                v-model="field.value[0]"
                 :label="opt.value || opt.label || opt.name"
             />
         </div>
@@ -135,54 +135,10 @@ const props = defineProps({
 
 const options = computed(() => props.field.choices || props.field.options || [])
 
-// Dropdown
-const dropdownOptions = computed(() => 
-    (props.field.choices || []).map(choice => {
-        if (typeof choice === 'string') {
-            return { label: choice, value: String(choice) }
-        }
-        // Prefer choice_code, then data, then label, then id - but always convert to string
-        const value = choice.choice_code || choice.data || choice.label || choice.value || choice.key || choice.id || ''
-        return {
-            label: choice.label || choice.value || choice.name || choice.data || '',
-            value: String(value) // Ensure value is always a string
-        }
-    })
+const dropdownItems = computed(() => 
+    options.value.map(opt => ({
+        label: opt.label,
+        value: opt.choice_code
+    }))
 )
-
-const dropdownValue = computed({
-    get: () => {
-        const val = props.field.value?.[0]
-        if (!val) return null
-        // Convert to string for comparison
-        const valStr = String(val)
-        return dropdownOptions.value.find(opt => 
-            String(opt.value) === valStr || opt.value === val
-        ) || null
-    },
-    set: (val) => {
-        // Ensure we always set a string value
-        const selectedValue = val?.value ?? val ?? ''
-        props.field.value[0] = String(selectedValue)
-    }
-})
-
-// Checkbox helpers
-const isSelected = (value) => {
-    const val = props.field.value?.[0]
-    return Array.isArray(val) && val.includes(value)
-}
-
-const toggleCheckbox = (value, checked) => {
-    const current = props.field.value?.[0]
-    const arr = Array.isArray(current) ? [...current] : (current ? [current] : [])
-    
-    if (checked && !arr.includes(value)) {
-        arr.push(value)
-    } else if (!checked) {
-        arr.splice(arr.indexOf(value), 1)
-    }
-    
-    props.field.value[0] = arr
-}
 </script>
