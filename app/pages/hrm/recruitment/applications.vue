@@ -215,34 +215,27 @@ Move to Employee Register
             @handleFormSubmit="handleApplicationStatusSubmit"
         />
 
-        <!-- Interview Remark Modal -->
-        <UModal v-model:open="interviewRemarkModel" :title="`Interview ${selectedInterviewRound} - Remarks`">
-            <template #body>
-                <div class="space-y-4">
-                    <UFormField label="Remarks">
-                        <UTextarea 
-                            v-model="interviewRemark" 
-                            placeholder="Enter interview remarks..."
-                            :rows="6"
-                        />
-                    </UFormField>
-                    <div class="flex gap-2 justify-end">
-                        <UButton 
-                            @click="saveInterviewRemark"
-                            :loading="savingRemark"
-                        >
-                            Save
-                        </UButton>
-                        <UButton 
-                            variant="outline" 
-                            @click="interviewRemarkModel = false"
-                        >
-                            Cancel
-                        </UButton>
-                    </div>
-                </div>
-            </template>
-        </UModal>
+        <!-- Interview 1 Form Modal -->
+        <CKFormModal
+            v-model="interview1Model"
+            title="Interview 1"
+            :endPoint="'/hrm/job_application'"
+            :formCode="'hr_interview_1'"
+            :id="interview1Id"
+            :params="interview1Params"
+            @handleFormSubmit="handleInterview1Submit"
+        />
+
+        <!-- Interview 2 Form Modal -->
+        <CKFormModal
+            v-model="interview2Model"
+            title="Interview 2"
+            :endPoint="'/hrm/job_application'"
+            :formCode="'hr_interview_2'"
+            :id="interview2Id"
+            :params="interview2Params"
+            @handleFormSubmit="handleInterview2Submit"
+        />
     </div>
 </template>
 
@@ -294,12 +287,15 @@ const applicationStatusModel = ref(false);
 const applicationStatusId = ref('');
 const applicationStatusParams = ref({});
 
-// Interview Remark Modal
-const interviewRemarkModel = ref(false);
-const interviewRemark = ref('');
-const selectedInterviewRound = ref(1);
-const selectedApplicationId = ref(null);
-const savingRemark = ref(false);
+// Interview 1 Modal
+const interview1Model = ref(false);
+const interview1Id = ref('');
+const interview1Params = ref({});
+
+// Interview 2 Modal
+const interview2Model = ref(false);
+const interview2Id = ref('');
+const interview2Params = ref({});
 
 /* ------------------ onMounted ------------------ */
 onMounted(async () => {
@@ -431,44 +427,42 @@ const handleFormSubmit = async () => {
 
 /* ------------------ Interview Handler ------------------ */
 const handleInterview = (application, round) => {
-    selectedApplicationId.value = application.form_response_id || application.id;
-    selectedInterviewRound.value = round;
-    interviewRemark.value = application[`remark${round}`] || application[`interview_remark_${round}`] || '';
-    interviewRemarkModel.value = true;
+    const responseId = application.form_response_id || application.id;
+    
+    if (round === 1) {
+        interview1Params.value = {
+            id: responseId,
+            application_id: responseId,
+            form_response_id: responseId
+        };
+        interview1Id.value = responseId;
+        interview1Model.value = true;
+    } else if (round === 2) {
+        interview2Params.value = {
+            id: responseId,
+            application_id: responseId,
+            form_response_id: responseId
+        };
+        interview2Id.value = responseId;
+        interview2Model.value = true;
+    }
 };
 
-const saveInterviewRemark = async () => {
-    savingRemark.value = true;
-    try {
-        // Save interview remark via API
-        const remarkField = `remark${selectedInterviewRound.value}`;
-        const payload = {
-            form_response_id: selectedApplicationId.value,
-            [remarkField]: interviewRemark.value
-        };
-        
-        // Update the application with interview remark
-        await $axios.post('/form/defaultForm', payload, {
-            params: {
-                form_code: 'hr_job_application',
-                form_response_id: selectedApplicationId.value
-            }
-        });
-        
-        interviewRemarkModel.value = false;
-        await loadData();
-    } catch (err) {
-        alert(err.response?.data?.message || err.message || 'Failed to save interview remark');
-        console.error('Error saving interview remark:', err);
-    } finally {
-        savingRemark.value = false;
-    }
+const handleInterview1Submit = async () => {
+    interview1Model.value = false;
+    await loadData();
+};
+
+const handleInterview2Submit = async () => {
+    interview2Model.value = false;
+    await loadData();
 };
 
 /* ------------------ CV Evaluation Handler ------------------ */
 const handleCVEvaluation = (application) => {
     const responseId = application.form_response_id || application.id;
     cvEvaluationParams.value = { 
+        id: responseId,
         application_id: responseId,
         form_response_id: responseId
     };

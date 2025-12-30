@@ -5,10 +5,9 @@
                 :formCode="formCode"
                 :endPoint="endPoint"
                 :params="params"
-                @submit="handleFormSubmit"
-                
-                
+                :id="id"
                 :staticForm="staticForm"
+                @submit="handleFormSubmit"
             />
         </template>
     </UModal>
