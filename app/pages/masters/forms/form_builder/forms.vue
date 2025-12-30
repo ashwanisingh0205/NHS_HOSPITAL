@@ -92,6 +92,9 @@ const staticFormConfig = computed(() => {
 
     return {
         fields: [
+            { id: 'corporate_id', field_code: 'corporate_id', data_type: 'NUMBER', label: 'Corporate ID', value: [initial.corporate_id ?? 1], required: true },
+            { id: 'unit_id', field_code: 'unit_id', data_type: 'NUMBER', label: 'Unit ID', value: [initial.unit_id ?? 1], required: true },
+            { id: 'category_id', field_code: 'category_id', data_type: 'NUMBER', label: 'Category ID', value: [initial.category_id ?? 1], required: true },
             { id: 'form_type', field_code: 'form_type', data_type: 'DROPDOWN', choices: formTypeArray, label: 'Form Type', value: [initial.form_type ?? 'FORM'], required: false },
             { id: 'form_code', field_code: 'form_code', data_type: 'TEXT', label: 'Form Code', value: [initial.form_code ?? ''], required: false },
             { id: 'form_name', field_code: 'form_name', data_type: 'TEXT', label: 'Form Name', value: [initial.form_name ?? ''], required: false },
@@ -165,6 +168,8 @@ const handleEdit = async (form) => {
 
 const handleFormSubmit = async () => {
     formModel.value = false;
+    params.value = null;
+    formData.value = null;
     await loadData();
 };
 

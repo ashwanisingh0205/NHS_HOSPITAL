@@ -89,52 +89,59 @@ watch([() => props.formCode, () => props.staticForm, () => props.endPoint, () =>
 const handleSubmit = async () => {
     submitting.value = true
     try {
-        // Build payload from form fields
-        // const payload = {}
-        // form.value.fields.forEach(field => {
-        //     const fieldCode = field.field_code || field.id
-        //     if (fieldCode) {
-        //         const fieldValue = field.value?.[0]
-        //         // Include all fields, even if empty (null/undefined/empty string)
-        //         // This ensures choice_code and other optional fields are sent
-        //         payload[fieldCode] = fieldValue !== undefined && fieldValue !== null ? fieldValue : ''
-        //     }
-        // })
-        //
-        // // Merge params into payload (except 'id' which is handled separately for edit mode)
-        // if (props.params) {
-        //     Object.keys(props.params).forEach(key => {
-        //         if (key !== 'id' && props.params[key] !== undefined && props.params[key] !== null) {
-        //             payload[key] = props.params[key]
-        //         }
-        //     })
-        // }
-        //
-        
-        
-            const isEdit = !!props.params?.id || !!props.id
-            const requestConfig = {
-                headers: { 'Content-Type': 'application/json' }
+        // Collect form data directly from fields
+        const formData = form.value.fields.reduce((acc, field) => {
+            const fieldCode = field.field_code || field.id
+            if (fieldCode) {
+                const fieldValue = field.value?.[0]
+                acc[fieldCode] = fieldValue !== undefined && fieldValue !== null ? fieldValue : ''
             }
-            
-            // For PATCH requests, add id and form_code as query params
-            if (isEdit) {
-                requestConfig.params = { 
-                    id: Number(props.params?.id || props.id)
-                }
-                // Add form_code to query params if provided
-                if (props.formCode) {
-                    requestConfig.params.form_code = props.formCode
-                }
-            }
-            
-            await $axios[isEdit ? 'patch' : 'post'](
-                end,
-                form,
-                requestConfig
+            return acc
+        }, {})
+        
+        // Merge additional params (except 'id' which is handled separately for edit mode)
+        if (props.params) {
+            Object.assign(formData, 
+                Object.fromEntries(
+                    Object.entries(props.params).filter(([key]) => key !== 'id')
+                )
             )
+        }
         
-        emit('submit', { form: form.value, payload })
+        // If using staticForm, just emit the data and let parent handle submission
+        if (props.staticForm) {
+            emit('submit', { form: form.value, payload: formData })
+            submitting.value = false
+            return
+        }
+        
+        const isEdit = !!props.params?.id || !!props.id
+        const submitEndpoint = props.endPoint || '/form/defaultForm'
+        
+        const requestConfig = {
+            headers: { 'Content-Type': 'application/json' }
+        }
+        
+        // For PATCH requests, add id and form_code as query params
+        if (isEdit) {
+            requestConfig.params = { 
+                id: Number(props.params?.id || props.id)
+            }
+            if (props.formCode) {
+                requestConfig.params.form_code = props.formCode
+            }
+        } else if (!props.endPoint && props.formCode) {
+            // For POST requests, add form_code as query param if using defaultForm endpoint
+            requestConfig.params = { form_code: props.formCode }
+        }
+        
+        await $axios[isEdit ? 'patch' : 'post'](
+            submitEndpoint,
+            formData,
+            requestConfig
+        )
+        
+        emit('submit', { form: form.value, payload: formData })
     } catch (err) {
         console.error('Form submission error:', err)
         console.error('Error response:', err.response?.data)

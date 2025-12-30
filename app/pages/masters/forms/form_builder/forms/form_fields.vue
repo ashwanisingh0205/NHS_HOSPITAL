@@ -85,10 +85,11 @@ const staticFormConfig = computed(() => {
     
     return {
         fields: [
+            { id: 'form_id', field_code: 'form_id', data_type: 'NUMBER', label: 'Form ID', value: [data.form_id || selectedForm.value?.id || ''], required: true },
             { id: 'data_type', field_code: 'data_type', data_type: 'DROPDOWN', choices: dataTypeArray, label: 'Data Type', value: [data.data_type || 'TEXT'], required: true },
             { id: 'field_code', field_code: 'field_code', data_type: 'TEXT', label: 'Field Code', value: [data.field_code || ''], required: true },
             { id: 'label', field_code: 'label', data_type: 'TEXT', label: 'Label', value: [data.label || ''], required: true },
-            { id: 'col', field_code: 'col', data_type: 'TEXT', label: 'Column', value: [data.col ] },
+            { id: 'col', field_code: 'col', data_type: 'TEXT', label: 'Column', value: [data.col || ''], required: false },
             { id: 'priority', field_code: 'priority', data_type: 'NUMBER', label: 'Priority', value: [data.priority || 0], required: false },
             { id: 'choice_code', field_code: 'choice_code', data_type: 'TEXT', label: 'Choice Code', value: [data.choice_code || ''], required: false },
             { id: 'status', field_code: 'status', data_type: 'CHECKBOX', label: 'Status', value: [data.status ?? true], required: false }
@@ -161,11 +162,11 @@ const handleFormSubmit = async (submitData) => {
         console.log('Form submit payload:', payload);
         
         if (editingField.value) {
-            // Ensure choice_code is included in PATCH payload
-            // Use payload.choice_code directly (don't convert empty string to null)
             const patchPayload = {
                 ...payload,
-                choice_code: payload.choice_code !== undefined ? payload.choice_code : null
+                col: payload.col || null,
+                priority: Number(payload.priority) || 0,
+                choice_code: payload.choice_code ?? null
             };
             console.log('PATCH payload:', patchPayload);
             console.log('PATCH request URL:', `/masters/forms/field?id=${editingField.value.id}`);
@@ -182,10 +183,10 @@ const handleFormSubmit = async (submitData) => {
                     data_type: payload.data_type,
                     field_code: payload.field_code,
                     label: payload.label,
-                    label_position: payload.label_position,
-                    status: payload.status,
-                    priority: Number(payload.priority),
-                    choice_code: payload.choice_code || null
+                    col: payload.col || null,
+                    priority: Number(payload.priority) || 0,
+                    choice_code: payload.choice_code || null,
+                    status: payload.status ?? true
                 }]
             };
             console.log('POST payload:', postPayload);
