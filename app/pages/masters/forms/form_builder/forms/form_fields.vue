@@ -71,6 +71,7 @@ const staticFormConfig = computed(() => {
     const dataTypeArray = [
         { id: "TEXT", value: "Text" },
         { id: "NUMBER", value: "Number" },
+        { id: "HIDDEN", value: "Hidden" },
         { id: "DATE", value: "Date" },
         { id: "DROPDOWN", value: "Dropdown/Select" },
         { id: "CHECKBOX", value: "Checkbox" },
@@ -85,7 +86,7 @@ const staticFormConfig = computed(() => {
     
     return {
         fields: [
-            { id: 'form_id', field_code: 'form_id', data_type: 'NUMBER', label: 'Form ID', value: [data.form_id || selectedForm.value?.id || ''], required: true },
+            { id: 'form_id', field_code: 'form_id', data_type: 'HIDDEN', label: 'Form ID', value: [data.form_id || selectedForm.value?.id || ''], required: true },
             { id: 'data_type', field_code: 'data_type', data_type: 'DROPDOWN', choices: dataTypeArray, label: 'Data Type', value: [data.data_type || 'TEXT'], required: true },
             { id: 'field_code', field_code: 'field_code', data_type: 'TEXT', label: 'Field Code', value: [data.field_code || ''], required: true },
             { id: 'label', field_code: 'label', data_type: 'TEXT', label: 'Label', value: [data.label || ''], required: true },

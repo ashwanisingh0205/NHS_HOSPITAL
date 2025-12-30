@@ -1,4 +1,5 @@
 <template>
+    
     <!-- Text Input Types -->
     <UFormField
         v-if="['TEXT', 'EMAIL', 'NUMBER', 'PASSWORD', 'TEL', 'URL', 'DATE'].includes(field.data_type)"
@@ -26,8 +27,10 @@
         :error="field.error"
         :label="field.label">
         <USelectMenu
-            v-model="dropdownValue"
-            :items="dropdownOptions"
+            v-model="field.value[0]"
+            :items="field.choices"
+            value-key="key"
+            label-key="value"
             :icon="field.icon"
             class="w-full"
             :placeholder="field.label"
@@ -135,37 +138,6 @@ const props = defineProps({
 
 const options = computed(() => props.field.choices || props.field.options || [])
 
-// Dropdown
-const dropdownOptions = computed(() => 
-    (props.field.choices || []).map(choice => {
-        if (typeof choice === 'string') {
-            return { label: choice, value: String(choice) }
-        }
-        // Prefer choice_code, then data, then label, then id - but always convert to string
-        const value = choice.choice_code || choice.data || choice.label || choice.value || choice.key || choice.id || ''
-        return {
-            label: choice.label || choice.value || choice.name || choice.data || '',
-            value: String(value) // Ensure value is always a string
-        }
-    })
-)
-
-const dropdownValue = computed({
-    get: () => {
-        const val = props.field.value?.[0]
-        if (!val) return null
-        // Convert to string for comparison
-        const valStr = String(val)
-        return dropdownOptions.value.find(opt => 
-            String(opt.value) === valStr || opt.value === val
-        ) || null
-    },
-    set: (val) => {
-        // Ensure we always set a string value
-        const selectedValue = val?.value ?? val ?? ''
-        props.field.value[0] = String(selectedValue)
-    }
-})
 
 // Checkbox helpers
 const isSelected = (value) => {

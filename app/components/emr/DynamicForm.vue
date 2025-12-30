@@ -21,8 +21,6 @@
         <div v-else class="text-center py-8 text-gray-500 dark:text-gray-400">
             <p>No form fields available. Please check the API endpoint configuration.</p>
         </div>
-        
-        
     </UForm>
 </template>
 
@@ -65,18 +63,9 @@ const loadForm = async () => {
         
         const { data } = await $axios.get(endpoint, { params: requestParams })
         
-        const fields = data?.success ? (data.fields || []) : []
-        
-        form.value = {
-            fields: Array.isArray(fields) ? fields.map(field => ({
-                ...field,
-                value: Array.isArray(field.value) ? field.value :
-                       (field.value != null ? [field.value] : [''])
-            })) : []
-        }
+        form.value = data
         
     } catch (err) {
-        console.error('Error loading form:', err)
         form.value = { fields: [] }
     } finally {
         loading.value = false
@@ -89,28 +78,11 @@ watch([() => props.formCode, () => props.staticForm, () => props.endPoint, () =>
 const handleSubmit = async () => {
     submitting.value = true
     try {
-        // Collect form data directly from fields
-        const formData = form.value.fields.reduce((acc, field) => {
-            const fieldCode = field.field_code || field.id
-            if (fieldCode) {
-                const fieldValue = field.value?.[0]
-                acc[fieldCode] = fieldValue !== undefined && fieldValue !== null ? fieldValue : ''
-            }
-            return acc
-        }, {})
         
-        // Merge additional params (except 'id' which is handled separately for edit mode)
-        if (props.params) {
-            Object.assign(formData, 
-                Object.fromEntries(
-                    Object.entries(props.params).filter(([key]) => key !== 'id')
-                )
-            )
-        }
         
         // If using staticForm, just emit the data and let parent handle submission
         if (props.staticForm) {
-            emit('submit', { form: form.value, payload: formData })
+            emit('submit', { form: form.value })
             submitting.value = false
             return
         }
@@ -137,7 +109,7 @@ const handleSubmit = async () => {
         
         await $axios[isEdit ? 'patch' : 'post'](
             submitEndpoint,
-            formData,
+            form.value,
             requestConfig
         )
         
