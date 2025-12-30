@@ -379,13 +379,14 @@ const mainNavItems = [
     { id: 'FRONT', name: 'Front Desk', icon: 'lucide:monitor-check' },
     { id: 'OPD', name: 'OPD', icon: 'lucide:stethoscope' },
     { id: 'IPD', name: 'IPD', icon: 'lucide:bed' },
+    { id: 'CORPORATE', name: 'Corporate/TPA', icon: 'lucide:credit-card' },
     { id: 'PHAR', name: 'Store/Pharmacy', icon: 'lucide:tablets' },
     { id: 'OT', name: 'OT', icon: 'lucide:slice' },
     { id: 'LIS', name: 'Laboratory', icon: 'lucide:flask-conical' },
     { id: 'RIS', name: 'Radiology', icon: 'lucide:radiation' },
     { id: 'HR', name: 'Human Resource', icon: 'lucide:users' },
     { id: 'BLOODBANK', name: 'Blood Bank', icon: 'lucide:droplets' },
-    { id: 'ACCOUNTS', name: 'Accounts', icon: 'lucide:notebook-tabs' },
+    { id: 'ACCOUNTS', name: 'Accounts', icon: 'lucide:indian-rupee' },
     { id: 'MIS', name: 'MIS/BI', icon: 'lucide:file-chart-column-increasing' },
 ];
 
@@ -400,40 +401,150 @@ const navSections = {
         { name :"OPD Queue", path: '/opd/opd_queue', icon: 'lucide:list-ordered'},
         { name :"IPD Help Desk", path: '/ipd/ipd_help_desk', icon: 'lucide:grid-2x2'},
     ],
+    OPD: [
+        { name :"OPD Queue", path: '/opd/opd_queue', icon: 'lucide:list-ordered'},
+        { name :"OPD EMR", path: '/emr/opd_emr', icon: 'lucide:list-ordered'},
+        { name :"Appointments", path: '/opd/appointment/calendar', icon: 'lucide:list-ordered'},
+        { name :"OPD Register", path: '/mis/opd/opd_register', icon: 'lucide:list-ordered'},
+        { name :"Patient Register", path: '/mis/patient/patient_register', icon: 'lucide:list-ordered'},
+    ],
+    IPD: [
+        { name :"IPD Help Desk", path: '/ipd/ipd_help_desk', icon: 'lucide:grid-2x2'},
+        { name :"IPD EMR", path: '/emr/ipd_emr', icon: 'lucide:grid-2x2'},
+        { name :"IPD Register", path: '/mis/ipd/ipd_register', icon: 'lucide:grid-2x2'},
+        { name :"IPD Dues", path: '/mis/ipd/ipd_dues', icon: 'lucide:grid-2x2'},
+        { name :"MRD Register", path: '/mis/ipd/mrd_register', icon: 'lucide:grid-2x2'},
+    ],
+    CORPORATE: [
+        { name :"Insurance Register", path: '/insurance/desk/help_desk', icon: 'lucide:user-plus'},
+        { name :"Pre-auth", path: '/insurance/desk/pre_auth', icon: 'lucide:list-ordered'},
+        { name :"Payments", path: '/insurance/desk/payments', icon: 'lucide:grid-2x2'},
+        { name :"Settle Patient Bill", path: '/insurance/settlement/payment_settlement', icon: 'lucide:grid-2x2'},
+    ],
+    PHAR: [
+        {
+            name: 'Purchase',
+            icon: 'lucide:file-bar-chart',
+            children: [
+                { name :"Demand", path: '/store/purchase/demand', icon: 'lucide:user-plus'},
+                { name :"Approval", path: '/store/purchase/demand_approval', icon: 'lucide:list-ordered'},
+                { name :"PO", path: '/store/purchase/po', icon: 'lucide:grid-2x2'},
+                { name :"GRN", path: '/store/purchase/grn', icon: 'lucide:grid-2x2'},
+                { name :"Receival", path: '/store/purchase/grn_receive', icon: 'lucide:grid-2x2'},
+                { name :"Adjustment", path: '/store/purchase/adjustment', icon: 'lucide:grid-2x2'},
+                { name :"Demand Register", path: '/store/purchase/demand_register', icon: 'lucide:grid-2x2'},
+                { name :"PO Register", path: '/store/purchase/po_register', icon: 'lucide:grid-2x2'},
+                { name :"GRN Register", path: '/store/purchase/grn_register', icon: 'lucide:grid-2x2'},
+                { name :"Adjustment Register", path: '/store/purchase/adjustment_register', icon: 'lucide:grid-2x2'},
+            ]
+        },
+        {
+            name: 'Sale',
+            icon: 'lucide:file-bar-chart',
+            children: [
+                { name :"Medicine Indents", path: '/store/sale/indent', icon: 'lucide:user-plus'},
+                { name :"Sale", path: '/store/sale/sale', icon: 'lucide:user-plus'},
+                { name :"Sale Register", path: '/store/sale/sale_register', icon: 'lucide:user-plus'},
+                { name :"Patient Return", path: '/store/sale/return', icon: 'lucide:list-ordered'},
+                { name :"Stock Transfer", path: '/store/sale/stock_transfer', icon: 'lucide:list-ordered'},
+                { name :"Consumption", path: '/store/sale/consumption', icon: 'lucide:grid-2x2'},
+            ]
+        },
+        {
+            name: 'Stock',
+            icon: 'lucide:file-bar-chart',
+            children: [
+                { name :"Stock In Hand", path: '/store/stock/stock_in_hand', icon: 'lucide:list-ordered'},
+                { name :"Stock Summary", path: '/store/stock/stock_summary', icon: 'lucide:grid-2x2'},
+                { name :"Stock History", path: '/store/stock/stock_history', icon: 'lucide:grid-2x2'},
+                { name :"Item History", path: '/store/stock/item_history', icon: 'lucide:grid-2x2'},
+                { name :"Expired/Near Expiry", path: '/store/stock/expired', icon: 'lucide:grid-2x2'},
+                { name :"ABC Analysis", path: '/store/stock/abc_analysis', icon: 'lucide:grid-2x2'},
+                { name :"Stock Movement", path: '/store/stock/stock_movement', icon: 'lucide:grid-2x2'},
+                { name :"NRX/Other Categories", path: '/store/stock/nrx', icon: 'lucide:grid-2x2'},
+                { name :"GST Register", path: '/store/stock/gst_register', icon: 'lucide:grid-2x2'},
+                { name :"Stock Audits", path: '/store/stock/audit', icon: 'lucide:list-ordered'},
+            ]
+        },
+        {
+            name: 'BME',
+            icon: 'lucide:file-bar-chart',
+            children: [
+                { name :"Equipment Register", path: '/store/bme/equipments', icon: 'lucide:grid-2x2'},
+                { name :"Downtime Report", path: '/store/bme/downtime', icon: 'lucide:grid-2x2'},
+                { name :"Stock Utilization Report", path: '/store/bme/stock_utilization', icon: 'lucide:grid-2x2'},
+                { name :"AMC Tracker", path: '/store/bme/amc_tracker', icon: 'lucide:grid-2x2'},
+                { name :"History Card", path: '/store/bme/history_card', icon: 'lucide:grid-2x2'},
+            ]
+        },
+    ],
+    OT: [
+        { name :"OT Scheduler", path: '/ot/ot_scheduler', icon: 'lucide:user-plus'},
+        { name :"OT Register", path: '/ot/ot_register', icon: 'lucide:list-ordered'},
+        { name :"Patient Tracker", path: '/ot/patient_trakcer', icon: 'lucide:grid-2x2'},
+        { name :"OT Utilization", path: '/ot/ot_utilization', icon: 'lucide:grid-2x2'},
+        { name :"OT Signage", path: '/ot/sianage', icon: 'lucide:grid-2x2'},
+    ],
+    LIS: [
+        { name :"Lab Orders", path: '/visit/registration', icon: 'lucide:user-plus'},
+        { name :"Lab Queue", path: '/visit/registration', icon: 'lucide:user-plus'},
+        { name :"Sample Collection", path: '/opd/opd_queue', icon: 'lucide:list-ordered'},
+        { name :"Interface Monitor", path: '/ipd/ipd_help_desk', icon: 'lucide:grid-2x2'},
+    ],
+    RIS: [
+        { name :"Radiology Studies", path: '/visit/registration', icon: 'lucide:user-plus'},
+        { name :"Scan Queues", path: '/visit/registration', icon: 'lucide:user-plus'},
+        { name :"PACS Monitor", path: '/opd/opd_queue', icon: 'lucide:list-ordered'},
+    ],
     HR: [
         { name :"Employee Register", path: '/hrm/profile/employees', icon: 'lucide:users'},
-        { name: 'Job Applications', path: '/hrm/recruitment/applications', icon: 'lucide:user-round-plus' },
-        { name: 'New Joining', path: '/hrm/recruitment/joining', icon: 'lucide:user-round-plus' },
+        {
+            name: 'Recruitment',
+            icon: 'lucide:file-bar-chart',
+            children: [
+                { name: 'Job Applications', path: '/hrm/recruitment/applications', icon: 'lucide:user-round-plus' },
+                { name: 'New Joining', path: '/hrm/recruitment/joining', icon: 'lucide:user-round-plus' },
+            ]
+        },
+        {
+            name: 'Attendance',
+            icon: 'lucide:file-bar-chart',
+            children: [
+                { name: 'Job Applications', path: '/hrm/recruitment/applications', icon: 'lucide:user-round-plus' },
+                { name: 'New Joining', path: '/hrm/recruitment/joining', icon: 'lucide:user-round-plus' },
+            ]
+        },
+        {
+            name: 'Payroll',
+            icon: 'lucide:file-bar-chart',
+            children: [
+                { name: 'Job Applications', path: '/hrm/recruitment/applications', icon: 'lucide:user-round-plus' },
+                { name: 'New Joining', path: '/hrm/recruitment/joining', icon: 'lucide:user-round-plus' },
+            ]
+        },
+        {
+            name: 'Training',
+            icon: 'lucide:file-bar-chart',
+            children: [
+                { name: 'Job Applications', path: '/hrm/recruitment/applications', icon: 'lucide:user-round-plus' },
+                { name: 'New Joining', path: '/hrm/recruitment/joining', icon: 'lucide:user-round-plus' },
+            ]
+        },
     ],
-    analytics: [
-        { name: 'Overview', path: '/analytics', icon: 'lucide:activity' },
-        { name: 'Traffic', path: '/analytics/traffic', icon: 'lucide:trending-up' },
-        { name: 'Conversion', path: '/analytics/conversion', icon: 'lucide:target' },
-        { name: 'Revenue', path: '/analytics/revenue', icon: 'lucide:dollar-sign' },
+    BLOODBANK: [
+        { name :"Registration", path: '/visit/registration', icon: 'lucide:user-plus'},
+        { name :"OPD Queue", path: '/opd/opd_queue', icon: 'lucide:list-ordered'},
+        { name :"IPD Help Desk", path: '/ipd/ipd_help_desk', icon: 'lucide:grid-2x2'},
     ],
-    team: [
-        { name: 'Members', path: '/team/members', icon: 'lucide:users' },
-        { name: 'Roles', path: '/team/roles', icon: 'lucide:shield' },
-        { name: 'Permissions', path: '/team/permissions', icon: 'lucide:lock' },
-    
+    ACCOUNTS: [
+        { name :"Registration", path: '/visit/registration', icon: 'lucide:user-plus'},
+        { name :"OPD Queue", path: '/opd/opd_queue', icon: 'lucide:list-ordered'},
+        { name :"IPD Help Desk", path: '/ipd/ipd_help_desk', icon: 'lucide:grid-2x2'},
     ],
-    messages: [
-        { name: 'Inbox', path: '/messages', icon: 'lucide:inbox' },
-        { name: 'Sent', path: '/messages/sent', icon: 'lucide:send' },
-        { name: 'Drafts', path: '/messages/drafts', icon: 'lucide:file-edit' },
-        { name: 'Archived', path: '/messages/archived', icon: 'lucide:archive' },
-    ],
-    calendar: [
-        { name: 'Month View', path: '/calendar', icon: 'lucide:calendar-days' },
-        { name: 'Week View', path: '/calendar/week', icon: 'lucide:calendar-range' },
-        { name: 'Events', path: '/calendar/events', icon: 'lucide:calendar-check' },
-        { name: 'Reminders', path: '/calendar/reminders', icon: 'lucide:bell' },
-    ],
-    files: [
-        { name: 'All Files', path: '/files', icon: 'lucide:folder' },
-        { name: 'Recent', path: '/files/recent', icon: 'lucide:clock' },
-        { name: 'Shared', path: '/files/shared', icon: 'lucide:share-2' },
-        { name: 'Trash', path: '/files/trash', icon: 'lucide:trash-2' },
+    MIS: [
+        { name :"Registration", path: '/visit/registration', icon: 'lucide:user-plus'},
+        { name :"OPD Queue", path: '/opd/opd_queue', icon: 'lucide:list-ordered'},
+        { name :"IPD Help Desk", path: '/ipd/ipd_help_desk', icon: 'lucide:grid-2x2'},
     ],
 };
 

@@ -1,9 +1,9 @@
 <template>
-    Dashboard
+    Stock History
 </template>
 
 <script setup>
 definePageMeta({
-  layout: 'home'
+    layout: 'home'
 })
 </script>

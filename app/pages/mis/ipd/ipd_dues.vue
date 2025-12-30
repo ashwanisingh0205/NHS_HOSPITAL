@@ -1,9 +1,9 @@
 <template>
-    Dashboard
+    IPD Dues after discharge
 </template>
 
 <script setup>
 definePageMeta({
-  layout: 'home'
+    layout: 'home'
 })
 </script>

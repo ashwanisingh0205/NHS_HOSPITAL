@@ -3,7 +3,10 @@
         class="w-full"
         :loading="loading" :title="title" @handleAdd="handleAdd" v-model="searchQuery">
         <UTable :loading="loading" :data="filteredDetails" :columns="columns">
-            <template v-if="!loading" #empty>
+            <template #loading>
+                <CKLoader />
+            </template>
+            <template #empty>
                 <UError :error="{ statusMessage: error || 'No Record Found!!' }" />
             </template>
             <template #id-cell="{ row }">
@@ -32,6 +35,7 @@
 import DynamicForm from "~/components/emr/DynamicForm.vue";
 import CKEdit from "~/components/common/CKEdit.vue";
 import CKCardList from "~/components/common/CKCardList.vue";
+import CKLoader from "~/components/common/CKLoader.vue";
 
 definePageMeta({ layout: 'home' });
 

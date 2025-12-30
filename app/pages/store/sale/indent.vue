@@ -1,9 +1,9 @@
 <template>
-    Dashboard
+    Medicine Indent
 </template>
 
 <script setup>
 definePageMeta({
-  layout: 'home'
+    layout: 'home'
 })
 </script>

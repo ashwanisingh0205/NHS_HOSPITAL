@@ -1,9 +1,10 @@
 <template>
-    Dashboard
+    OT Signage
 </template>
 
 <script setup>
 definePageMeta({
-  layout: 'home'
+    layout: 'home'
 })
+
 </script>

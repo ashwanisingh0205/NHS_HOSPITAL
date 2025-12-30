@@ -1,9 +1,9 @@
 <template>
-    Dashboard
+    PO Generation
 </template>
 
 <script setup>
 definePageMeta({
-  layout: 'home'
+    layout: 'home'
 })
 </script>

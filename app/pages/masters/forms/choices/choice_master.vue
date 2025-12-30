@@ -3,7 +3,10 @@
         <div class="w-1/3">
             <CKCardList :loading="loading" :title="title" @handleAdd="handleAdd" v-model="searchQuery">
                 <UTable :loading="loading" :data="filteredData" :columns="columns">
-                    <template v-if="!loading" #empty>
+                    <template #loading>
+                        <CKLoader />
+                    </template>
+                    <template #empty>
                         <UError :error="{ statusMessage: error || 'No Record Found!!' }" />
                     </template>
                     <template #choice_code-cell="{ row }">
@@ -33,6 +36,7 @@
 import CKEdit from "~/components/common/CKEdit.vue";
 import CKCardList from "~/components/common/CKCardList.vue";
 import CKFormModal from "~/components/common/CKFormModal.vue";
+import CKLoader from "~/components/common/CKLoader.vue";
 
 definePageMeta({ layout: 'home' });
 

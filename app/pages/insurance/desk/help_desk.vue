@@ -1,9 +1,10 @@
 <template>
-    Dashboard
+    Insurance Help Desk
 </template>
 
 <script setup>
 definePageMeta({
-  layout: 'home'
+    layout: 'home'
 })
+
 </script>

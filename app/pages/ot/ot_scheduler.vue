@@ -1,9 +1,10 @@
 <template>
-    Dashboard
+    OT Scheduler
 </template>
 
 <script setup>
 definePageMeta({
-  layout: 'home'
+    layout: 'home'
 })
+
 </script>

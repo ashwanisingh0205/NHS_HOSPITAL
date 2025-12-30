@@ -1,9 +1,9 @@
 <template>
-    Dashboard
+    Expired
 </template>
 
 <script setup>
 definePageMeta({
-  layout: 'home'
+    layout: 'home'
 })
 </script>

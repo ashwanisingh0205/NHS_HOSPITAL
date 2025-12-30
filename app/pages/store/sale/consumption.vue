@@ -1,9 +1,9 @@
 <template>
-    Dashboard
+    Stock Consumption
 </template>
 
 <script setup>
 definePageMeta({
-  layout: 'home'
+    layout: 'home'
 })
 </script>

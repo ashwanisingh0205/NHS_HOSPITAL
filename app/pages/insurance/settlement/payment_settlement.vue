@@ -1,9 +1,10 @@
 <template>
-    Dashboard
+    Payment Settlement
 </template>
 
 <script setup>
 definePageMeta({
-  layout: 'home'
+    layout: 'home'
 })
+
 </script>

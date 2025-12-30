@@ -1,9 +1,9 @@
 <template>
-    Dashboard
+    Abc Analysis
 </template>
 
 <script setup>
 definePageMeta({
-  layout: 'home'
+    layout: 'home'
 })
 </script>

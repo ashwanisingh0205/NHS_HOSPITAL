@@ -1,4 +1,5 @@
 <template>
+    Appointment Calendar
     <!--    list of consultants: hr_employee_master -->
     <!-- Calender : local list -->
 </template>

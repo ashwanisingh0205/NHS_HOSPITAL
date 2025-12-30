@@ -1,9 +1,9 @@
 <template>
-    Dashboard
+    IPD EMR
 </template>
 
 <script setup>
 definePageMeta({
-  layout: 'home'
+    layout: 'home'
 })
 </script>

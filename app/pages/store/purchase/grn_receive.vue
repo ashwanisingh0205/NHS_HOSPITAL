@@ -1,9 +1,9 @@
 <template>
-    Dashboard
+    GRN Receive
 </template>
 
 <script setup>
 definePageMeta({
-  layout: 'home'
+    layout: 'home'
 })
 </script>

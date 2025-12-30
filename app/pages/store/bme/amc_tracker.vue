@@ -1,9 +1,9 @@
 <template>
-    Dashboard
+    AMC Tracker
 </template>
 
 <script setup>
 definePageMeta({
-  layout: 'home'
+    layout: 'home'
 })
 </script>

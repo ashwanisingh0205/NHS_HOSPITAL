@@ -1,9 +1,9 @@
 <template>
-    Dashboard
+    Patient Register
 </template>
 
 <script setup>
 definePageMeta({
-  layout: 'home'
+    layout: 'home'
 })
 </script>

@@ -1,9 +1,9 @@
 <template>
-    Dashboard
+    Downtime Report
 </template>
 
 <script setup>
 definePageMeta({
-  layout: 'home'
+    layout: 'home'
 })
 </script>

@@ -1,9 +1,9 @@
 <template>
-    Dashboard
+    Demand Approval
 </template>
 
 <script setup>
 definePageMeta({
-  layout: 'home'
+    layout: 'home'
 })
 </script>
