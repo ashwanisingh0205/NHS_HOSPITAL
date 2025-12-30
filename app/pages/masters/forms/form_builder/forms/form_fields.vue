@@ -69,18 +69,22 @@ const staticFormConfig = computed(() => {
     const data = editingField.value || { form_id: selectedForm.value?.id };
     
     const dataTypeArray = [
-        { id: "TEXT", value: "Text" },
-        { id: "NUMBER", value: "Number" },
-        { id: "DATE", value: "Date" },
-        { id: "DROPDOWN", value: "Dropdown/Select" },
-        { id: "CHECKBOX", value: "Checkbox" },
-        { id: "RADIO", value: "Radio" },
-        { id: "FILE", value: "File" },
-        { id: "CARD", value: "Card" },
-        { id: "GROUP", value: "Group" },
-        { id: "TAB", value: "Tab" },
-        { id: "SECTION", value: "Section" },
-        { id: "TABLE", value: "Table" }
+        { id: "TEXT", value: "TEXT" },
+        { id: "NUMBER", value: "NUMBER" },
+        { id: "DATE", value: "DATE" },
+        { id: "DROPDOWN", value: "DROPDOWN" },
+        { id: "CHECKBOX", value: "CHECKBOX" },
+        { id: "RADIO", value: "RADIO" },
+        { id: "FILE", value: "FILE" },
+        { id: "CARD", value: "CARD" },
+        { id: "GROUP", value: "GROUP" },
+        { id: "TAB", value: "TAB" },
+        { id: "SECTION", value: "SECTION" },
+        { id: "TABLE", value: "TABLE" },
+        {id:"STAR", value: "STAR"},
+        {id:"TEXTAREA", value: "TEXTAREA"},
+        {id:"EMOJI", value: "EMOJI"},
+        {id:"HIDDEN", value: "HIDDEN"},
     ]
     
     return {

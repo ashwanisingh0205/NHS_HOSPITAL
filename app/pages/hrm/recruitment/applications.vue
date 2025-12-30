@@ -464,7 +464,8 @@ const handleCVEvaluation = (application) => {
     cvEvaluationParams.value = { 
         id: responseId,
         application_id: responseId,
-        form_response_id: responseId
+        form_response_id: responseId,
+        form_code: 'hr_cv_evaluation'
     };
     cvEvaluationId.value = responseId;
     cvEvaluationModel.value = true;
