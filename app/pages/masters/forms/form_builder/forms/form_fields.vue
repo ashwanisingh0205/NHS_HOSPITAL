@@ -69,22 +69,23 @@ const staticFormConfig = computed(() => {
     const data = editingField.value || { form_id: selectedForm.value?.id };
     
     const dataTypeArray = [
-        { key: "TEXT", label: "Text" },
-        { key: "NUMBER", label: "Number" },
-        { key: "DATE", label: "Date" },
-        { key: "DROPDOWN", label: "Dropdown/Select" },
-        { key: "CHECKBOX", label: "Checkbox" },
-        { key: "RADIO", label: "Radio" },
-        { key: "FILE", label: "File" },
-        { key: "CARD", label: "Card" },
-        { key: "GROUP", label: "Group" },
-        { key: "TAB", label: "Tab" },
-        { key: "SECTION", label: "Section" },
-        { key: "TABLE", label: "Table" }
+        { id: "TEXT", value: "Text" },
+        { id: "NUMBER", value: "Number" },
+        { id: "DATE", value: "Date" },
+        { id: "DROPDOWN", value: "Dropdown/Select" },
+        { id: "CHECKBOX", value: "Checkbox" },
+        { id: "RADIO", value: "Radio" },
+        { id: "FILE", value: "File" },
+        { id: "CARD", value: "Card" },
+        { id: "GROUP", value: "Group" },
+        { id: "TAB", value: "Tab" },
+        { id: "SECTION", value: "Section" },
+        { id: "TABLE", value: "Table" }
     ]
     
     return {
         fields: [
+            { id: 'form_id', field_code: 'form_id', data_type: 'NUMBER', label: 'Form ID', value: [data.form_id || selectedForm.value?.id || ''], required: true },
             { id: 'data_type', field_code: 'data_type', data_type: 'DROPDOWN', choices: dataTypeArray, label: 'Data Type', value: [data.data_type || 'TEXT'], required: true },
             { id: 'field_code', field_code: 'field_code', data_type: 'TEXT', label: 'Field Code', value: [data.field_code || ''], required: true },
             { id: 'label', field_code: 'label', data_type: 'TEXT', label: 'Label', value: [data.label || ''], required: true },
