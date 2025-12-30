@@ -26,8 +26,7 @@
         :error="field.error"
         :label="field.label">
         <USelectMenu
-            :model-value="dropdownItems.find(item => item.value === field.value[0])"
-            @update:model-value="field.value[0] = $event?.value ?? ''"
+            v-model="dropdownValue"
             :items="dropdownItems"
             :icon="field.icon"
             class="w-full"
@@ -136,9 +135,26 @@ const props = defineProps({
 const options = computed(() => props.field.choices || props.field.options || [])
 
 const dropdownItems = computed(() => 
-    options.value.map(opt => ({
-        label: opt.label,
-        value: opt.choice_code
-    }))
+    options.value.map(opt => {
+        if (typeof opt === 'string') {
+            return { label: opt, value: opt }
+        }
+        // Handle format: { id, label, choice_code, data }
+        return {
+            label: opt.label || opt.name || opt.value || '',
+            value: opt.choice_code || opt.data || opt.value || opt.id || opt.label || ''
+        }
+    })
 )
+
+const dropdownValue = computed({
+    get: () => {
+        const val = props.field.value?.[0]
+        if (!val) return null
+        return dropdownItems.value.find(item => item.value === val) || null
+    },
+    set: (val) => {
+        props.field.value[0] = val?.value ?? val ?? ''
+    }
+})
 </script>

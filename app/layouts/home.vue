@@ -558,7 +558,9 @@ const navSections = {
         { name: 'Application Status', path: '/hrm/recruitment/applications', icon: 'lucide:file-text' },
         { name: 'Joining Status', path: '/hrm/recruitment/joining', icon: 'lucide:user-check' },
         { name: 'Steps', path: '/hrm/steps', icon: 'lucide:archive' },
-        { name: 'Templates', path: '/projects/templates', icon: 'lucide:layout-template' },
+        { name: 'Registration', path: '/visit/registration', icon: 'lucide:layout-template' },
+        { name: 'IPD Registration', path: '/ipd/ipd_help_desk', icon: 'lucide:layout-template' },
+        { name: 'OPD Registration', path: '/opd/opd_queue', icon: 'lucide:layout-template' },
     ],
     analytics: [
         { name: 'Overview', path: '/analytics', icon: 'lucide:activity' },

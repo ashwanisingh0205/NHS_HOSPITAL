@@ -18,11 +18,7 @@
             </div>
         </template>
         
-        <div v-else class="text-center py-8 text-gray-500 dark:text-gray-400">
-            <p>No form fields available. Please check the API endpoint configuration.</p>
-        </div>
-        
-        
+       
     </UForm>
 </template>
 
@@ -38,6 +34,7 @@ const props = defineProps({
     staticForm: { type: Object, default: null },
     formCode: { type: String, default: "" },
     id: { type: String, default: "" },
+    noAutoSubmit: { type: Boolean, default: false }, // If true, only emit submit event without auto-submitting
 })
 const emit = defineEmits(['submit'])
 
@@ -59,21 +56,15 @@ const loadForm = async () => {
         // Build request params - always include form=true for form structure
         const requestParams = { 
             form: 'true',
-            ...(props.formCode && { form_code: props.formCode, id: props.id }),
-            ...(!props.formCode && props.params || {})
+            ...(props.formCode && { form_code: props.formCode, id: props.id })
+        }
+        if (props.params) {
+            Object.assign(requestParams, props.params)
         }
         
         const { data } = await $axios.get(endpoint, { params: requestParams })
         
-        const fields = data?.success ? (data.fields || []) : []
-        
-        form.value = {
-            fields: Array.isArray(fields) ? fields.map(field => ({
-                ...field,
-                value: Array.isArray(field.value) ? field.value :
-                       (field.value != null ? [field.value] : [''])
-            })) : []
-        }
+        form.value = data
         
     } catch (err) {
         console.error('Error loading form:', err)
@@ -89,27 +80,18 @@ watch([() => props.formCode, () => props.staticForm, () => props.endPoint, () =>
 const handleSubmit = async () => {
     submitting.value = true
     try {
-        // Collect form data directly from fields
-        const formData = form.value.fields.reduce((acc, field) => {
+        // Build payload from form fields
+        const formData = form.value.fields?.reduce((acc, field) => {
             const fieldCode = field.field_code || field.id
             if (fieldCode) {
                 const fieldValue = field.value?.[0]
                 acc[fieldCode] = fieldValue !== undefined && fieldValue !== null ? fieldValue : ''
             }
             return acc
-        }, {})
+        }, {}) || {}
         
-        // Merge additional params (except 'id' which is handled separately for edit mode)
-        if (props.params) {
-            Object.assign(formData, 
-                Object.fromEntries(
-                    Object.entries(props.params).filter(([key]) => key !== 'id')
-                )
-            )
-        }
-        
-        // If using staticForm, just emit the data and let parent handle submission
-        if (props.staticForm) {
+        // If using staticForm or noAutoSubmit, just emit the data and let parent handle submission
+        if (props.staticForm || props.noAutoSubmit) {
             emit('submit', { form: form.value, payload: formData })
             submitting.value = false
             return
@@ -137,7 +119,7 @@ const handleSubmit = async () => {
         
         await $axios[isEdit ? 'patch' : 'post'](
             submitEndpoint,
-            formData,
+            form.value,
             requestConfig
         )
         
