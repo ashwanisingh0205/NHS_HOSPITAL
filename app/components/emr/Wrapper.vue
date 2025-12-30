@@ -8,11 +8,11 @@
         :error="field.error"
         :label="field.label">
         <UInput
-            v-model="field.value[0]"
+            :model-value="field.value[0]"
             :type="field.data_type.toLowerCase()"
             :placeholder="field.label"
             :icon="field.icon"
-            :maxlength="field.data_type === 'NUMBER' ? 10 : undefined"
+            :maxlength="field?.maxlength"
             class="w-full"
         />
     </UFormField>
@@ -26,12 +26,13 @@
         :error="field.error"
         :label="field.label">
         <USelectMenu
-            :model-value="dropdownItems.find(item => item.value === field.value[0])"
-            @update:model-value="field.value[0] = $event?.value ?? ''"
-            :items="dropdownItems"
+            :model-value="field.value[0]"
+            :placeholder="field.label"
+            :items="field.choices"
+            value-key="key"
+            label-key="value"
             :icon="field.icon"
             class="w-full"
-            :placeholder="field.label"
         />
     </UFormField>
     
