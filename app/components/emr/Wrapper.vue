@@ -28,6 +28,8 @@
         <USelectMenu
             v-model="dropdownValue"
             :items="dropdownOptions"
+            value-key="key"
+            label-key="label"
             :icon="field.icon"
             class="w-full"
             :placeholder="field.label"
