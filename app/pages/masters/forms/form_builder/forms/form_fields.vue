@@ -69,22 +69,22 @@ const staticFormConfig = computed(() => {
     const data = editingField.value || { form_id: selectedForm.value?.id };
     
     const dataTypeArray = [
-        { id: 1, label: "TEXT", choice_code: "TEXT", data: "" },
-        { id: 2, label: "NUMBER", choice_code: "NUMBER", data: "" },
-        { id: 3, label: "DATE", choice_code: "DATE", data: "" },
-        { id: 4, label: "DROPDOWN", choice_code: "DROPDOWN", data: "" },
-        { id: 5, label: "CHECKBOX", choice_code: "CHECKBOX", data: "" },
-        { id: 6, label: "RADIO", choice_code: "RADIO", data: "" },
-        { id: 7, label: "FILE", choice_code: "FILE", data: "" },
-        { id: 8, label: "CARD", choice_code: "CARD", data: "" },
-        { id: 9, label: "GROUP", choice_code: "GROUP", data: "" },
-        { id: 10, label: "TAB", choice_code: "TAB", data: "" },
-        { id: 11, label: "SECTION", choice_code: "SECTION", data: "" },
-        { id: 12, label: "TABLE", choice_code: "TABLE", data: "" },
-        { id: 13, label: "STAR", choice_code: "STAR", data: "" },
-        { id: 14, label: "TEXTAREA", choice_code: "TEXTAREA", data: "" },
-        { id: 15, label: "EMOJI", choice_code: "EMOJI", data: "" },
-        { id: 16, label: "HIDDEN", choice_code: "HIDDEN", data: "" }
+        { key: "TEXT", value: "TEXT", data: null },
+        { key: "NUMBER", value: "NUMBER", data: null },
+        { key: "DATE", value: "DATE", data: null },
+        { key: "DROPDOWN", value: "DROPDOWN", data: null },
+        { key: "CHECKBOX", value: "CHECKBOX", data: null },
+        { key: "RADIO", value: "RADIO", data: null },
+        { key: "FILE", value: "FILE", data: null },
+        { key: "CARD", value: "CARD", data: null },
+        { key: "GROUP", value: "GROUP", data: null },
+        { key: "TAB", value: "TAB", data: null },
+        { key: "SECTION", value: "SECTION", data: null },
+        { key: "TABLE", value: "TABLE", data: null },
+        { key: "STAR", value: "STAR", data: null },
+        { key: "TEXTAREA", value: "TEXTAREA", data: null },
+        { key: "EMOJI", value: "EMOJI", data: null },
+        { key: "HIDDEN", value: "HIDDEN", data: null }
     ]
     
     return {

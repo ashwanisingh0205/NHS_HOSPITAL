@@ -3,7 +3,7 @@
     
     <UForm v-else @submit.prevent="handleSubmit">
         <template v-if="form.fields?.length">
-            <div  class="grid gap-6 md:grid-cols-2">
+          <div class="grid grid-cols-12 gap-5 w-full">
                 <Wrapper
                     v-for="field in form.fields"
                     :key="field.id"

@@ -1,8 +1,10 @@
 <template>
+    
     <!-- Text Input Types -->
     <UFormField
         v-if="['TEXT', 'EMAIL', 'NUMBER', 'PASSWORD', 'TEL', 'URL', 'DATE'].includes(field.data_type)"
         :required="field.required"
+        :class="fieldClass"
         :hint="field.hint"
         :help="field.help"
         :error="field.error"
@@ -21,13 +23,16 @@
     <UFormField
         v-else-if="field.data_type === 'DROPDOWN'"
         :required="field.required"
+        :class="fieldClass"
         :hint="field.hint"
         :help="field.help"
         :error="field.error"
         :label="field.label">
         <USelectMenu
-            v-model="dropdownValue"
-            :items="dropdownItems"
+            v-model="field.value[0]"
+            :items="field.choices"
+            value-key="key"
+            label-key="value"
             :icon="field.icon"
             class="w-full"
             :placeholder="field.label"
@@ -38,6 +43,7 @@
     <UFormField
         v-else-if="field.data_type === 'TEXTAREA'"
         :required="field.required"
+        :class="fieldClass"
         :hint="field.hint"
         :help="field.help"
         :error="field.error"
@@ -53,6 +59,7 @@
     <UFormField
         v-else-if="field.data_type === 'CHECKBOX' && !options.length"
         :required="field.required"
+        :class="fieldClass"
         :hint="field.hint"
         :help="field.help"
         :error="field.error"
@@ -67,6 +74,7 @@
     <UFormField
         v-else-if="field.data_type === 'CHECKBOX' && options.length"
         :required="field.required"
+        :class="fieldClass"
         :hint="field.hint"
         :help="field.help"
         :error="field.error"
@@ -75,7 +83,8 @@
             <UCheckbox
                 v-for="opt in options"
                 :key="opt.id || opt.key || opt.value"
-                v-model="field.value[0]"
+                :model-value="isSelected(opt.id || opt.key || opt.value)"
+                @update:model-value="toggleCheckbox(opt.id || opt.key || opt.value, $event)"
                 :label="opt.value || opt.label || opt.name"
             />
         </div>
@@ -85,6 +94,7 @@
     <UFormField
         v-else-if="field.data_type === 'RADIO'"
         :required="field.required"
+        :class="fieldClass"
         :hint="field.hint"
         :help="field.help"
         :error="field.error"
@@ -114,6 +124,7 @@
     <UFormField
         v-else-if="['STAR', 'star'].includes(field.data_type)"
         :required="field.required"
+        :class="fieldClass"
         :hint="field.hint"
         :help="field.help"
         :error="field.error"
@@ -128,33 +139,70 @@
 <script setup>
 import CKStar from '~/components/common/CKStar.vue'
 
+
+
+
 const props = defineProps({
     field: { type: Object, required: true }
 })
 
-const options = computed(() => props.field.choices || props.field.options || [])
 
-const dropdownItems = computed(() => 
-    options.value.map(opt => {
-        if (typeof opt === 'string') {
-            return { label: opt, value: opt }
-        }
-        // Handle format: { id, label, choice_code, data }
-        return {
-            label: opt.label || opt.name || opt.value || '',
-            value: opt.choice_code || opt.data || opt.value || opt.id || opt.label || ''
-        }
-    })
-)
-
-const dropdownValue = computed({
-    get: () => {
-        const val = props.field.value?.[0]
-        if (!val) return null
-        return dropdownItems.value.find(item => item.value === val) || null
-    },
-    set: (val) => {
-        props.field.value[0] = val?.value ?? val ?? ''
+onMounted(() => {
+    // Ensure col has a default value if not provided
+    if (!props.field.col || props.field.col <= 0) {
+        props.field.col = 2
     }
 })
+
+
+
+// Computed property for field width class based on col value
+const fieldClass = computed(() => {
+    const col = props.field.col || 4
+    
+    
+    const colSpanMap = {
+      1: 'col-span-12 sm:col-span-1',
+      2: 'col-span-12 sm:col-span-2',
+      3: 'col-span-12 sm:col-span-3',
+      4: 'col-span-12 sm:col-span-4',
+      5: 'col-span-12 sm:col-span-5',
+      6: 'col-span-12 sm:col-span-6',
+      7: 'col-span-12 sm:col-span-7',
+      8: 'col-span-12 sm:col-span-8',
+      9: 'col-span-12 sm:col-span-9',
+      10: 'col-span-12 sm:col-span-10',
+      11: 'col-span-12 sm:col-span-11',
+      12: 'col-span-12'
+    }
+    
+    // Get the class for the col value, default to 4 if not found
+    return colSpanMap[col] || 'col-span-12 sm:col-span-4'
+})
+
+const options = computed(() => props.field.choices || props.field.options || [])
+// Checkbox helpers
+const isSelected = (value) => {
+    const val = props.field.value?.[0]
+    return Array.isArray(val) && val.includes(value)
+}
+
+const toggleCheckbox = (value, checked) => {
+    const current = props.field.value?.[0]
+    let arr = []
+    
+    if (Array.isArray(current)) {
+        arr = [...current]
+    } else if (current) {
+        arr = [current]
+    }
+    
+    if (checked && !arr.includes(value)) {
+        arr.push(value)
+    } else if (!checked) {
+        arr.splice(arr.indexOf(value), 1)
+    }
+    
+    props.field.value[0] = arr
+}
 </script>

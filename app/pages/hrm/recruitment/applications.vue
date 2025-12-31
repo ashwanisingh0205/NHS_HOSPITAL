@@ -122,19 +122,19 @@ Move to Employee Register
                         <UButton 
                             size="xs" 
                             color="warning"
-                            @click="handleAccept(row.original)"
-                        >
-                            Accept
-                        </UButton>
-                        
+                            @click="handleAccept(row.original)">
+                                Accept
+                            </UButton>
+
                         <!-- Reject Button -->
                         <UButton 
                             size="xs" 
-                            color="error"
-                            @click="handleReject(row.original)"
-                        >
-                            Reject
-                        </UButton>
+                            color="error" 
+                            @click="handleReject(row.original)">
+                                Reject
+                            </UButton>
+
+  
                     </div>
                 </template>
             </UTable>
@@ -236,6 +236,22 @@ Move to Employee Register
             :params="interview2Params"
             @handleFormSubmit="handleInterview2Submit"
         />
+
+        <!-- Accept Form Modal -->
+        <CKFormModal 
+            v-model="acceptModel" 
+            title="Accept Application" 
+            :endPoint="'/hrm/job_application'"
+            :submitEndPoint="'/hrm/job_application'" 
+            :formCode="'hr_job_accept'" 
+            :id="acceptId"
+            :params="acceptParams" 
+            @handleFormSubmit="handleAcceptSubmit" />
+
+        <!-- Reject Form Modal -->
+        <CKFormModal v-model="rejectModel" title="Reject Application" :endPoint="'/hrm/job_application'"
+            :submitEndPoint="'/hrm/job_application'" :formCode="'hr_job_reject'" :id="rejectId"
+            :params="rejectParams" @handleFormSubmit="handleRejectSubmit" />
     </div>
 </template>
 
@@ -297,6 +313,17 @@ const interview2Model = ref(false);
 const interview2Id = ref('');
 const interview2Params = ref({});
 
+// Accept Modal
+const acceptModel = ref(false);
+const acceptId = ref('');
+const acceptParams = ref({});
+
+// Reject Modal
+const rejectModel = ref(false);
+const rejectId = ref('');
+const rejectParams = ref({});
+
+
 /* ------------------ onMounted ------------------ */
 onMounted(async () => {
     await loadData();
@@ -320,46 +347,56 @@ const columns = ref([
 const loadData = async () => {
     loading.value = true;
     error.value = null;
-    
+
     try {
-        const { data: res } = await $axios.get(endPoint.value);
-        
+        const { data: res } = await $axios.get(endPoint.value, {
+            params: {
+                form_code: 'hr_job_application'
+            }
+        });
+
         console.log('API Response:', res);
-        
+
         if (!res.success) {
             error.value = res.message || 'Failed to load applications';
             console.error('API returned unsuccessful response:', res);
             return;
         }
-        
+
         if (!Array.isArray(res.rows)) {
             error.value = res.message || 'Invalid response format - rows is not an array';
             console.error('Invalid response format:', res);
             return;
-            }
-        
-        if (res.rows.length === 0) {
-            error.value = 'No applications found';
+        }
+
+        // CLIENT-SIDE FILTER: Exclude HIR and REJ
+        const filteredRows = res.rows.filter(app => {
+            const status = app.application_status;
+            return status !== 'HIR' && status !== 'REJ';
+        });
+
+        if (filteredRows.length === 0) {
+            error.value = 'No pending applications found';
             data.value = [];
             return;
         }
-        
-        // Map the direct object structure to table format
-        data.value = res.rows.map(app => ({
+
+        // Map the FILTERED data to table format
+        data.value = filteredRows.map(app => ({
             id: app.id,
             form_response_id: app.id,
             name: [app.title, app.first_name, app.middle_name, app.last_name]
                 .filter(Boolean).join(' ').trim() || '-',
             date_of_application: app.created_at_date || app.created_at || '-',
             phone_number: app.phone_number || '-',
-            address: app.local_address_line1 
+            address: app.local_address_line1
                 ? [app.local_address_line1, app.local_address_line2, app.local_city]
                     .filter(Boolean).join(', ')
                 : '-',
-            post_applied: app.designation_id || '-', // You might want to fetch designation name
+            post_applied: app.designation_id || '-',
             application_status: app.application_status || 'Pending'
         }));
-        
+
     } catch (err) {
         error.value = err.response?.data?.message || err.message || 'Failed to load applications';
         console.error('Error loading applications:', err);
@@ -563,42 +600,37 @@ const handleApplicationStatusSubmit = async () => {
 };
 
 /* ------------------ Accept Handler ------------------ */
-const handleAccept = async (application) => {
-    try {
-        const responseId = application.form_response_id || application.id;
-        await $axios.post('/form/defaultForm', {
-            form_response_id: responseId,
-            application_status: 'Accepted'
-        }, {
-            params: {
-                form_code: 'hr_job_application',
-                form_response_id: responseId
-            }
-        });
-        await loadData();
-    } catch (err) {
-        alert(err.response?.data?.message || err.message || 'Failed to accept application');
-        console.error('Error accepting application:', err);
-    }
+const handleAccept = (application) => {
+    const responseId = application.form_response_id || application.id;
+    acceptParams.value = {
+        id: responseId,
+        application_id: responseId,
+        form_response_id: responseId
+    };
+    acceptId.value = responseId;
+    acceptModel.value = true;
+};
+
+const handleAcceptSubmit = async () => {
+    acceptModel.value = false;
+    await loadData();
 };
 
 /* ------------------ Reject Handler ------------------ */
-const handleReject = async (application) => {
-    try {
-        const responseId = application.form_response_id || application.id;
-        await $axios.post('/form/defaultForm', {
-            form_response_id: responseId,
-            application_status: 'Rejected'
-        }, {
-            params: {
-                form_code: 'hr_job_application',
-                form_response_id: responseId
-            }
-        });
-        await loadData();
-    } catch (err) {
-        alert(err.response?.data?.message || err.message || 'Failed to reject application');
-        console.error('Error rejecting application:', err);
-    }
+const handleReject = (application) => {
+    const responseId = application.form_response_id || application.id;
+    rejectParams.value = {
+        id: responseId,
+        application_id: responseId,
+        form_response_id: responseId
+    };
+    rejectId.value = responseId;
+    rejectModel.value = true;
 };
+
+const handleRejectSubmit = async () => {
+    rejectModel.value = false;
+    await loadData();
+};
+
 </script>

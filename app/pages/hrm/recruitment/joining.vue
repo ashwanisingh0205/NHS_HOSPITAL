@@ -11,7 +11,11 @@
                 </template>
                 <template #name-cell="{ row }">
                     <div class="flex items-center gap-3">
-                        <UAvatar size="sm" />
+                        <UAvatar 
+                            size="sm" 
+                            :src="row.original.url_profile"
+                            :alt="row.original.name"
+                        />
                         <span class="font-medium">{{ row.original.name || '-' }}</span>
                     </div>
                 </template>
@@ -135,18 +139,32 @@
             :params="joiningKitParams"
             @handleFormSubmit="handleJoiningKitSubmit"
         />
+
+        <!-- Approve Modal -->
+        <UModal v-model:open="approveModel" :dismissible="true" title="Approve Employee">
+            <template #body>
+                <DynamicForm
+                    :endPoint="'/form/defaultForm'"
+                    :formCode="'hr_status_job'"
+                    :params="approveFormParams"
+                    :noAutoSubmit="true"
+                    @submit="handleApproveSubmit"
+                />
+            </template>
+        </UModal>
     </div>
 </template>
 
 <script setup>
 import CKCardList from "~/components/common/CKCardList.vue";
 import CKFormModal from "~/components/common/CKFormModal.vue";
+import DynamicForm from "~/components/emr/DynamicForm.vue";
 
 /* ------------------ Default Variables ------------------ */
 definePageMeta({ layout: 'home' });
 const { $axios } = useNuxtApp()
 const title = ref("Employee Joining Process");
-const endPoint = ref("/form/defaultForm");
+const endPoint = ref("/hrm/employee");
 const params = ref({});
 const formModel = ref(false);
 const id = ref('');
@@ -175,6 +193,11 @@ const joiningKitId = ref('');
 const joiningKitParams = ref({});
 const joiningKitFormCode = ref('hr_joining_kit'); // Update with actual form code
 
+// Approve Modal
+const approveModel = ref(false);
+const approveEmployeeId = ref(null); // Store employee_id for PATCH request
+const approveFormParams = ref({ form: 'true' }); // Params for loading the form
+
 /* ------------------ onMounted ------------------ */
 onMounted(async () => {
     await loadData();
@@ -200,45 +223,78 @@ const loadData = async () => {
     
     try {
         const { data: res } = await $axios.get(endPoint.value, {
-            params: { form_code: 'hr_joining' }
+            params: { status_job: 'JOIN' }
         });
         
-        if (!res.success || !Array.isArray(res.response_values)) {
-            error.value = res.message || 'Invalid response format';
+        // Debug: Log the response to see what we're getting
+        console.log('API Response:', res);
+        
+        if (!res.success) {
+            error.value = res.message || 'API request failed';
+            data.value = [];
             return;
         }
         
-        const parseValue = (val) => {
-            if (!val) return '';
-            try {
-                const parsed = JSON.parse(val);
-                return Array.isArray(parsed) ? parsed[0] : parsed;
-            } catch {
-                return val;
-            }
-        };
+        // Check if employees array exists
+        if (!res.employees) {
+            error.value = 'No employees data in API response';
+            data.value = [];
+            console.warn('API response missing employees:', res);
+            return;
+        }
         
-        const grouped = {};
+        if (!Array.isArray(res.employees)) {
+            error.value = 'Employees data is not an array';
+            data.value = [];
+            console.warn('Employees data is not an array:', res.employees);
+            return;
+        }
         
-        res.response_values.forEach(({ form_response_id, field_code, value }) => {
-            if (!grouped[form_response_id]) {
-                grouped[form_response_id] = { form_response_id };
-            }
-            grouped[form_response_id][field_code] = parseValue(value);
+        // If employees array is empty, show empty state
+        if (res.employees.length === 0) {
+            error.value = null; // Clear error, show empty state message
+            data.value = [];
+            return;
+        }
+        
+        // Map employees to table format
+        data.value = res.employees.map(employee => {
+            // Combine first_name, middle_name, and last_name for full name
+            const nameParts = [
+                employee.first_name,
+                employee.middle_name,
+                employee.last_name
+            ].filter(Boolean);
+            const fullName = nameParts.length > 0 ? nameParts.join(' ') : '-';
+            
+            return {
+                id: employee.employee_id,
+                form_response_id: employee.employee_id, // Keep for compatibility with modals
+                employee_id: employee.employee_id,
+                name: fullName,
+                first_name: employee.first_name || '',
+                middle_name: employee.middle_name || '',
+                last_name: employee.last_name || '',
+                designation: employee.designation || '-',
+                department: employee.department || '-',
+                phone_number: employee.phone_number || '-',
+                date_of_joining: employee.date_of_joining || null,
+                date_of_birth: employee.date_of_birth || null,
+                url_profile: employee.url_profile || null
+            };
         });
         
-        data.value = Object.values(grouped).map(j => ({
-            id: j.form_response_id,
-            form_response_id: j.form_response_id,
-            name: j.name || j.employee_name_lang1 || '-',
-            designation: j.designation || '-',
-            department: j.department || j.department_id || '-',
-            phone_number: j.phone_number || '-'
-        }));
+        console.log('Processed employee data:', data.value);
         
     } catch (err) {
         error.value = err.response?.data?.message || err.message || 'Failed to load joining data';
+        data.value = [];
         console.error('Error loading joining data:', err);
+        console.error('Error details:', {
+            message: err.message,
+            response: err.response?.data,
+            status: err.response?.status
+        });
     } finally {
         loading.value = false;
     }
@@ -335,22 +391,48 @@ const handleJoiningKitSubmit = async () => {
 };
 
 /* ------------------ Approve Handler ------------------ */
-const handleApprove = async (joining) => {
+const handleApprove = (joining) => {
+    const employeeId = joining.employee_id || joining.id;
+    approveEmployeeId.value = employeeId;
+    approveModel.value = true;
+};
+
+const handleApproveSubmit = async (submitData) => {
+    if (submitData?.error) {
+        alert(submitData.error?.message || 'Failed to submit form');
+        return;
+    }
+    
+    if (!approveEmployeeId.value) {
+        alert('Employee ID is missing');
+        return;
+    }
+    
     try {
-        const responseId = joining.form_response_id || joining.id;
-        await $axios.post('/form/defaultForm', {
-            form_response_id: responseId,
-            status: 'Approved'
-        }, {
-            params: {
-                form_code: 'hr_joining',
-                form_response_id: responseId
-            }
+        // Extract the status_job value from payload (this should be the key like "ACT")
+        const statusJob = submitData.payload?.status_job;
+        
+        if (!statusJob) {
+            alert('Status job value is missing');
+            return;
+        }
+        
+        // Send only the status_job field with the key value
+        const patchPayload = {
+            status_job: statusJob
+        };
+        
+        // Make PATCH request to /hrm/employee?id={employee_id}
+        await $axios.patch('/hrm/employee', patchPayload, {
+            params: { id: approveEmployeeId.value }
         });
+        
+        approveModel.value = false;
+        approveEmployeeId.value = null;
         await loadData();
     } catch (err) {
-        alert(err.response?.data?.message || err.message || 'Failed to approve joining');
-        console.error('Error approving joining:', err);
+        alert(err.response?.data?.message || err.message || 'Failed to approve employee');
+        console.error('Error approving employee:', err);
     }
 };
 </script>
