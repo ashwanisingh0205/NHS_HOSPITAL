@@ -53,15 +53,11 @@ onMounted(async () => {
         });
         
         if (!response.data.success) {
-            error.value = response.data.message || 'API returned unsuccessful response';
+            error.value = response.data.message || 'Failed to load form';
             return;
         }
         
-        formStructure.value = {
-            form: response.data.form || {},
-            fields: response.data.fields || [],
-            fieldMap: response.data.fieldMap || {}
-        };
+        formStructure.value = response.data;
         
     } catch (err) {
         error.value = err.response?.data?.message || err.message || 'Failed to load form';
@@ -79,46 +75,40 @@ const handleFormSubmit = async (submitData) => {
     successMessage.value = null;
     
     try {
-        const formData = submitData.form || {};
-        const currentFields = formData.fields || [];
-        const payload = submitData.payload || {};
-        
         if (!formStructure.value) {
             error.value = 'Form structure not loaded. Please refresh the page.';
             return;
         }
         
-        const extractFieldValue = (fieldValue) => {
-            if (fieldValue === undefined || fieldValue === null) return '';
-            if (Array.isArray(fieldValue)) return fieldValue[0] ?? '';
-            return fieldValue;
+        const payload = submitData.payload || {};
+        
+        const extractValue = (val) => {
+            if (val === undefined || val === null) return '';
+            if (Array.isArray(val)) return val[0] ?? '';
+            return val;
         };
         
-        const formatValueForAPI = (value, dataType) => {
+        const formatValue = (value, dataType) => {
             if (dataType === 'CHECKBOX') {
-                const isTruthy = value === true || value === 'true' || value === 1 || value === '1';
-                return isTruthy ? '1' : '';
+                return (value === true || value === 'true' || value === 1 || value === '1') ? '1' : '';
             }
             return value !== null && value !== undefined ? String(value) : '';
         };
         
         const updatedFields = formStructure.value.fields.map(field => {
-            const currentField = currentFields.find(f => f.id === field.id || f.field_code === field.field_code);
+            let value = '';
             
-            let updatedValue = '';
             if (field.field_code && field.field_code in payload) {
-                updatedValue = payload[field.field_code];
-            } else if (currentField) {
-                updatedValue = extractFieldValue(currentField.value);
+                value = payload[field.field_code];
             } else {
-                updatedValue = extractFieldValue(field.value);
+                value = extractValue(field.value);
             }
             
-            const finalValue = formatValueForAPI(updatedValue, field.data_type);
+            const formattedValue = formatValue(value, field.data_type);
             
             return {
                 ...field,
-                value: [finalValue]
+                value: [formattedValue]
             };
         });
         
@@ -136,12 +126,13 @@ const handleFormSubmit = async (submitData) => {
         
         if (response.data.success) {
             successMessage.value = 'Patient registration submitted successfully!';
+            console.log('Patient registration submitted successfully!', response.data);
         } else {
             error.value = response.data.message || 'Form submission failed';
         }
         
     } catch (err) {
-        error.value = err.response?.data?.message || err.response?.data?.error || err.message || 'Failed to submit registration';
+        error.value = err.response?.data?.message || err.message || 'Failed to submit registration';
     }
 };
 
