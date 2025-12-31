@@ -134,10 +134,27 @@
             @update:model-value="field.value[0] = $event"
         />
     </UFormField>
+    
+    <!-- Emoji Rating -->
+    <UFormField
+        v-else-if="['EMOJI', 'emoji'].includes(field.data_type)"
+        :required="field.required"
+        :class="fieldClass"
+        :hint="field.hint"
+        :help="field.help"
+        :error="field.error"
+        :label="field.label">
+        <CKEmoji
+            :model-value="field.value[0]"
+            @update:model-value="field.value[0] = $event"
+            :emojis="field.emojis || field.choices?.map(c => c.value || c.key) || undefined"
+        />
+    </UFormField>
 </template>
 
 <script setup>
 import CKStar from '~/components/common/CKStar.vue'
+import CKEmoji from '~/components/common/CKEmoji.vue'
 
 
 
@@ -150,7 +167,7 @@ const props = defineProps({
 onMounted(() => {
     // Ensure col has a default value if not provided
     if (!props.field.col || props.field.col <= 0) {
-        props.field.col = 2
+        props.field.col = 6
     }
 })
 
@@ -158,7 +175,7 @@ onMounted(() => {
 
 // Computed property for field width class based on col value
 const fieldClass = computed(() => {
-    const col = props.field.col || 4
+    const col = props.field.col || 6
     
     
     const colSpanMap = {
