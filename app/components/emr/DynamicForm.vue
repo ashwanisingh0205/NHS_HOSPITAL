@@ -1,9 +1,12 @@
 <template>
     <CKLoader v-if="loading" />
     
+    
     <UForm v-else @submit.prevent="handleSubmit">
+        
+        
         <template v-if="form.fields?.length">
-            <div  class="grid gap-6 md:grid-cols-2">
+            <div class="flex flex-wrap gap-5">
                 <Wrapper
                     v-for="field in form.fields"
                     :key="field.id"
@@ -113,7 +116,7 @@ const handleSubmit = async () => {
             requestConfig
         )
         
-        emit('submit', { form: form.value, payload: formData })
+        emit('submit', { form: form.value })
     } catch (err) {
         console.error('Form submission error:', err)
         console.error('Error response:', err.response?.data)

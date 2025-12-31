@@ -4,6 +4,7 @@
     <UFormField
         v-if="['TEXT', 'EMAIL', 'NUMBER', 'PASSWORD', 'TEL', 'URL', 'DATE'].includes(field.data_type)"
         :required="field.required"
+        :class="['w-full', 'sm:w-' + field.col + '/12']"
         :hint="field.hint"
         :help="field.help"
         :error="field.error"
@@ -22,6 +23,7 @@
     <UFormField
         v-else-if="field.data_type === 'DROPDOWN'"
         :required="field.required"
+        :class="['w-full', 'sm:w-' + field.col + '/12']"
         :hint="field.hint"
         :help="field.help"
         :error="field.error"
@@ -49,6 +51,7 @@
             v-model="field.value[0]"
             :placeholder="field.label"
             :rows="field.rows || 4"
+            class="w-full"
         />
     </UFormField>
     
@@ -138,6 +141,9 @@ const props = defineProps({
 
 const options = computed(() => props.field.choices || props.field.options || [])
 
+onMounted(() => {
+    props.field.col = props.field.col>0 ? props.field.col : 4
+})
 
 // Checkbox helpers
 const isSelected = (value) => {
