@@ -82,29 +82,23 @@ const handleFormSubmit = async (submitData) => {
         
         const payload = submitData.payload || {};
         
-        const extractValue = (val) => {
-            if (val === undefined || val === null) return '';
-            if (Array.isArray(val)) return val[0] ?? '';
-            return val;
-        };
-        
-        const formatValue = (value, dataType) => {
-            if (dataType === 'CHECKBOX') {
-                return (value === true || value === 'true' || value === 1 || value === '1') ? '1' : '';
-            }
-            return value !== null && value !== undefined ? String(value) : '';
-        };
-        
         const updatedFields = formStructure.value.fields.map(field => {
             let value = '';
             
-            if (field.field_code && field.field_code in payload) {
+            // Check if user provided a value, otherwise use original
+            if (field.field_code in payload) {
                 value = payload[field.field_code];
             } else {
-                value = extractValue(field.value);
+                value = Array.isArray(field.value) ? (field.value[0] ?? '') : field.value;
             }
             
-            const formattedValue = formatValue(value, field.data_type);
+            // Format value based on data type
+            let formattedValue = '';
+            if (field.data_type === 'CHECKBOX') {
+                formattedValue = value ? '1' : '';
+            } else {
+                formattedValue = value ? String(value) : '';
+            }
             
             return {
                 ...field,
