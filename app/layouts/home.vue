@@ -561,6 +561,7 @@ const navSections = {
         { name: 'Registration', path: '/visit/registration', icon: 'lucide:layout-template' },
         { name: 'IPD Registration', path: '/ipd/ipd_help_desk', icon: 'lucide:layout-template' },
         { name: 'OPD Registration', path: '/opd/opd_queue', icon: 'lucide:layout-template' },
+        {name:'Panel',path:'/panel/dashboard', icon: 'lucide:layout-template'}
     ],
     analytics: [
         { name: 'Overview', path: '/analytics', icon: 'lucide:activity' },
