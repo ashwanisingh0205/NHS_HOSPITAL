@@ -1,3 +1,8 @@
+<!--
+List of employees
+    Filter by Clinical Department, designations, Unit, Full-time/Part-time/Contract
+    
+-->
 <template>
     <div class="p-4 space-y-6">
         <template v-if="!isChildRoute">

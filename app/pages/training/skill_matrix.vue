@@ -1,3 +1,7 @@
+<!--
+    Show employee skill matrix
+    Training calendar along with scheduled training
+-->
 <template>
   <Form />
 </template>
