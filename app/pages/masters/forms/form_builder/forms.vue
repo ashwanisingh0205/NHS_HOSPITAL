@@ -85,9 +85,9 @@ const staticFormConfig = computed(() => {
     const initial = formData.value || {};
     
     const formTypeArray = [
-        { key: "FORM", label: "Data entry form" },
-        { key: "SURVEY", label: "Survey/Feedback/Checklist" },
-        { key: "WORKFLOW", label: "Workflow Initializer" },
+        { key: "FORM", value: "Data entry form" },
+        { key: "SURVEY", value: "Survey/Feedback/Checklist" },
+        { key: "WORKFLOW", value: "Workflow Initializer" },
     ]
 
     return {

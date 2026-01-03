@@ -34,10 +34,10 @@ import CKLoader from "~/components/common/CKLoader.vue";
 const { $axios } = useNuxtApp()
 
 const props = defineProps({
-    endPoint: { type: String, default: "" },
-    params: { type: Object, default: null },
-    staticForm: { type: Object, default: null },
     formCode: { type: String, default: "" },
+    params: { type: Object, default: null },
+    endPoint: { type: String, default: "" },
+    staticForm: { type: Object, default: null },
     id: { type: String, default: "" },
 })
 const emit = defineEmits(['submit'])
