@@ -7,6 +7,7 @@
                 :params="params"
                 :id="id"
                 :staticForm="staticForm"
+                :noAutoSubmit="isFeedbackEndpoint"
                 @submit="handleFormSubmit"
             />
         </template>
@@ -29,9 +30,57 @@ const props = defineProps({
 const { $axios } = useNuxtApp()
 const emit = defineEmits(['update:modelValue', 'handleFormSubmit']);
 
+const isFeedbackEndpoint = computed(() => {
+    return props.endPoint?.includes('/v1/feedback/feedback') || props.endPoint?.includes('/feedback/feedback');
+});
+
 const handleFormSubmit = async (submitData) => {
     if (submitData?.error) {
         alert(submitData.error?.message || 'Failed to submit form');
+        return;
+    }
+    
+    // Handle feedback API submission with specific format
+    if (isFeedbackEndpoint.value) {
+        try {
+            const formData = submitData?.form || {};
+            const isEdit = !!props.params?.id || !!props.id;
+            
+            // Build fieldMap from fields array
+            const fieldMap = {};
+            if (formData.fields && Array.isArray(formData.fields)) {
+                formData.fields.forEach((field, index) => {
+                    const fieldCode = field.field_code || field.id;
+                    if (fieldCode) {
+                        fieldMap[fieldCode] = [index];
+                    }
+                });
+            }
+            
+            // Format body according to feedback API structure
+            const requestBody = {
+                success: true,
+                message: "success",
+                form: formData.form || {},
+                fields: formData.fields || [],
+                fieldMap: fieldMap
+            };
+            
+            if (isEdit) {
+                await $axios.patch(props.endPoint, requestBody, {
+                    params: { id: props.params?.id || props.id }
+                });
+            } else {
+                await $axios.post(props.endPoint, requestBody);
+            }
+            
+            localValue.value = false;
+            emit('handleFormSubmit', submitData);
+        } catch (err) {
+            console.error('Form submit error:', err);
+            alert(err.response?.data?.message || 'Failed to submit form');
+            emit('handleFormSubmit', { error: err.response?.data || err.message });
+        }
         return;
     }
     

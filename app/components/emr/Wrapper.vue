@@ -4,7 +4,7 @@
     <UFormField
         v-if="['TEXT', 'EMAIL', 'NUMBER', 'PASSWORD', 'TEL', 'URL', 'DATE'].includes(field.data_type)"
         :required="field.required"
-        :class="['w-full', 'sm:w-' + field.col + '/12']"
+        :class="fieldClass"
         :hint="field.hint"
         :help="field.help"
         :error="field.error"
@@ -23,7 +23,7 @@
     <UFormField
         v-else-if="field.data_type === 'DROPDOWN'"
         :required="field.required"
-        :class="['w-full', 'sm:w-' + field.col + '/12']"
+        :class="fieldClass"
         :hint="field.hint"
         :help="field.help"
         :error="field.error"
@@ -43,6 +43,7 @@
     <UFormField
         v-else-if="field.data_type === 'TEXTAREA'"
         :required="field.required"
+        :class="fieldClass"
         :hint="field.hint"
         :help="field.help"
         :error="field.error"
@@ -51,7 +52,6 @@
             v-model="field.value[0]"
             :placeholder="field.label"
             :rows="field.rows || 4"
-            class="w-full"
         />
     </UFormField>
     
@@ -59,6 +59,7 @@
     <UFormField
         v-else-if="field.data_type === 'CHECKBOX' && !options.length"
         :required="field.required"
+        :class="fieldClass"
         :hint="field.hint"
         :help="field.help"
         :error="field.error"
@@ -73,6 +74,7 @@
     <UFormField
         v-else-if="field.data_type === 'CHECKBOX' && options.length"
         :required="field.required"
+        :class="fieldClass"
         :hint="field.hint"
         :help="field.help"
         :error="field.error"
@@ -92,6 +94,7 @@
     <UFormField
         v-else-if="field.data_type === 'RADIO'"
         :required="field.required"
+        :class="fieldClass"
         :hint="field.hint"
         :help="field.help"
         :error="field.error"
@@ -121,6 +124,7 @@
     <UFormField
         v-else-if="['STAR', 'star'].includes(field.data_type)"
         :required="field.required"
+        :class="fieldClass"
         :hint="field.hint"
         :help="field.help"
         :error="field.error"
@@ -130,21 +134,70 @@
             @update:model-value="field.value[0] = $event"
         />
     </UFormField>
+    
+    <!-- Emoji Rating -->
+    <UFormField
+        v-else-if="['EMOJI', 'emoji'].includes(field.data_type)"
+        :required="field.required"
+        :class="fieldClass"
+        :hint="field.hint"
+        :help="field.help"
+        :error="field.error"
+        :label="field.label">
+        <CKEmoji
+            :model-value="field.value[0]"
+            @update:model-value="field.value[0] = $event"
+            :emojis="field.emojis || field.choices?.map(c => c.value || c.key) || undefined"
+        />
+    </UFormField>
 </template>
 
 <script setup>
 import CKStar from '~/components/common/CKStar.vue'
+import CKEmoji from '~/components/common/CKEmoji.vue'
+
+
+
 
 const props = defineProps({
     field: { type: Object, required: true }
 })
 
-const options = computed(() => props.field.choices || props.field.options || [])
 
 onMounted(() => {
-    props.field.col = props.field.col>0 ? props.field.col : 4
+    // Ensure col has a default value if not provided
+    if (!props.field.col || props.field.col <= 0) {
+        props.field.col = 6
+    }
 })
 
+
+
+// Computed property for field width class based on col value
+const fieldClass = computed(() => {
+    const col = props.field.col || 6
+    
+    
+    const colSpanMap = {
+      1: 'col-span-12 sm:col-span-1 lg:col-span-1',
+      2: 'col-span-12 sm:col-span-2 lg:col-span-2',
+      3: 'col-span-12 sm:col-span-3 lg:col-span-3',
+      4: 'col-span-12 sm:col-span-4' ,
+      5: 'col-span-12 sm:col-span-5 lg:col-span-5',
+      6: 'col-span-12 sm:col-span-6 lg:col-span-6',
+      7: 'col-span-12 sm:col-span-7 lg:col-span-7',
+      8: 'col-span-12 sm:col-span-8',
+      9: 'col-span-12 sm:col-span-9 lg:col-span-9',
+      10: 'col-span-12 sm:col-span-10 lg:col-span-10',
+      11: 'col-span-12 sm:col-span-11',
+      12: 'col-span-12'
+    }
+    
+    // Get the class for the col value, default to 4 if not found
+    return colSpanMap[col] || 'col-span-12 sm:col-span-4'
+})
+
+const options = computed(() => props.field.choices || props.field.options || [])
 // Checkbox helpers
 const isSelected = (value) => {
     const val = props.field.value?.[0]
@@ -153,7 +206,13 @@ const isSelected = (value) => {
 
 const toggleCheckbox = (value, checked) => {
     const current = props.field.value?.[0]
-    const arr = Array.isArray(current) ? [...current] : (current ? [current] : [])
+    let arr = []
+    
+    if (Array.isArray(current)) {
+        arr = [...current]
+    } else if (current) {
+        arr = [current]
+    }
     
     if (checked && !arr.includes(value)) {
         arr.push(value)

@@ -1,10 +1,7 @@
 <template>
     <CKCardList :loading="loading" :title="title" @handleAdd="handleAdd" v-model="searchQuery">
         <UTable :loading="loading" :data="filteredFields" :columns="columns">
-            <template #loading>
-                <CKLoader />
-            </template>
-            <template #empty>
+            <template v-if="!loading" #empty>
                 <UError :error="{ statusMessage: error || 'No Record Found!!' }" />
             </template>
             <template #data_type-cell="{ row }">
@@ -38,7 +35,6 @@
 import DynamicForm from "~/components/emr/DynamicForm.vue";
 import CKEdit from "~/components/common/CKEdit.vue";
 import CKCardList from "~/components/common/CKCardList.vue";
-import CKLoader from "~/components/common/CKLoader.vue";
 
 definePageMeta({ layout: 'home' });
 
@@ -73,24 +69,27 @@ const staticFormConfig = computed(() => {
     const data = editingField.value || { form_id: selectedForm.value?.id };
     
     const dataTypeArray = [
-        { id: "TEXT", value: "Text" },
-        { id: "NUMBER", value: "Number" },
-        { id: "HIDDEN", value: "Hidden" },
-        { id: "DATE", value: "Date" },
-        { id: "DROPDOWN", value: "Dropdown/Select" },
-        { id: "CHECKBOX", value: "Checkbox" },
-        { id: "RADIO", value: "Radio" },
-        { id: "FILE", value: "File" },
-        { id: "CARD", value: "Card" },
-        { id: "GROUP", value: "Group" },
-        { id: "TAB", value: "Tab" },
-        { id: "SECTION", value: "Section" },
-        { id: "TABLE", value: "Table" }
+        { id: 1, label: "TEXT", choice_code: "TEXT", data: "" },
+        { id: 2, label: "NUMBER", choice_code: "NUMBER", data: "" },
+        { id: 3, label: "DATE", choice_code: "DATE", data: "" },
+        { id: 4, label: "DROPDOWN", choice_code: "DROPDOWN", data: "" },
+        { id: 5, label: "CHECKBOX", choice_code: "CHECKBOX", data: "" },
+        { id: 6, label: "RADIO", choice_code: "RADIO", data: "" },
+        { id: 7, label: "FILE", choice_code: "FILE", data: "" },
+        { id: 8, label: "CARD", choice_code: "CARD", data: "" },
+        { id: 9, label: "GROUP", choice_code: "GROUP", data: "" },
+        { id: 10, label: "TAB", choice_code: "TAB", data: "" },
+        { id: 11, label: "SECTION", choice_code: "SECTION", data: "" },
+        { id: 12, label: "TABLE", choice_code: "TABLE", data: "" },
+        { id: 13, label: "STAR", choice_code: "STAR", data: "" },
+        { id: 14, label: "TEXTAREA", choice_code: "TEXTAREA", data: "" },
+        { id: 15, label: "EMOJI", choice_code: "EMOJI", data: "" },
+        { id: 16, label: "HIDDEN", choice_code: "HIDDEN", data: "" }
     ]
     
     return {
         fields: [
-            { id: 'form_id', field_code: 'form_id', data_type: 'HIDDEN', label: 'Form ID', value: [data.form_id || selectedForm.value?.id || ''], required: true },
+            { id: 'form_id', field_code: 'form_id', data_type: 'NUMBER', label: 'Form ID', value: [data.form_id || selectedForm.value?.id || ''], required: true },
             { id: 'data_type', field_code: 'data_type', data_type: 'DROPDOWN', choices: dataTypeArray, label: 'Data Type', value: [data.data_type || 'TEXT'], required: true },
             { id: 'field_code', field_code: 'field_code', data_type: 'TEXT', label: 'Field Code', value: [data.field_code || ''], required: true },
             { id: 'label', field_code: 'label', data_type: 'TEXT', label: 'Label', value: [data.label || ''], required: true },

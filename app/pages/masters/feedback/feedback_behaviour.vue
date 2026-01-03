@@ -23,7 +23,7 @@
 
 
     <CKFormModal v-model="formModel" :title="params.id ? 'Edit Feedback' : 'New Feedback'" :endPoint="endPoint"
-        :formCode="'f5'" :id="id" :params="params" @handleFormSubmit="handleFormSubmit" />
+        :formCode="formCode" :id="id" :params="params" @handleFormSubmit="handleFormSubmit" />
 
 
 </template>
@@ -37,10 +37,11 @@ import CKFormModal from "~/components/common/CKFormModal.vue";
 definePageMeta({ layout: 'home' });
 const { $axios } = useNuxtApp()
 const title = ref("Feedback Behaviour");
-const endPoint = ref("/form/defaultForm");
+const endPoint = ref("/feedback/feedback");
 const params = ref({});
 const formModel = ref(false);
 const id = ref('');
+const formCode = ref('behaviour');
 
 
 /* ------------------ onMounted ------------------ */
@@ -55,7 +56,9 @@ const error = ref(null);
 const data = ref([]);
 const columns = ref([
     { accessorKey: 'id', header: 'Sr.No.' },
-    { accessorKey: 'Behaviour of Helper', header: 'Helper Behavior' },
+    { accessorKey: 'title', header: 'Title' },
+    { accessorKey: 'description', header: 'Description' },
+    { accessorKey: 'status_feedback', header: 'Status' },
     { id: 'action' }
 ]);
 const loadData = async () => {
@@ -63,31 +66,26 @@ const loadData = async () => {
     error.value = null;
     try {
         const response = await $axios.get(endPoint.value, {
-            params: { form_code: 'f5' }
+            params: { form_code: formCode.value }
         });
         const temp = response.data;
-        if (temp.success && Array.isArray(temp.response_values)) {
-            // Group data by form_response_id
-            const grouped = {};
-            temp.response_values.forEach(item => {
-                const responseId = item.form_response_id;
-                if (!grouped[responseId]) {
-                    grouped[responseId] = { id: responseId };
-                }
-
-                try {
-                    const parsedValue = JSON.parse(item.value);
-                    grouped[responseId][item.field_code] = Array.isArray(parsedValue) ? parsedValue[0] : parsedValue;
-                } catch (e) {
-                    grouped[responseId][item.field_code] = item.value;
-                }
-            });
-            data.value = Object.values(grouped);
+        if (temp.success && Array.isArray(temp.feedbacks)) {
+           
+            data.value = temp.feedbacks.map(feedback => ({
+                id: feedback.id,
+                title: feedback.title || '',
+                description: feedback.description || '',
+                status_feedback: feedback.status_feedback || '',
+                form_id: feedback.form_id,
+                ...feedback
+            }));
         } else {
             error.value = 'Invalid response format from API';
+            data.value = [];
         }
     } catch (err) {
         error.value = err.response?.data?.message || err.message || 'Failed to load feedback';
+        data.value = [];
     } finally {
         loading.value = false;
     }
@@ -102,7 +100,8 @@ const filteredData = computed(() => {
     }
     const query = searchQuery.value.toLowerCase();
     return data.value.filter(item =>
-        String(item['Behaviour of Helper'])?.toLowerCase().includes(query)
+        String(item.title)?.toLowerCase().includes(query) ||
+        String(item.description)?.toLowerCase().includes(query)
     );
 });
 
@@ -112,13 +111,14 @@ const filteredData = computed(() => {
 
 /* ------------------ Add Button ------------------ */
 const handleAdd = () => {
-    params.value = { form_code: 'f5' };
+    params.value = { form_code: formCode.value };
+    id.value = '';
     formModel.value = true;
 };
 
 /* ------------------ Edit Button ------------------ */
 const handleEdit = async (item) => {
-    params.value = { id: item.original.id, form_code: 'f5' };
+    params.value = { id: item.original.id, form_code: formCode.value };
     id.value = item.original.id;
     formModel.value = true;
 };
