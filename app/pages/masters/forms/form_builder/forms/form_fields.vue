@@ -1,8 +1,11 @@
 <template>
-    <CKCardList :loading="loading" :title="title" @handleAdd="handleAdd" v-model="searchQuery">
+    <CKCardList :loading="loading" :title="title" :show-add="true" @handleAdd="handleAdd" v-model="searchQuery">
         <UTable :loading="loading" :data="filteredFields" :columns="columns">
             <template v-if="!loading" #empty>
                 <UError :error="{ statusMessage: error || 'No Record Found!!' }" />
+            </template>
+            <template #id-cell="{ row }">
+                {{filteredFields.findIndex(f => f.id === row.original.id) + 1}}
             </template>
             <template #data_type-cell="{ row }">
                 <b>{{ row.original.data_type }}</b> <br>

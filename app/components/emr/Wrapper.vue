@@ -12,10 +12,11 @@
         <UInput
             v-model="field.value[0]"
             :type="field.data_type.toLowerCase()"
-            :placeholder="field.label"
+            :placeholder="field.placeholder || null"
             :icon="field.icon"
             :maxlength="field.data_type === 'NUMBER' ? 10 : undefined"
             class="w-full"
+            @keypress="handleKeyPress"
         />
     </UFormField>
     
@@ -35,7 +36,7 @@
             label-key="value"
             :icon="field.icon"
             class="w-full"
-            :placeholder="field.label"
+          :placeholder="field.placeholder || null"
         />
     </UFormField>
     
@@ -50,7 +51,7 @@
         :label="field.label">
         <UTextarea
             v-model="field.value[0]"
-            :placeholder="field.label"
+              :placeholder="field.placeholder || null"
             class="w-full"
             :rows="field.rows || 4"
         />
@@ -199,6 +200,24 @@ const fieldClass = computed(() => {
 })
 
 const options = computed(() => props.field.choices || props.field.options || [])
+
+// Handle keypress for TEXT fields - only allow capital alphabets
+const handleKeyPress = (event) => {
+    if (props.field.data_type !== 'TEXT') {
+        return true
+    }
+    
+   
+    
+    // Only allow capital alphabets (A-Z), no spaces or underscores
+    if (!/[A-Z]/.test(event.key)) {
+        event.preventDefault()
+        return false
+    }
+    
+    return true
+}
+
 // Checkbox helpers
 const isSelected = (value) => {
     const val = props.field.value?.[0]

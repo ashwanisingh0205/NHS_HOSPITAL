@@ -15,6 +15,12 @@
                     label="Submit"
                     :loading="submitting"
                     :disabled="submitting" />
+                <UButton
+                    v-if="shouldShowClearButton"
+                    type="button"
+                    variant="outline"
+                    label="Clear"
+                    @click="handleClear" />
             </div>
         </template>
     
@@ -35,12 +41,29 @@ const props = defineProps({
     formCode: { type: String, default: "" },
     id: { type: String, default: "" },
     noAutoSubmit: { type: Boolean, default: false }, // If true, only emit submit event without auto-submitting
+    showClearButton: { type: [Boolean, String], default: false }, // Show clear button if true or "yes"
 })
-const emit = defineEmits(['submit'])
+const emit = defineEmits(['submit', 'clear'])
 
 const form = ref({ fields: [] })
 const loading = ref(true)
 const submitting = ref(false)
+
+const shouldShowClearButton = computed(() => {
+    return props.showClearButton === true || props.showClearButton === 'yes' || props.showClearButton === 'Yes'
+})
+
+const handleClear = () => {
+    // Reset form fields
+    if (form.value.fields) {
+        form.value.fields.forEach(field => {
+            if (field.value) {
+                field.value = []
+            }
+        })
+    }
+    emit('clear')
+}
 
 const loadForm = async () => {
     loading.value = true

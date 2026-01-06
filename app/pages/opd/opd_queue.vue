@@ -24,7 +24,7 @@
         <UCard class="w-full" v-if="!loading">
             <UTable :data="filteredPatients" :columns="patientColumns">
                 <template #id-cell="{ row }">
-                    {{ row.original.id || '-' }}
+                    {{filteredPatients.findIndex(f => f.id === row.original.id) + 1}}
                 </template>
                 <template #patient_name-cell="{ row }">
                     {{ row.original.patient_name || '-' }}

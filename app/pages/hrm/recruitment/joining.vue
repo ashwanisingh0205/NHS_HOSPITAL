@@ -1,6 +1,6 @@
 <template>
     <div>
-        <CKCardList :loading="loading" :title="title" @handleAdd="handleAdd" v-model="searchQuery">
+        <CKCardList :loading="loading" :title="title" :show-add="true" @handleAdd="handleAdd" v-model="searchQuery">
             <UTable :loading="loading" :data="filteredData" :columns="columns">
                 <!-- Empty message -->
                 <template v-if="!loading" #empty>

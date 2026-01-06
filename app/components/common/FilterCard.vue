@@ -36,7 +36,6 @@
 </template>
 
 <script setup>
-import DynamicStaticData from '~/components/emr/DynamicStaticData.vue'
 
 const props = defineProps({
     filterData: { type: Object, default: () => ({}) }

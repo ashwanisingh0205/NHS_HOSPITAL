@@ -1,7 +1,7 @@
 <template>
     <div class="flex gap-2">
         <div class="w-1/3">
-            <CKCardList :title="title" @handleAdd="handleAdd" v-model="searchQuery">
+            <CKCardList :title="title" :show-add="true" @handleAdd="handleAdd" v-model="searchQuery">
                 <UTable :loading="loading" :data="filteredData" :columns="columns">
                     <template #loading>
                         <CKLoader />
@@ -10,11 +10,14 @@
                         <UError :error="{ statusMessage: error || 'No Record Found!!' }" />
                     </template>
                     
+                    <template #id-cell="{ row }">
+                        {{filteredData.findIndex(f => f.id === row.original.id) + 1}}
+                    </template>
+                    
                     <template #form_name-cell="{ row }">
                         <ULink
                             :to="{ name: 'masters-forms-form_builder-forms-form_fields', query: { id: row.original.id } }"
                              class="cursor-pointer block max-w-[180px] truncate">
-                            <small>{{ row.original.category_id }}{{ row.original.category_name }}</small> <br>
                             <b>{{ row.original.form_name }}</b> <br>
                             <small>{{ row.original.form_code }}</small>
                         </ULink>

@@ -92,89 +92,23 @@ List of employees
             </div>
 
             
-            <CKCardList>
-                <UTable
-                    :loading="loading"
-                    :data="filteredEmployees"
+            <!-- Employee Table -->
+            <CKCardList :title="title" :show-add="true" @handleAdd="handleAdd" v-model="searchQuery">
+                <UTable 
+                    :loading="loading" 
+                    :data="filteredEmployees" 
                     :columns="columns"
-                    class="min-w-full">
-                    
+                    class="min-w-full"
+                >
                     <template #loading>
                         <CKLoader />
                     </template>
                     <template #empty>
                         <UError :error="{ statusMessage: error || 'No Record Found!!' }" />
                     </template>
-                    
-                    <template #View-cell="{ row }">
-                        <UButton
-                            variant="ghost"
-                            icon="lucide:eye"
-                            size="sm"
-                            @click="navigateTo(`/hrm/profile/employees/${row.original.employee_id}`)"
-                        />
-                    </template>
-                    
-                </UTable>
-                
-            </CKCardList>
-            
-            
-            <!-- Employee Table -->
-            <UCard>
-                <template #header>
-                    <div class="flex items-center justify-between">
-                        <div class="text-lg font-semibold">Employee List</div>
-                        <UButton 
-                            icon="lucide:plus" 
-                            variant="solid" 
-                            color="primary" 
-                            size="sm" 
-                            @click="addEmployeeModalOpen = true"
-                        >
-                            Add Employee
-                        </UButton>
-                    </div>
-                </template>
-                <div class="overflow-x-auto">
-                    <UTable 
-                        :loading="loading" 
-                        :data="filteredEmployees" 
-                        :columns="columns"
-                        class="min-w-full"
-                    >
-                        <template v-if="!loading" #empty>
-                            <UError :error="{ statusMessage: error || 'No Record Found!!' }" />
-                        </template>
 
                         <!-- Employee Info Column -->
-                        <template #employee_info-cell="{ row }">
-                            <div class="flex items-center gap-3">
-                                <div 
-                                    class="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm overflow-hidden"
-                                    :class="getAvatarClass(row.original.employee_id)"
-                                >
-                                    <img 
-                                        v-if="row.original.url_profile" 
-                                        :src="row.original.url_profile" 
-                                        :alt="getEmployeeName(row.original)"
-                                        class="w-full h-full object-cover"
-                                    />
-                                    <span v-else>{{ getInitials(row.original) }}</span>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-center gap-2">
-                                        <p class="font-medium text-gray-900 dark:text-white truncate">
-                                            {{ getEmployeeName(row.original) }}
-                                        </p>
-                                        <UIcon name="lucide:external-link" class="w-4 h-4 text-gray-400 shrink-0" />
-                                    </div>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                                        {{ getAge(row.original) }} years old
-                                    </p>
-                                </div>
-                            </div>
-                        </template>
+                       
 
                         <!-- Simple Text Columns -->
                         <template #phone_number-cell="{ row }">
@@ -232,8 +166,7 @@ List of employees
                             />
                         </template>
                     </UTable>
-                </div>
-            </UCard>
+            </CKCardList>
 
             <!-- New Employee Modal -->
             <EmployeeModal 
@@ -254,8 +187,8 @@ import StaticCard from '~/components/common/StaticCard.vue'
 import FilterCard from '~/components/common/FilterCard.vue'
 import ProfileCard from '~/components/common/ProfileCard.vue'
 import EmployeeModal from '~/components/common/EmployeeModal.vue'
-import CKCardList from "~/components/common/CKCardList.vue";
-import CKLoader from "~/components/common/CKLoader.vue";
+import CKCardList from "~/components/common/CKCardList.vue"
+import CKLoader from "~/components/common/CKLoader.vue"
 
 definePageMeta({
     layout: 'home'
@@ -274,6 +207,7 @@ const quickSearchQuery = ref('')
 const advancedFilters = ref({})
 const addEmployeeModalOpen = ref(false)
 const birthdaysContainer = ref(null)
+const title = "Employee List";
 
 // Computed
 const isChildRoute = computed(() => route.path.includes('/employees/new'))
@@ -337,7 +271,6 @@ const filteredEmployees = computed(() => {
 
 // Table Columns
 const columns = [
-    { accessorKey: 'employee_info', header: 'EMPLOYEE INFO' },
     { accessorKey: 'phone_number', header: 'PHONE NUMBER' },
     { accessorKey: 'patient_number', header: 'PATIENT NUMBER' },
     { accessorKey: 'privileges', header: 'PRIVILEGES' },

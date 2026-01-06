@@ -1,7 +1,7 @@
 <template>
     <CKCardList
         class="w-full"
-        :loading="loading" :title="title" @handleAdd="handleAdd" v-model="searchQuery">
+        :loading="loading" :title="title" :show-add="true" @handleAdd="handleAdd" v-model="searchQuery">
         <UTable :loading="loading" :data="filteredDetails" :columns="columns">
             <template #loading>
                 <CKLoader />

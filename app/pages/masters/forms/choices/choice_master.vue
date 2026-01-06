@@ -1,7 +1,7 @@
 <template>
     <div class="flex gap-2">
         <div class="w-1/3">
-            <CKCardList :loading="loading" :title="title" @handleAdd="handleAdd" v-model="searchQuery">
+            <CKCardList :loading="loading" :title="title" :show-add="true" @handleAdd="handleAdd" v-model="searchQuery">
                 <UTable :loading="loading" :data="filteredData" :columns="columns">
                     <template #loading>
                         <CKLoader />
