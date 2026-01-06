@@ -91,6 +91,35 @@ List of employees
                 </div>
             </div>
 
+            
+            <CKCardList>
+                <UTable
+                    :loading="loading"
+                    :data="filteredEmployees"
+                    :columns="columns"
+                    class="min-w-full">
+                    
+                    <template #loading>
+                        <CKLoader />
+                    </template>
+                    <template #empty>
+                        <UError :error="{ statusMessage: error || 'No Record Found!!' }" />
+                    </template>
+                    
+                    <template #View-cell="{ row }">
+                        <UButton
+                            variant="ghost"
+                            icon="lucide:eye"
+                            size="sm"
+                            @click="navigateTo(`/hrm/profile/employees/${row.original.employee_id}`)"
+                        />
+                    </template>
+                    
+                </UTable>
+                
+            </CKCardList>
+            
+            
             <!-- Employee Table -->
             <UCard>
                 <template #header>
@@ -225,6 +254,8 @@ import StaticCard from '~/components/common/StaticCard.vue'
 import FilterCard from '~/components/common/FilterCard.vue'
 import ProfileCard from '~/components/common/ProfileCard.vue'
 import EmployeeModal from '~/components/common/EmployeeModal.vue'
+import CKCardList from "~/components/common/CKCardList.vue";
+import CKLoader from "~/components/common/CKLoader.vue";
 
 definePageMeta({
     layout: 'home'

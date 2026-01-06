@@ -14,6 +14,7 @@
                         <ULink
                             :to="{ name: 'masters-forms-form_builder-forms-form_fields', query: { id: row.original.id } }"
                              class="cursor-pointer block max-w-[180px] truncate">
+                            <small>{{ row.original.category_id }}{{ row.original.category_name }}</small> <br>
                             <b>{{ row.original.form_name }}</b> <br>
                             <small>{{ row.original.form_code }}</small>
                         </ULink>
@@ -89,9 +90,25 @@ const staticFormConfig = computed(() => {
         { key: "SURVEY", value: "Survey/Feedback/Checklist" },
         { key: "WORKFLOW", value: "Workflow Initializer" },
     ]
+    
+    const categoryArray = [
+        { key: 1, value: "Patient" },
+        { key: 2, value: "HR" },
+        { key: 3, value: "HR Joining" },
+    ]
 
     return {
         fields: [
+            {
+                id: 'category_id',
+                field_code: 'form_type',
+                data_type: 'DROPDOWN',
+                label: 'Category',
+                value: ["1"],
+                choices: categoryArray,
+                required: false,
+                cols: '6'
+            },
             {
                 id: 'form_type',
                 field_code: 'form_type',
@@ -156,6 +173,10 @@ const loadData = async () => {
     try {
         const response = await $axios.get(endPoint);
         data.value = response.data.success ? response.data.forms : [];
+        console.log(staticFormConfig)
+        data.value.map((form, index) => {
+            form.category_name = staticFormConfig.value.categoryArray.find(c => c.key === form.category_id)?.value
+        })
     } catch (err) {
         error.value = err.response?.data?.message || 'Failed to load forms';
     } finally {

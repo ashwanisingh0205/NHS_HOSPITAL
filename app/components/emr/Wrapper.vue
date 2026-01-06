@@ -51,6 +51,7 @@
         <UTextarea
             v-model="field.value[0]"
             :placeholder="field.label"
+            class="w-full"
             :rows="field.rows || 4"
         />
     </UFormField>

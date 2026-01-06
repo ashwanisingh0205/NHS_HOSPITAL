@@ -1,12 +1,9 @@
 <template>
     <CKLoader v-if="loading" />
     
-    
     <UForm v-else @submit.prevent="handleSubmit">
-        
-        
         <template v-if="form.fields?.length">
-            <div class="flex flex-wrap gap-5">
+            <div class="grid grid-cols-12 gap-5 w-full">
                 <Wrapper
                     v-for="field in form.fields"
                     :key="field.id"
@@ -20,10 +17,8 @@
                     :disabled="submitting" />
             </div>
         </template>
-        
-        <div v-else class="text-center py-8 text-gray-500 dark:text-gray-400">
-            <p>No form fields available. Please check the API endpoint configuration.</p>
-        </div>
+    
+    
     </UForm>
 </template>
 
@@ -34,11 +29,12 @@ import CKLoader from "~/components/common/CKLoader.vue";
 const { $axios } = useNuxtApp()
 
 const props = defineProps({
-    formCode: { type: String, default: "" },
-    params: { type: Object, default: null },
     endPoint: { type: String, default: "" },
+    params: { type: Object, default: null },
     staticForm: { type: Object, default: null },
+    formCode: { type: String, default: "" },
     id: { type: String, default: "" },
+    noAutoSubmit: { type: Boolean, default: false }, // If true, only emit submit event without auto-submitting
 })
 const emit = defineEmits(['submit'])
 
@@ -58,10 +54,12 @@ const loadForm = async () => {
         const endpoint = props.endPoint || '/form/defaultForm'
         
         // Build request params - always include form=true for form structure
-        const requestParams = { 
+        const requestParams = {
             form: 'true',
-            ...(props.formCode && { form_code: props.formCode, id: props.id }),
-            ...(!props.formCode && props.params || {})
+            ...(props.formCode && { form_code: props.formCode, id: props.id })
+        }
+        if (props.params) {
+            Object.assign(requestParams, props.params)
         }
         
         const { data } = await $axios.get(endpoint, { params: requestParams })
@@ -69,6 +67,7 @@ const loadForm = async () => {
         form.value = data
         
     } catch (err) {
+        console.error('Error loading form:', err)
         form.value = { fields: [] }
     } finally {
         loading.value = false
@@ -81,11 +80,19 @@ watch([() => props.formCode, () => props.staticForm, () => props.endPoint, () =>
 const handleSubmit = async () => {
     submitting.value = true
     try {
+        // Build payload from form fields
+        const formData = form.value.fields?.reduce((acc, field) => {
+            const fieldCode = field.field_code || field.id
+            if (fieldCode) {
+                const fieldValue = field.value?.[0]
+                acc[fieldCode] = fieldValue !== undefined && fieldValue !== null ? fieldValue : ''
+            }
+            return acc
+        }, {}) || {}
         
-        
-        // If using staticForm, just emit the data and let parent handle submission
-        if (props.staticForm) {
-            emit('submit', { form: form.value })
+        // If using staticForm or noAutoSubmit, just emit the data and let parent handle submission
+        if (props.staticForm || props.noAutoSubmit) {
+            emit('submit', { form: form.value, payload: formData })
             submitting.value = false
             return
         }
@@ -99,7 +106,7 @@ const handleSubmit = async () => {
         
         // For PATCH requests, add id and form_code as query params
         if (isEdit) {
-            requestConfig.params = { 
+            requestConfig.params = {
                 id: Number(props.params?.id || props.id)
             }
             if (props.formCode) {
@@ -116,7 +123,7 @@ const handleSubmit = async () => {
             requestConfig
         )
         
-        emit('submit', { form: form.value })
+        emit('submit', { form: form.value, payload: formData })
     } catch (err) {
         console.error('Form submission error:', err)
         console.error('Error response:', err.response?.data)

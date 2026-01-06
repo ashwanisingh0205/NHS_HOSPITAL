@@ -69,32 +69,31 @@ const staticFormConfig = computed(() => {
     const data = editingField.value || { form_id: selectedForm.value?.id };
     
     const dataTypeArray = [
-        { id: 1, label: "TEXT", choice_code: "TEXT", data: "" },
-        { id: 2, label: "NUMBER", choice_code: "NUMBER", data: "" },
-        { id: 3, label: "DATE", choice_code: "DATE", data: "" },
-        { id: 4, label: "DROPDOWN", choice_code: "DROPDOWN", data: "" },
-        { id: 5, label: "CHECKBOX", choice_code: "CHECKBOX", data: "" },
-        { id: 6, label: "RADIO", choice_code: "RADIO", data: "" },
-        { id: 7, label: "FILE", choice_code: "FILE", data: "" },
-        { id: 8, label: "CARD", choice_code: "CARD", data: "" },
-        { id: 9, label: "GROUP", choice_code: "GROUP", data: "" },
-        { id: 10, label: "TAB", choice_code: "TAB", data: "" },
-        { id: 11, label: "SECTION", choice_code: "SECTION", data: "" },
-        { id: 12, label: "TABLE", choice_code: "TABLE", data: "" },
-        { id: 13, label: "STAR", choice_code: "STAR", data: "" },
-        { id: 14, label: "TEXTAREA", choice_code: "TEXTAREA", data: "" },
-        { id: 15, label: "EMOJI", choice_code: "EMOJI", data: "" },
-        { id: 16, label: "HIDDEN", choice_code: "HIDDEN", data: "" }
+        { key: 1, value: "TEXT" },
+        { key: 2, value: "NUMBER" },
+        { key: 3, value: "DATE" },
+        { key: 4, value: "DROPDOWN" },
+        { key: 5, value: "CHECKBOX" },
+        { key: 6, value: "RADIO" },
+        { key: 7, value: "FILE" },
+        { key: 8, value: "CARD" },
+        { key: 9, value: "GROUP" },
+        { key: 10, value: "TAB" },
+        { key: 11, value: "SECTION" },
+        { key: 12, value: "TABLE" },
+        { key: 13, value: "STAR" },
+        { key: 14, value: "TEXTAREA" },
+        { key: 15, value: "EMOJI" },
+        { key: 16, value: "HIDDEN" },
     ]
     
     return {
         fields: [
-            { id: 'form_id', field_code: 'form_id', data_type: 'NUMBER', label: 'Form ID', value: [data.form_id || selectedForm.value?.id || ''], required: true },
+            { id: 'form_id', field_code: 'form_id', data_type: 'HIDEEN', label: 'Form ID', value: [data.form_id || selectedForm.value?.id || ''], required: true },
             { id: 'data_type', field_code: 'data_type', data_type: 'DROPDOWN', choices: dataTypeArray, label: 'Data Type', value: [data.data_type || 'TEXT'], required: true },
             { id: 'field_code', field_code: 'field_code', data_type: 'TEXT', label: 'Field Code', value: [data.field_code || ''], required: true },
             { id: 'label', field_code: 'label', data_type: 'TEXT', label: 'Label', value: [data.label || ''], required: true },
             { id: 'col', field_code: 'col', data_type: 'TEXT', label: 'Column', value: [data.col || ''], required: false },
-            { id: 'priority', field_code: 'priority', data_type: 'NUMBER', label: 'Priority', value: [data.priority || 0], required: false },
             { id: 'choice_code', field_code: 'choice_code', data_type: 'TEXT', label: 'Choice Code', value: [data.choice_code || ''], required: false },
             { id: 'status', field_code: 'status', data_type: 'CHECKBOX', label: 'Status', value: [data.status ?? true], required: false }
         ]

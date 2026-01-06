@@ -6,9 +6,7 @@
                 v-model="searchQuery"
                 placeholder="Search patient by... name, bed number"
                 icon="i-heroicons-magnifying-glass"
-                class="flex-1"
-            />
-           
+                class="flex-1" />
         </div>
 
         <!-- Filter Tags -->
@@ -19,13 +17,12 @@
                 :variant="selectedTags.includes(tag) ? 'solid' : 'soft'"
                 :color="selectedTags.includes(tag) ? 'primary' : 'gray'"
                 class="cursor-pointer border"
-                @click="toggleTag(tag)"
-            >
-                {{ tag }}
-            </UBadge>
+                :content="tag"
+                @click="toggleTag(tag)" />
         </div>
 
         <!-- Patient Cards Grid -->
+        <!-- TODO: user ckloader -->
         <div v-if="loading" class="flex justify-center py-8">
             <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
@@ -101,6 +98,7 @@ const loadData = async () => {
 
 /* ------------------ Computed ------------------ */
 const filteredPatients = computed(() => {
+    // todo: search using search string: generated from server side
     return patients.value.filter(patient => {
         // Search filter
         const matchesSearch = !searchQuery.value.trim() ||
@@ -121,6 +119,7 @@ const filteredPatients = computed(() => {
 
 /* ------------------ Methods ------------------ */
 const toggleTag = (tag) => {
+    
     if (tag === 'All') {
         selectedTags.value = ['All']
         return
