@@ -1,12 +1,18 @@
 <template>
-    <CKCardList :loading="loading" :title="title" :show-add="true" @handleAdd="handleAdd" v-model="searchQuery">
-        <UTable :loading="loading" :data="filteredFields" :columns="columns">
-            <template v-if="!loading" #empty>
+    
+    <CKCardList :title="title" :show-add="true" @handleAdd="handleAdd" v-model="searchQuery">
+        
+        <UTable
+            :loading="loading" :error="error"
+            :data="filteredFields" :columns="columns">
+            
+            <template #loading>
+                <CKLoader />
+            </template>
+            <template #empty>
                 <UError :error="{ statusMessage: error || 'No Record Found!!' }" />
             </template>
-            <template #id-cell="{ row }">
-                {{filteredFields.findIndex(f => f.id === row.original.id) + 1}}
-            </template>
+            
             <template #data_type-cell="{ row }">
                 <b>{{ row.original.data_type }}</b> <br>
                 <small>{{ row.original.choice_code }}</small>
@@ -20,7 +26,9 @@
                     <CKEdit @click="handleEdit(row)" />
                 </div>
             </template>
+            
         </UTable>
+        
     </CKCardList>
     
     <UModal v-model:open="formModel" :title="modalTitle">
@@ -38,6 +46,7 @@
 import DynamicForm from "~/components/emr/DynamicForm.vue";
 import CKEdit from "~/components/common/CKEdit.vue";
 import CKCardList from "~/components/common/CKCardList.vue";
+import CKLoader from "~/components/common/CKLoader.vue";
 
 definePageMeta({ layout: 'home' });
 
@@ -71,23 +80,24 @@ const columns = [
 const staticFormConfig = computed(() => {
     const data = editingField.value || { form_id: selectedForm.value?.id };
     
+    
     const dataTypeArray = [
-        { key: 1, value: "TEXT" },
-        { key: 2, value: "NUMBER" },
-        { key: 3, value: "DATE" },
-        { key: 4, value: "DROPDOWN" },
-        { key: 5, value: "CHECKBOX" },
-        { key: 6, value: "RADIO" },
-        { key: 7, value: "FILE" },
-        { key: 8, value: "CARD" },
-        { key: 9, value: "GROUP" },
-        { key: 10, value: "TAB" },
-        { key: 11, value: "SECTION" },
-        { key: 12, value: "TABLE" },
-        { key: 13, value: "STAR" },
-        { key: 14, value: "TEXTAREA" },
-        { key: 15, value: "EMOJI" },
-        { key: 16, value: "HIDDEN" },
+        { id: "TEXT", value: "Text" },
+        { id: "NUMBER", value: "Number" },
+        { id: "HIDDEN", value: "Hidden" },
+        { id: "DATE", value: "Date" },
+        { id: "DROPDOWN", value: "Dropdown/Select" },
+        { id: "CHECKBOX", value: "Checkbox" },
+        { id: "RADIO", value: "Radio" },
+        { id: "FILE", value: "File" },
+        { id: "CARD", value: "Card" },
+        { id: "GROUP", value: "Group" },
+        { id: "TAB", value: "Tab" },
+        { id: "SECTION", value: "Section" },
+        { id: "TABLE", value: "Table" },
+        { id: "STAR", value: "Star" },
+        { id: "TEXTAREA", value: "Textarea" },
+        { id: "EMOJI", value: "Emoji" }
     ]
     
     return {

@@ -1,18 +1,17 @@
 <template>
     <UCard class="w-full" :ui="{ body: 'sm:p-0 p-0'}">
         <template #header>
-            <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center justify-between">
                 <h2 class="text-lg font-semibold">{{ title }}</h2>
                 <div class="flex items-center gap-2">
                     <UButton
                         v-if="showFilter"
                         variant="ghost"
-                        size="sm"
                         @click="toggleFilter"
                         :class="isFilterVisible ? 'text-primary' : ''"
-                    >
+                        leading-icon="lucide:filter">
                         <div class="flex items-center gap-1">
-                            <UIcon name="lucide:filter" class="w-4 h-4" />
+                            Filter
                             <UIcon 
                                 name="lucide:chevron-down"
                                 class="w-4 h-4 transition-transform"
@@ -28,20 +27,22 @@
                 </div>
             </div>
             <CKSearch
+                class="mt-4"
                 v-model="localValue" />
-            
-            <!-- Filter Section -->
-            <div v-if="showFilter && isFilterVisible" class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-800">
-                <DynamicForm 
-                    :key="filterConfigKey"
-                    :staticForm="filterForm"
-                    :noAutoSubmit="true"
-                    :showClearButton="true"
-                    @submit="handleFilterSubmit"
-                    @clear="handleFilterClear"
-                />
-            </div>
         </template>
+        
+        <!-- Filter Section -->
+        <div v-if="showFilter && isFilterVisible" class="pt-4 pb-2 bg-gray-50 border-b border-gray-200 dark:border-gray-800">
+            <DynamicForm
+                :key="filterConfigKey"
+                :staticForm="filterForm"
+                :noAutoSubmit="true"
+                :showClearButton="true"
+                @submit="handleFilterSubmit"
+                @clear="handleFilterClear"
+                class="mx-4"
+            />
+        </div>
         
         <slot />
     </UCard>
@@ -54,7 +55,7 @@ import CKAdd from "~/components/common/CKAdd.vue";
 import DynamicForm from "~/components/emr/DynamicForm.vue";
 
 const props = defineProps({
-    modelValue: { type: String, default: "" },
+    modelValue: { type: String, default: null },
     loading: { type: Boolean, default: false },
     title: { type: String, default: "Title" },
     showFilter: { type: Boolean, default: false },

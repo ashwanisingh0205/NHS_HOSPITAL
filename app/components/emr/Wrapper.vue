@@ -32,7 +32,7 @@
         <USelectMenu
             v-model="field.value[0]"
             :items="field.choices"
-            value-key="key"
+            value-key="id"
             label-key="value"
             :icon="field.icon"
             class="w-full"
@@ -203,17 +203,15 @@ const options = computed(() => props.field.choices || props.field.options || [])
 
 // Handle keypress for TEXT fields - only allow capital alphabets
 const handleKeyPress = (event) => {
-    if (props.field.data_type !== 'TEXT') {
-        return true
-    }
-    
-   
-    
-    // Only allow capital alphabets (A-Z), no spaces or underscores
-    if (!/[A-Z]/.test(event.key)) {
-        event.preventDefault()
-        return false
-    }
+    // if (props.field.data_type !== 'TEXT') {
+    //     return true
+    // }
+    //
+    // // Only allow capital alphabets (A-Z), no spaces or underscores
+    // if (!/[A-Z]/.test(event.key)) {
+    //     event.preventDefault()
+    //     return false
+    // }
     
     return true
 }

@@ -3,7 +3,7 @@
         
         <CKLoader v-if="loading" />
         
-        <UCard class="w-1/3" v-if="!loading">
+        <CKCardList title="Doctors" class="w-1/3" v-if="!loading">
             <UTable
                 :data="consultants"
                 :columns="consultantColumns"
@@ -19,9 +19,9 @@
                     </div>
                 </template>
             </UTable>
-        </UCard>
+        </CKCardList>
         
-        <UCard class="w-full" v-if="!loading">
+        <CKCardList title="Patients" class="w-full" v-if="!loading">
             <UTable :data="filteredPatients" :columns="patientColumns">
                 <template #id-cell="{ row }">
                     {{filteredPatients.findIndex(f => f.id === row.original.id) + 1}}
@@ -35,12 +35,12 @@
                     </UButton>
                 </template>
             </UTable>
-        </UCard>
+        </CKCardList>
         
-        <UCard class="w-1/3" v-if="!loading">
+        <CKCardList title="Appointments" class="w-1/3" v-if="!loading">
             <UTable :data="todayAppointments" >
             </UTable>
-        </UCard>
+        </CKCardList>
         
         
     </div>
@@ -48,6 +48,7 @@
 
 <script setup>
 import CKLoader from "~/components/common/CKLoader.vue";
+import CKCardList from "~/components/common/CKCardList.vue";
 
 definePageMeta({ layout: 'home' })
 
