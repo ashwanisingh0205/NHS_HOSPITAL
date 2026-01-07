@@ -3,11 +3,8 @@
         <!-- OPD Register Table -->
         <CKCardList 
             :title="title" 
-            :show-filter="true"
+            :show-filter="false"
             :show-add="false"
-            :filterForm="filterForm"
-            @filter="handleFilterSubmit"
-            @filterClear="handleFilterClear"
             >
             <UTable 
                 :loading="loading" 
@@ -41,160 +38,6 @@ const loading = ref(false)
 const error = ref(null)
 const searchQuery = ref('')
 const title = "OPD Register"
-const advancedFilters = ref({})
-
-
-
-// Filter Config
-const filterForm = computed(() => ({
-
-
-        fields: [
-            // Row 1
-            {
-                id: 'uhid_start',
-                field_code: 'uhid_start',
-                label: 'UHID Start',
-                data_type: 'TEXT',
-                placeholder: 'UHID Start',
-                col: '3',
-                value: [advancedFilters.value.uhid_start || '']
-            },
-            {
-                id: 'uhid_end',
-                field_code: 'uhid_end',
-                label: 'UHID End',
-                data_type: 'TEXT',
-                placeholder: 'UHID End',
-                col: '3',
-                value: [advancedFilters.value.uhid_end || '']
-            },
-            {
-                id: 'dopd_start',
-                field_code: 'dopd_start',
-                label: 'Date of OPD Start',
-                data_type: 'DATE',
-                placeholder: 'Date of OPD Start',
-                col: '3',
-                value: [advancedFilters.value.dopd_start || '']
-            },
-            {
-                id: 'dopd_end',
-                field_code: 'dopd_end',
-                label: 'Date of OPD End',
-                data_type: 'DATE',
-                placeholder: 'Date of OPD End',
-                col: '3',
-                value: [advancedFilters.value.dopd_end || '']
-            },
-            {
-                id: 'tpa',
-                field_code: 'tpa',
-                label: 'TPA',
-                data_type: 'DROPDOWN',
-                placeholder: 'All',
-                col: '3',
-                choices: [
-                    { id: 'all', value: 'All' },
-                    { id: 'star_health', value: 'Star Health' },
-                    { id: 'hdfc_ergo', value: 'HDFC Ergo' },
-                    { id: 'icici_lombard', value: 'ICICI Lombard' },
-                    { id: 'bajaj_allianz', value: 'Bajaj Allianz' }
-                ],
-                value: [advancedFilters.value.tpa || 'all']
-            },
-            {
-                id: 'polyclinic',
-                field_code: 'polyclinic',
-                label: 'Polyclinic',
-                data_type: 'DROPDOWN',
-                placeholder: 'All polyclinics',
-                col: '3',
-                choices: [
-                    { id: 'all', value: 'All polyclinics' },
-                    { id: 'polyclinic_1', value: 'Polyclinic 1' },
-                    { id: 'polyclinic_2', value: 'Polyclinic 2' },
-                    { id: 'polyclinic_3', value: 'Polyclinic 3' }
-                ],
-                value: [advancedFilters.value.polyclinic || 'all']
-            },
-            {
-                id: 'cons_dept',
-                field_code: 'cons_dept',
-                label: 'Cons. Dept.',
-                data_type: 'DROPDOWN',
-                placeholder: 'All Departments',
-                col: '3',
-                choices: [
-                    { id: 'all', value: 'All Departments' },
-                    { id: 'cardiology', value: 'Cardiology' },
-                    { id: 'neurology', value: 'Neurology' },
-                    { id: 'orthopedics', value: 'Orthopedics' },
-                    { id: 'general', value: 'General Medicine' }
-                ],
-                value: [advancedFilters.value.cons_dept || 'all']
-            },
-            // Row 2
-            {
-                id: 'consultant',
-                field_code: 'consultant',
-                label: 'Consultant',
-                data_type: 'DROPDOWN',
-                placeholder: 'Select an Option...',
-                col: '3',
-                choices: [
-                    { id: '', value: 'Select an Option...' },
-                    { id: 'dr_smith', value: 'Dr. Smith' },
-                    { id: 'dr_johnson', value: 'Dr. Johnson' },
-                    { id: 'dr_brown', value: 'Dr. Brown' },
-                    { id: 'dr_wilson', value: 'Dr. Wilson' },
-                    { id: 'dr_taylor', value: 'Dr. Taylor' },
-                    { id: 'dr_anderson', value: 'Dr. Anderson' }
-                ],
-                value: [advancedFilters.value.consultant || '']
-            },
-            {
-                id: 'user',
-                field_code: 'user',
-                label: 'User',
-                data_type: 'DROPDOWN',
-                placeholder: 'All Users',
-                col: '3',
-                choices: [
-                    { id: 'all', value: 'All Users' },
-                    { id: 'user_1', value: 'User 1' },
-                    { id: 'user_2', value: 'User 2' },
-                    { id: 'user_3', value: 'User 3' }
-                ],
-                value: [advancedFilters.value.user || 'all']
-            },
-            {
-                id: 'company',
-                field_code: 'company',
-                label: 'Company',
-                data_type: 'DROPDOWN',
-                placeholder: 'All Companies',
-                col: '3',
-                choices: [
-                    { id: 'all', value: 'All Companies' },
-                    { id: 'star_health', value: 'Star Health' },
-                    { id: 'hdfc_ergo', value: 'HDFC Ergo' },
-                    { id: 'icici_lombard', value: 'ICICI Lombard' },
-                    { id: 'bajaj_allianz', value: 'Bajaj Allianz' }
-                ],
-                value: [advancedFilters.value.company || 'all']
-            },
-            {
-                id: 'employee',
-                field_code: 'employee',
-                label: 'Employee',
-                data_type: 'CHECKBOX',
-                col: '3',
-                checkboxLabel: 'Employee',
-                value: [advancedFilters.value.employee || false]
-            }
-        ]
-    }))
 
 
 // Table Columns
@@ -382,18 +225,9 @@ const filteredData = computed(() => {
             )
         })
     }
-}
-)
-   
 
-// Filter Handlers
-const handleFilterSubmit = (event) => {
-    advancedFilters.value = event.payload || {}
-}
-
-const handleFilterClear = () => {
-    advancedFilters.value = {}
-}
+    return filtered
+})
 
 const handleAdd = () => {
     // Handle add new OPD record
