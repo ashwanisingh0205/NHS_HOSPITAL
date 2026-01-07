@@ -1,5 +1,5 @@
 <template>
-    IPD EMR
+
 </template>
 
 <script setup>

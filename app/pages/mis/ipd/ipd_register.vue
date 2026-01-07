@@ -14,7 +14,6 @@
                 :loading="loading" 
                 :data="filteredData" 
                 :columns="columns"
-                class="min-w-full"
             >
                 <template #loading>
                     <CKLoader />
