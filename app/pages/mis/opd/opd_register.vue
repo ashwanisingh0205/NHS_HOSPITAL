@@ -1,3 +1,4 @@
+<!-- status: Waiting/Done, uhid, patient_name, services, time_reg, time_in, time_out  -->
 <template>
     <div class="p-1">
         <!-- OPD Register Table -->
@@ -46,13 +47,14 @@ const columns = [
 
 
 const data = ref();
+ const { $axios } = useNuxtApp()
 const loadForm = async () => {
     loading.value = true
     
     try {
         
         const endpoint = '/form/dummy'
-        
+         
         const dataSchema = {
             uhid: 'TEXT',
             bill_no: 'TEXT',
@@ -62,11 +64,13 @@ const loadForm = async () => {
             amount: 'CURRENCY',
         }
         
-        const result = await $axios.get(endpoint, { params: {dataSchema} })
-        data.value = result.data
+        const result = await $axios.post(endpoint, { schema: dataSchema })
+        console.log('result', result)
+        data.value = result.data.data
         
     } catch (err) {
-    
+        error.value = err.response?.data?.message || err.message || 'Failed to load data'
+        console.error('Error loading OPD register:', err)
     } finally {
         loading.value = false
     }
@@ -76,3 +80,4 @@ onMounted(loadForm)
 
 
 </script>
+
