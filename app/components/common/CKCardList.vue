@@ -27,12 +27,13 @@
                 </div>
             </div>
             <CKSearch
+                v-if="showSearch"
                 class="mt-4"
                 v-model="localValue" />
         </template>
         
         <!-- Filter Section -->
-        <div v-if="showFilter && isFilterVisible" class="pt-4 pb-2 bg-gray-50 border-b border-gray-200 dark:border-gray-800">
+        <div v-if="showFilter && isFilterVisible" class="pt-4 pb-2 border-b bg-gray-50 dark:bg-gray-900 border-gray-200  dark:border-gray-800">
             <DynamicForm
                 :key="filterConfigKey"
                 :formCode="filterFormCode"
@@ -57,6 +58,7 @@ const props = defineProps({
     modelValue: { type: String, default: null },
     loading: { type: Boolean, default: false },
     title: { type: String, default: "Title" },
+    showSearch: { type: Boolean, default: false },
     showFilter: { type: Boolean, default: false },
     filterForm: { type: Object, default: () => ({ fields: [] }) },
     filterFormCode: { type: String, default: "" },

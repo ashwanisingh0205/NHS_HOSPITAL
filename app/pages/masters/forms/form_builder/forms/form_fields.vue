@@ -58,7 +58,7 @@ const selectedForm = inject('selectedForm', ref(null));
 const fields = ref([]);
 const formModel = ref(false);
 const formResetKey = ref(0);
-const loading = ref(false);
+const loading = ref(true);
 const error = ref(null);
 const editingField = ref(null);
 const searchQuery = ref('');
@@ -83,6 +83,7 @@ const staticFormConfig = computed(() => {
     
     const dataTypeArray = [
         { id: "TEXT", value: "Text" },
+        { id: "TEXTAREA", value: "Textarea" },
         { id: "NUMBER", value: "Number" },
         { id: "HIDDEN", value: "Hidden" },
         { id: "DATE", value: "Date" },
@@ -90,14 +91,14 @@ const staticFormConfig = computed(() => {
         { id: "CHECKBOX", value: "Checkbox" },
         { id: "RADIO", value: "Radio" },
         { id: "FILE", value: "File" },
+        { id: "STAR", value: "Star" },
+        { id: "EMOJI", value: "Emoji" },
         { id: "CARD", value: "Card" },
         { id: "GROUP", value: "Group" },
         { id: "TAB", value: "Tab" },
         { id: "SECTION", value: "Section" },
         { id: "TABLE", value: "Table" },
-        { id: "STAR", value: "Star" },
-        { id: "TEXTAREA", value: "Textarea" },
-        { id: "EMOJI", value: "Emoji" }
+        { id: "DIVIDOR", value: "Divider" }
     ]
     
     return {

@@ -33,7 +33,7 @@ definePageMeta({
 })
 
 // State
-const loading = ref(false)
+const loading = ref(true)
 const error = ref(null)
 const title = "TPA Help Desk"
 const { $axios } = useNuxtApp()

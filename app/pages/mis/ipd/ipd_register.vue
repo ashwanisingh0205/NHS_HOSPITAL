@@ -3,15 +3,11 @@
         <!-- IPD Register Table -->
         <CKCardList 
             :title="title" 
-            :show-filter="true" 
+            :show-filter="true"
             :show-add="false"
             :filterFormCode="filterFormCode"
             :filterEndPoint="filterEndPoint">
-            <UTable 
-                :loading="loading" 
-                :data="ipdData" 
-                :columns="columns"
-            >
+            <UTable :loading="loading" :data="data" :columns="columns">
                 <template #loading>
                     <CKLoader />
                 </template>
@@ -36,7 +32,7 @@ definePageMeta({
 })
 
 // State
-const loading = ref(false)
+const loading = ref(true)
 const error = ref(null)
 const title = "IPD Register"
 const { $axios } = useNuxtApp()
@@ -44,6 +40,7 @@ const { $axios } = useNuxtApp()
 // Filter Form Configuration
 const filterFormCode = "ipd_register_filter"
 const filterEndPoint = "/form/defaultForm"
+const endpoint = '/form/dummy'
 
 // Table Columns
 const columns = [
@@ -58,15 +55,13 @@ const columns = [
 ]
 
 // Data
-const ipdData = ref([])
+const data = ref([])
 
 // Load data
 const loadForm = async () => {
     loading.value = true
     
     try {
-        const endpoint = '/form/dummy'
-        
         const dataSchema = {
             ipd_no: 'TEXT',
             d_no: 'TEXT',
@@ -78,7 +73,7 @@ const loadForm = async () => {
         }
         
         const result = await $axios.post(endpoint, { schema: dataSchema })
-        ipdData.value = result.data.data || []
+        data.value = result.data.data || []
         
     } catch (err) {
         error.value = err.response?.data?.message || err.message || 'Failed to load data'
@@ -87,8 +82,6 @@ const loadForm = async () => {
         loading.value = false
     }
 }
-
-// Initialize
 onMounted(loadForm)
 
 </script>

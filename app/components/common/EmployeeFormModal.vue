@@ -54,7 +54,7 @@ const emit = defineEmits(['update:modelValue', 'submit'])
 const { $axios } = useNuxtApp()
 
 const localValue = ref(props.modelValue)
-const loading = ref(false)
+const loading = ref(true)
 const error = ref(null)
 const submitting = ref(false)
 const formConfig = ref(null)

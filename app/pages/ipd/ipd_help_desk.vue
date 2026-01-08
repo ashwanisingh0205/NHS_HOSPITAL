@@ -66,7 +66,7 @@ const { $axios } = useNuxtApp()
 
 const searchQuery = ref('')
 const selectedTags = ref(['All'])
-const loading = ref(false)
+const loading = ref(true)
 const patients = ref([])
 const filterTags = ref(['All'])
 

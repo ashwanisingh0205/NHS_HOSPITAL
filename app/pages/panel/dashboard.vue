@@ -2,10 +2,8 @@
     <div class="min-h-screen bg-gray-50 dark:bg-gray-950">
         <div class="p-6 space-y-6">
             <!-- Loading State -->
-            <div v-if="loading" class="flex items-center justify-center py-12">
-                <UIcon name="lucide:loader-2" class="w-8 h-8 animate-spin text-gray-400" />
-                <span class="ml-3 text-gray-600 dark:text-gray-400">Loading dashboard data...</span>
-            </div>
+            <CKLoader v-if="loading" />
+            
             
             <!-- Error State -->
             <UAlert
@@ -37,7 +35,7 @@
                     
                     <!-- Promoters Card -->
                     <StatsCard
-                        icon="😊"
+                        icon="lucide:check-circle"
                         icon-color="text-green-600 dark:text-green-400"
                         :value="stats.nps?.promoters?.percentage || '0%'"
                         :label="stats.nps?.promoters?.label || 'Promoters'"
@@ -45,7 +43,7 @@
                     
                     <!-- Passives Card -->
                     <StatsCard
-                        icon="😐"
+                        icon="lucide:check-circle"
                         icon-color="text-orange-600 dark:text-orange-400"
                         :value="stats.nps?.passives?.percentage || '0%'"
                         :label="stats.nps?.passives?.label || 'Passives'"
@@ -53,7 +51,7 @@
                     
                     <!-- Detractors Card -->
                     <StatsCard
-                        icon="😞"
+                        icon="lucide:check-circle"
                         icon-color="text-red-600 dark:text-red-400"
                         :value="stats.nps?.detractors?.percentage || '0%'"
                         :label="stats.nps?.detractors?.label || 'Detractors'"
@@ -137,6 +135,7 @@ import StatsCard from '~/components/Card/StatsCard.vue'
 import GraphCard from '~/components/Card/GraphCard.vue'
 import GaugeMetricCard from '~/components/Card/GaugeMetricCard.vue'
 import GaugeWithBreakdownCard from '~/components/Card/GaugeWithBreakdownCard.vue'
+import CKLoader from "~/components/common/CKLoader.vue";
 
 definePageMeta({
     layout: 'home'

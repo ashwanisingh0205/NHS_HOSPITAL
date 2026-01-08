@@ -56,7 +56,7 @@ watch(() => selectedChoice.value, (choice) => {
 const details = ref([]);
 const formModel = ref(false);
 const formResetKey = ref(0);
-const loading = ref(false);
+const loading = ref(true);
 const error = ref(null);
 const editingDetail = ref(null);
 const searchQuery = ref('');
