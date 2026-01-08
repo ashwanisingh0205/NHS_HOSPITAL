@@ -2,7 +2,12 @@
 <template>
     <div class="p-1">
         <!-- OPD Register Table -->
-        <CKCardList :title="title" :show-filter="false" :show-add="false">
+        <CKCardList 
+            :title="title" 
+            :show-filter="true" 
+            :show-add="false"
+            :filterFormCode="filterFormCode"
+            :filterEndPoint="filterEndPoint">
             <UTable :loading="loading" :data="data" :columns="columns">
                 <template #loading>
                     <CKLoader />
@@ -31,7 +36,11 @@ definePageMeta({
 const loading = ref(false)
 const error = ref(null)
 const title = "OPD Register"
+const { $axios } = useNuxtApp()
 
+// Filter Form Configuration
+const filterFormCode = "opd_register"
+const filterEndPoint = "/form/defaultForm"
 
 // Table Columns
 const columns = [
@@ -44,15 +53,14 @@ const columns = [
     { id: 'action'}
 ]
 
+// Data
+const data = ref([])
 
-
-const data = ref();
- const { $axios } = useNuxtApp()
+// Load data
 const loadForm = async () => {
     loading.value = true
     
     try {
-        
         const endpoint = '/form/dummy'
          
         const dataSchema = {
@@ -65,8 +73,7 @@ const loadForm = async () => {
         }
         
         const result = await $axios.post(endpoint, { schema: dataSchema })
-        console.log('result', result)
-        data.value = result.data.data
+        data.value = result.data.data || []
         
     } catch (err) {
         error.value = err.response?.data?.message || err.message || 'Failed to load data'
@@ -75,6 +82,8 @@ const loadForm = async () => {
         loading.value = false
     }
 }
+
+// Initialize
 onMounted(loadForm)
 
 

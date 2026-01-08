@@ -3,15 +3,16 @@
         <!-- IPD Register Table -->
         <CKCardList 
             :title="title" 
-            :show-filter="false"
+            :show-filter="true" 
             :show-add="false"
-            @handleAdd="handleAdd">
+            :filterFormCode="filterFormCode"
+            :filterEndPoint="filterEndPoint">
             <UTable 
                 :loading="loading" 
                 :data="ipdData" 
                 :columns="columns"
             >
-              <template #loading>
+                <template #loading>
                     <CKLoader />
                 </template>
                 <template #empty>
@@ -38,11 +39,28 @@ definePageMeta({
 const loading = ref(false)
 const error = ref(null)
 const title = "IPD Register"
+const { $axios } = useNuxtApp()
+
+// Filter Form Configuration
+const filterFormCode = "ipd_register"
+const filterEndPoint = "/form/defaultForm"
+
+// Table Columns
+const columns = [
+    { accessorKey: 'ipd_no', header: 'IPD NO' },
+    { accessorKey: 'd_no', header: 'D NO' },
+    { accessorKey: 'patient_name', header: 'PATIENT NAME' },
+    { accessorKey: 'tpa', header: 'TPA' },
+    { accessorKey: 'consultant_name', header: 'CONSULTANT NAME' },
+    { accessorKey: 'date_admit', header: 'DATE ADMIT' },
+    { accessorKey: 'amount', header: 'AMOUNT' },
+    { id: 'action'}
+]
 
 // Data
 const ipdData = ref([])
-const { $axios } = useNuxtApp()
 
+// Load data
 const loadForm = async () => {
     loading.value = true
     
@@ -60,7 +78,6 @@ const loadForm = async () => {
         }
         
         const result = await $axios.post(endpoint, { schema: dataSchema })
-        console.log('result', result)
         ipdData.value = result.data.data || []
         
     } catch (err) {
@@ -71,22 +88,7 @@ const loadForm = async () => {
     }
 }
 
+// Initialize
 onMounted(loadForm)
 
-// Table Columns
-const columns = [
-    { accessorKey: 'ipd_no', header: 'IPD NO' },
-    { accessorKey: 'd_no', header: 'D NO' },
-    { accessorKey: 'patient_name', header: 'PATIENT NAME' },
-    { accessorKey: 'tpa', header: 'TPA' },
-    { accessorKey: 'consultant_name', header: 'CONSULTANT NAME' },
-    { accessorKey: 'date_admit', header: 'DATE ADMIT' },
-    { accessorKey: 'amount', header: 'AMOUNT' },
-    { id: 'action'}
-]
-
-const handleAdd = () => {
-    // Handle add new IPD record
-    console.log('Add new IPD record')
-}
 </script>

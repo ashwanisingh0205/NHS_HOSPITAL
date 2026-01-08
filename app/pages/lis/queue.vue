@@ -1,7 +1,13 @@
+<!-- status: Waiting/Done, uhid, patient_name, services, time_reg, time_in, time_out  -->
 <template>
     <div class="p-1">
-        <!-- OPD Register Table -->
-        <CKCardList :title="title" :show-filter="false" :show-add="false">
+        <!-- LIS Queue Table -->
+        <CKCardList 
+            :title="title" 
+            :show-filter="true" 
+            :show-add="false"
+            :filterFormCode="filterFormCode"
+            :filterEndPoint="filterEndPoint">
             <UTable :loading="loading" :data="data" :columns="columns">
                 <template #loading>
                     <CKLoader />
@@ -29,50 +35,56 @@ definePageMeta({
 // State
 const loading = ref(false)
 const error = ref(null)
-const title = "OPD Register"
+const title = "LIS Queue"
+const { $axios } = useNuxtApp()
 
+// Filter Form Configuration
+const filterFormCode = "lis_queue"
+const filterEndPoint = "/form/defaultForm"
 
 // Table Columns
 const columns = [
-    { accessorKey: 'uhid', header: 'UHID' },
-    { accessorKey: 'bill_no', header: 'BILL NO' },
-    { accessorKey: 'patient_name', header: 'PATIENT NAME' },
-    { accessorKey: 'consultant_name', header: 'CONSULTANT NAME' },
-    { accessorKey: 'date_of_opd', header: 'DATE OF OPD' },
-    { accessorKey: 'amount', header: 'AMOUNT' },
+    { accessorKey: 'sr_no', header: 'Sr.No.' },
+    { accessorKey: 'date', header: 'Date' },
+    { accessorKey: 'patient_name', header: 'Patient Name' },
+    { accessorKey: 'consultant', header: 'Consultant' },
+    { accessorKey: 'investigations', header: 'Investigation(s)' },
     { id: 'action'}
 ]
 
+// Data
+const data = ref([])
 
-
-const data = ref();
+// Load data
 const loadForm = async () => {
     loading.value = true
     
     try {
-        
         const endpoint = '/form/dummy'
-        
+         
         const dataSchema = {
-            uhid: 'TEXT',
-            bill_no: 'TEXT',
+            sr_no: 'NUMBER',
+            date: 'DATE',
             patient_name: 'TEXT',
-            consultant_name: 'TEXT',
-            date_of_opd: 'DATE',
-            amount: 'CURRENCY',
+            consultant: 'TEXT',
+            investigations: 'TEXT',
         }
         
-        const result = await $axios.get(endpoint, { params: {dataSchema} })
-        data.value = result.data
+        const result = await $axios.post(endpoint, { schema: dataSchema })
+        data.value = result.data.data || []
         
     } catch (err) {
-    
+        error.value = err.response?.data?.message || err.message || 'Failed to load data'
+        console.error('Error loading LIS queue:', err)
     } finally {
         loading.value = false
     }
 }
+
+// Initialize
 onMounted(loadForm)
 
 
 
 </script>
+

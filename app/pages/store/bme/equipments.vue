@@ -1,17 +1,15 @@
+<!-- status: Waiting/Done, uhid, patient_name, services, time_reg, time_in, time_out  -->
 <template>
     <div class="p-1">
-        <!-- IPD Register Table -->
+        <!-- AMC Tracker Table -->
         <CKCardList 
             :title="title" 
-            :show-filter="false"
+            :show-filter="true" 
             :show-add="false"
-            @handleAdd="handleAdd">
-            <UTable 
-                :loading="loading" 
-                :data="ipdData" 
-                :columns="columns"
-            >
-              <template #loading>
+            :filterFormCode="filterFormCode"
+            :filterEndPoint="filterEndPoint">
+            <UTable :loading="loading" :data="data" :columns="columns">
+                <template #loading>
                     <CKLoader />
                 </template>
                 <template #empty>
@@ -28,7 +26,7 @@
 <script setup>
 import CKCardList from "~/components/common/CKCardList.vue"
 import CKLoader from "~/components/common/CKLoader.vue"
-import CKEdit from "~/components/common/CKEdit.vue"
+import CKEdit from "~/components/common/CKEdit.vue";
 
 definePageMeta({
     layout: 'home'
@@ -37,56 +35,62 @@ definePageMeta({
 // State
 const loading = ref(false)
 const error = ref(null)
-const title = "IPD Register"
-
-// Data
-const ipdData = ref([])
+const title = "AMC Equipments"
 const { $axios } = useNuxtApp()
 
+// Filter Form Configuration
+const filterFormCode = "amc_tracker"
+const filterEndPoint = "/form/defaultForm"
+
+// Table Columns
+const columns = [
+    { accessorKey: 'equipment_name', header: 'Equipment Name' },
+    { accessorKey: 'amc_number', header: 'AMC Number' },
+    { accessorKey: 'vendor', header: 'Vendor' },
+    { accessorKey: 'start_date', header: 'Start Date' },
+    { accessorKey: 'end_date', header: 'End Date' },
+    { accessorKey: 'renewal_date', header: 'Renewal Date' },
+    { accessorKey: 'status', header: 'Status' },
+    { accessorKey: 'amount', header: 'Amount' },
+    { id: 'action'}
+]
+
+// Data
+const data = ref([])
+
+// Load data
 const loadForm = async () => {
     loading.value = true
     
     try {
         const endpoint = '/form/dummy'
-        
+         
         const dataSchema = {
-            ipd_no: 'TEXT',
-            d_no: 'TEXT',
-            patient_name: 'TEXT',
-            tpa: 'TEXT',
-            consultant_name: 'TEXT',
-            date_admit: 'DATE',
+            equipment_name: 'TEXT',
+            amc_number: 'TEXT',
+            vendor: 'TEXT',
+            start_date: 'DATE',
+            end_date: 'DATE',
+            renewal_date: 'DATE',
+            status: 'TEXT',
             amount: 'CURRENCY',
         }
         
         const result = await $axios.post(endpoint, { schema: dataSchema })
-        console.log('result', result)
-        ipdData.value = result.data.data || []
+        data.value = result.data.data || []
         
     } catch (err) {
         error.value = err.response?.data?.message || err.message || 'Failed to load data'
-        console.error('Error loading IPD register:', err)
+        console.error('Error loading AMC tracker:', err)
     } finally {
         loading.value = false
     }
 }
 
+// Initialize
 onMounted(loadForm)
 
-// Table Columns
-const columns = [
-    { accessorKey: 'ipd_no', header: 'IPD NO' },
-    { accessorKey: 'd_no', header: 'D NO' },
-    { accessorKey: 'patient_name', header: 'PATIENT NAME' },
-    { accessorKey: 'tpa', header: 'TPA' },
-    { accessorKey: 'consultant_name', header: 'CONSULTANT NAME' },
-    { accessorKey: 'date_admit', header: 'DATE ADMIT' },
-    { accessorKey: 'amount', header: 'AMOUNT' },
-    { id: 'action'}
-]
 
-const handleAdd = () => {
-    // Handle add new IPD record
-    console.log('Add new IPD record')
-}
+
 </script>
+

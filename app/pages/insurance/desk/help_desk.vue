@@ -1,9 +1,13 @@
-    <!-- Filter Form -->
-    <!-- status:Pending, IPD/OPD, UHID, ipd Number, patient_name, consultant_name, date_admit, date_dischage, amount, buttons: View-->
+<!-- status: Waiting/Done, uhid, patient_name, services, time_reg, time_in, time_out  -->
 <template>
     <div class="p-1">
-        <!-- OPD Register Table -->
-        <CKCardList :title="title" :show-filter="false" :show-add="false">
+        <!-- TPA Help Desk Table -->
+        <CKCardList 
+            :title="title" 
+            :show-filter="true" 
+            :show-add="false"
+            :filterFormCode="filterFormCode"
+            :filterEndPoint="filterEndPoint">
             <UTable :loading="loading" :data="data" :columns="columns">
                 <template #loading>
                     <CKLoader />
@@ -31,53 +35,59 @@ definePageMeta({
 // State
 const loading = ref(false)
 const error = ref(null)
-const title = "OPD Register"
+const title = "TPA Help Desk"
+const { $axios } = useNuxtApp()
 
+// Filter Form Configuration
+const filterFormCode = "tpa_help_desk"
+const filterEndPoint = "/form/defaultForm"
 
 // Table Columns
 const columns = [
     { accessorKey: 'uhid', header: 'UHID' },
-    { accessorKey: 'bill_no', header: 'BILL NO' },
-    { accessorKey: 'patient_name', header: 'PATIENT NAME' },
-    { accessorKey: 'consultant_name', header: 'CONSULTANT NAME' },
-    { accessorKey: 'date_of_opd', header: 'DATE OF OPD' },
-    { accessorKey: 'amount', header: 'AMOUNT' },
+    { accessorKey: 'ipd_no', header: 'IPD No.' },
+    { accessorKey: 'd_no', header: 'D No.' },
+    { accessorKey: 'patient_name', header: 'Patient Name' },
+    { accessorKey: 'consultant_name', header: 'Consultant Name' },
+    { accessorKey: 'date_admission', header: 'Date Admission' },
+    { accessorKey: 'date_discharge', header: 'Dates Discharge' },
+    { accessorKey: 'amount', header: 'Amount' },
     { id: 'action'}
 ]
 
+// Data
+const data = ref([])
 
-
-const data = ref();
+// Load data
 const loadForm = async () => {
     loading.value = true
     
     try {
-        
         const endpoint = '/form/dummy'
-        
+         
         const dataSchema = {
-            IPD:'TEXT',
-            OPD:'TEXT',
             uhid: 'TEXT',
-            ipd_Number:'TEXT',
-            bill_no: 'TEXT',
+            ipd_no: 'TEXT',
+            d_no: 'TEXT',
             patient_name: 'TEXT',
             consultant_name: 'TEXT',
-            patient_name: 'TEXT',
-            amount: 'CURRENCY',
-            date_admit: 'DATE',
+            date_admission: 'DATE',
             date_discharge: 'DATE',
+            amount: 'CURRENCY',
         }
         
-        const result = await $axios.get(endpoint, { params: {dataSchema} })
-        data.value = result.data
+        const result = await $axios.post(endpoint, { schema: dataSchema })
+        data.value = result.data.data || []
         
     } catch (err) {
-    
+        error.value = err.response?.data?.message || err.message || 'Failed to load data'
+        console.error('Error loading TPA help desk:', err)
     } finally {
         loading.value = false
     }
 }
+
+// Initialize
 onMounted(loadForm)
 
 

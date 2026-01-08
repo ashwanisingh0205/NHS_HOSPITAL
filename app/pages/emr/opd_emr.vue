@@ -31,6 +31,7 @@ definePageMeta({
 const loading = ref(false)
 const error = ref(null)
 const title = "OPD Register"
+const { $axios } = useNuxtApp()
 
 
 // Table Columns
@@ -53,7 +54,7 @@ const loadForm = async () => {
     try {
         
         const endpoint = '/form/dummy'
-        
+         
         const dataSchema = {
             uhid: 'TEXT',
             bill_no: 'TEXT',
@@ -63,12 +64,12 @@ const loadForm = async () => {
             amount: 'CURRENCY',
         }
         
-        const result = await $axios.post(endpoint, { params: {dataSchema} })
-        console.log('result', result)
-        data.value = result.data
+        const result = await $axios.post(endpoint, { schema: dataSchema })
+        data.value = result.data.data
         
     } catch (err) {
-    
+        error.value = err.response?.data?.message || err.message || 'Failed to load data'
+        console.error('Error loading OPD register:', err)
     } finally {
         loading.value = false
     }

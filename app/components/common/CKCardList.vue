@@ -35,9 +35,8 @@
         <div v-if="showFilter && isFilterVisible" class="pt-4 pb-2 bg-gray-50 border-b border-gray-200 dark:border-gray-800">
             <DynamicForm
                 :key="filterConfigKey"
-                :staticForm="filterForm"
-                :noAutoSubmit="true"
-                :showClearButton="true"
+                :formCode="filterFormCode"
+                :endPoint="filterEndPoint"
                 @submit="handleFilterSubmit"
                 @clear="handleFilterClear"
                 class="mx-4"
@@ -60,6 +59,8 @@ const props = defineProps({
     title: { type: String, default: "Title" },
     showFilter: { type: Boolean, default: false },
     filterForm: { type: Object, default: () => ({ fields: [] }) },
+    filterFormCode: { type: String, default: "" },
+    filterEndPoint: { type: String, default: "" },
     showAdd: { type: [Boolean, String], default: true } // Show add button if true or "yes"
 })
 
@@ -72,6 +73,8 @@ const shouldShowAdd = computed(() => {
     return props.showAdd === true || props.showAdd === 'yes' || props.showAdd === 'Yes'
 })
 
+
+
 const toggleFilter = () => {
     isFilterVisible.value = !isFilterVisible.value
 }
@@ -80,16 +83,7 @@ const handleAdd = async (submitData) => {
     emit('handleAdd')
 }
 
-const handleFilterSubmit = (event) => {
-    if (event.payload) {
-        emit('filter', event.payload)
-    }
-}
 
-const handleFilterClear = () => {
-    filterConfigKey.value++
-    emit('filterClear')
-}
 
 /* --------------- Model Value: emit and bind with 'localValue' --------------- */
 const localValue = ref(props.modelValue)
