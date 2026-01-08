@@ -39,7 +39,7 @@ const title = "Stock Transfer"
 const { $axios } = useNuxtApp()
 
 // Filter Form Configuration
-const filterFormCode = "transfer_stock"
+const filterFormCode = "transfer_stock_filter"
 const filterEndPoint = "/form/defaultForm"
 
 // Table Columns

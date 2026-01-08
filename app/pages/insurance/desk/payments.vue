@@ -39,7 +39,7 @@ const title = "Payments"
 const { $axios } = useNuxtApp()
 
 // Filter Form Configuration
-const filterFormCode = "payment"
+const filterFormCode = "payment_filter"
 const filterEndPoint = "/form/defaultForm"
 
 // Table Columns

@@ -39,7 +39,7 @@ const title = "LIS Queue"
 const { $axios } = useNuxtApp()
 
 // Filter Form Configuration
-const filterFormCode = "lis_queue"
+const filterFormCode = "lis_queue_filter"
 const filterEndPoint = "/form/defaultForm"
 
 // Table Columns

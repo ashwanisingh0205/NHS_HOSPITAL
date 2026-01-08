@@ -39,7 +39,7 @@ const title = "GRN Register"
 const { $axios } = useNuxtApp()
 
 // Filter Form Configuration
-const filterFormCode = "grn_register"
+const filterFormCode = "grn_register_filter"
 const filterEndPoint = "/form/defaultForm"
 
 // Table Columns

@@ -35,7 +35,7 @@ definePageMeta({ layout: 'home' });
 const { $axios } = useNuxtApp();
 
 const title = ref("Patient Registration");
-const endPoint = ref("/form/defaultForm");
+const endPoint = ref("/visits/patient_registration");
 const formCode = ref("patient_registration");
 const params = ref({});
 const id = ref('');
@@ -48,7 +48,7 @@ onMounted(async () => {
         const response = await $axios.get(endPoint.value, {
             params: {
                 form: 'true',
-                form_code: formCode.value
+                id:1
             }
         });
         
@@ -56,6 +56,7 @@ onMounted(async () => {
             error.value = response.data.message || 'Failed to load form';
             return;
         }
+        console.log('response', response.data);
         
         formStructure.value = response.data;
         
@@ -107,14 +108,12 @@ const handleFormSubmit = async (submitData) => {
         });
         
         const submitBody = {
-            success: true,
-            message: "success",
+          
             form: formStructure.value.form,
             fields: updatedFields,
-            fieldMap: formStructure.value.fieldMap
         };
         
-        const response = await $axios.post("/form/defaultForm", submitBody, {
+        const response = await $axios.post("/visits/patient_registration", submitBody, {
             params: { form_code: formCode.value }
         });
         

@@ -42,7 +42,7 @@ const title = "IPD Register"
 const { $axios } = useNuxtApp()
 
 // Filter Form Configuration
-const filterFormCode = "ipd_register"
+const filterFormCode = "ipd_register_filter"
 const filterEndPoint = "/form/defaultForm"
 
 // Table Columns

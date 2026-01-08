@@ -1,127 +1,109 @@
 <template>
     <div class="flex gap-5 justify-between">
+        <OPDDoctors 
+            :doctors="consultants"
+            :show-add="false"
+            :selected-id="selectedConsultant?.employee_id"
+            :loading="loading"
+            @select="selectConsultant"
+        />
         
-        <CKLoader v-if="loading" />
+        <OPDPatients 
+            :patients="patients"
+            :show-add="false"
+            :loading="loadingPatients"
+        />
         
-        <CKCardList title="Doctors" class="w-1/3" v-if="!loading">
-            <UTable
-                :data="consultants"
-                :columns="consultantColumns"
-                class="text-sm"
-            >
-                <template #doctor_name-cell="{ row }">
-                    <div
-                        @click="selectConsultant(row.original)"
-                        class="cursor-pointer font-medium text-gray-900 dark:text-gray-100 hover:text-primary transition-colors"
-                        :class="selectedConsultant?.id === row.original.id ? 'text-primary font-semibold' : ''"
-                    >
-                        {{ row.original.doctor_name }}
-                    </div>
-                </template>
-            </UTable>
-        </CKCardList>
-        
-        <CKCardList title="Patients" class="w-full" v-if="!loading">
-            <UTable :data="filteredPatients" :columns="patientColumns">
-                <template #id-cell="{ row }">
-                    {{filteredPatients.findIndex(f => f.id === row.original.id) + 1}}
-                </template>
-                <template #patient_name-cell="{ row }">
-                    {{ row.original.patient_name || '-' }}
-                </template>
-                <template #action-cell="{ row }">
-                    <UButton size="xs" variant="ghost" @click="viewPatient(row.original)">
-                        View
-                    </UButton>
-                </template>
-            </UTable>
-        </CKCardList>
-        
-        <CKCardList title="Appointments" class="w-1/3" v-if="!loading">
-            <UTable :data="todayAppointments" >
-            </UTable>
-        </CKCardList>
-        
-        
+        <OPDAppointments 
+            :appointments="todayAppointments"
+            :show-add="false"
+            :loading="loadingPatients"
+        />
     </div>
 </template>
 
 <script setup>
-import CKLoader from "~/components/common/CKLoader.vue";
-import CKCardList from "~/components/common/CKCardList.vue";
+import OPDDoctors from "~/components/opd/OPDDoctors.vue"
+import OPDPatients from "~/components/opd/OPDPatients.vue"
+import OPDAppointments from "~/components/opd/OPDAppointments.vue"
 
 definePageMeta({ layout: 'home' })
 
 const { $axios } = useNuxtApp()
-const router = useRouter()
 
-/* ------------------ State ------------------ */
 const loading = ref(true)
-
+const loadingPatients = ref(false)
 const consultants = ref([])
 const selectedConsultant = ref(null)
-
 const patients = ref([])
 const todayAppointments = ref([])
 
-/* ------------------ Table Columns ------------------ */
-const consultantColumns = [
-    { accessorKey: 'doctor_name', header: 'Doctor Name' }
-]
+const getFullName = (employee) => {
+    return [employee.first_name, employee.middle_name, employee.last_name]
+        .filter(Boolean)
+        .join(' ') || 'N/A'
+}
 
-const patientColumns = [
-    { accessorKey: 'id', header: 'ID' },
-    { accessorKey: 'patient_name', header: 'Patient Name' },
-    { id: 'action' }
-]
-
-/* ------------------ Computed ------------------ */
-const filteredPatients = computed(() => patients.value)
-
-/* ------------------ Methods ------------------ */
-const loadData = async () => {
+const loadConsultants = async () => {
     loading.value = true
     try {
-        const { data } = await $axios.get('/visits/opd')
+        const { data } = await $axios.get('/visits/opd_queue', {
+            params: {
+                consultants: true
+            }
+        })
 
         if (data?.success) {
-            // Map doctors to consultants
-            consultants.value = (data.doctors || []).map(doctor => ({
-                id: doctor.id,
-                doctor_name: doctor.doctor_name || ''
+            consultants.value = (data.consultants || []).map(consultant => ({
+                ...consultant,
+                employee_id: consultant.employee_id,
+                doctor_name: getFullName(consultant)
             }))
-
-            // Set first consultant as selected by default
-            if (consultants.value.length > 0 && !selectedConsultant.value) {
-                selectedConsultant.value = consultants.value[0]
-            }
-
-            // Map patients
-            patients.value = data.patients || []
-
-            // Map appointments
-            todayAppointments.value = data.appointments || []
+        } else {
+            consultants.value = []
         }
     } catch (err) {
-        console.error('Error loading OPD data:', err)
+        console.error('Error loading consultants:', err)
+        consultants.value = []
     } finally {
         loading.value = false
     }
 }
 
-/* ------------------ Actions ------------------ */
-const selectConsultant = (consultant) => {
-    selectedConsultant.value = consultant
+const loadPatientsAndAppointments = async (consultantId) => {
+    loadingPatients.value = true
+    try {
+        const { data } = await $axios.get('/visits/opd_queue', {
+            params: {
+                consultants: true,
+                patients: true,
+                consultant_id: consultantId,
+                appointments: true
+            }
+        })
+
+        if (data?.success) {
+            patients.value = data.patients || []
+            todayAppointments.value = data.appointments || []
+        } else {
+            patients.value = []
+            todayAppointments.value = []
+        }
+    } catch (err) {
+        console.error('Error loading patients and appointments:', err)
+        patients.value = []
+        todayAppointments.value = []
+    } finally {
+        loadingPatients.value = false
+    }
 }
 
-const viewPatient = () => {}
-const viewAppointment = () => {}
-const createAppointment = () => router.push('/opd/appointment/create')
-const goBack = () => router.back()
-const registerPatient = () => router.push('/visit/registration')
+const selectConsultant = (consultant) => {
+    selectedConsultant.value = consultant
+    if (consultant?.employee_id) {
+        loadPatientsAndAppointments(consultant.employee_id)
+    }
+}
 
-/* ------------------ Lifecycle ------------------ */
-onMounted(() => {
-    loadData()
-})
+onMounted(loadConsultants)
 </script>

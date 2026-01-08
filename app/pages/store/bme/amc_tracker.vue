@@ -39,7 +39,7 @@ const title = "AMC Tracker"
 const { $axios } = useNuxtApp()
 
 // Filter Form Configuration
-const filterFormCode = "amc_tracker"
+const filterFormCode = "amc_tracker_filter"
 const filterEndPoint = "/form/defaultForm"
 
 // Table Columns

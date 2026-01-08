@@ -39,7 +39,7 @@ const title = "FIDO"
 const { $axios } = useNuxtApp()
 
 // Filter Form Configuration
-const filterFormCode = "file_manager"
+const filterFormCode = "file_manager_filter"
 const filterEndPoint = "/form/defaultForm"
 
 // Table Columns

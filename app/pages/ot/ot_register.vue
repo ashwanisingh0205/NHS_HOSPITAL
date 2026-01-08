@@ -39,7 +39,7 @@ const title = "OT Register"
 const { $axios } = useNuxtApp()
 
 // Filter Form Configuration
-const filterFormCode = "ot_register"
+const filterFormCode = "ot_register_filter"
 const filterEndPoint = "/form/defaultForm"
 
 // Table Columns

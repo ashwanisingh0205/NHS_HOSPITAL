@@ -39,7 +39,7 @@ const title = "TPA Help Desk"
 const { $axios } = useNuxtApp()
 
 // Filter Form Configuration
-const filterFormCode = "tpa_help_desk"
+const filterFormCode = "tpa_help_desk_filter"
 const filterEndPoint = "/form/defaultForm"
 
 // Table Columns

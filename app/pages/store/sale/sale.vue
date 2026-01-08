@@ -1,8 +1,13 @@
 <!-- status: Waiting/Done, uhid, patient_name, services, time_reg, time_in, time_out  -->
 <template>
     <div class="p-1">
-        <!-- OPD Register Table -->
-        <CKCardList :title="title" :show-filter="false" :show-add="false">
+        <!-- Daily Sale Table -->
+        <CKCardList 
+            :title="title" 
+            :show-filter="true" 
+            :show-add="false"
+            :filterFormCode="filterFormCode"
+            :filterEndPoint="filterEndPoint">
             <UTable :loading="loading" :data="data" :columns="columns">
                 <template #loading>
                     <CKLoader />
@@ -30,50 +35,57 @@ definePageMeta({
 // State
 const loading = ref(false)
 const error = ref(null)
-const title = "OPD Register"
+const title = "Daily Sale"
 const { $axios } = useNuxtApp()
 
+// Filter Form Configuration
+const filterFormCode = "transfer_stock_filter"
+const filterEndPoint = "/form/defaultForm"
 
 // Table Columns
 const columns = [
-    { accessorKey: 'uhid', header: 'UHID' },
-    { accessorKey: 'bill_no', header: 'BILL NO' },
-    { accessorKey: 'patient_name', header: 'PATIENT NAME' },
-    { accessorKey: 'consultant_name', header: 'CONSULTANT NAME' },
-    { accessorKey: 'date_of_opd', header: 'DATE OF OPD' },
-    { accessorKey: 'amount', header: 'AMOUNT' },
+    { accessorKey: 'slip_no', header: 'Slip No.' },
+    { accessorKey: 'bill_no', header: 'Bill No' },
+    { accessorKey: 'date', header: 'Date' },
+    { accessorKey: 'patient', header: 'Patient' },
+    { accessorKey: 'ipd_opd', header: 'IPD/OPD' },
+    { accessorKey: 'user', header: 'User' },
+    { accessorKey: 'amount', header: 'Amount' },
     { id: 'action'}
 ]
 
+// Data
+const data = ref([])
 
-
-const data = ref();
+// Load data
 const loadForm = async () => {
     loading.value = true
     
     try {
-        
         const endpoint = '/form/dummy'
          
         const dataSchema = {
-            uhid: 'TEXT',
+            slip_no: 'TEXT',
             bill_no: 'TEXT',
-            patient_name: 'TEXT',
-            consultant_name: 'TEXT',
-            date_of_opd: 'DATE',
+            date: 'DATE',
+            patient: 'TEXT',
+            ipd_opd: 'TEXT',
+            user: 'TEXT',
             amount: 'CURRENCY',
         }
         
         const result = await $axios.post(endpoint, { schema: dataSchema })
-        data.value = result.data.data
+        data.value = result.data.data || []
         
     } catch (err) {
         error.value = err.response?.data?.message || err.message || 'Failed to load data'
-        console.error('Error loading OPD register:', err)
+        console.error('Error loading daily sale:', err)
     } finally {
         loading.value = false
     }
 }
+
+// Initialize
 onMounted(loadForm)
 
 

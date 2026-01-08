@@ -39,7 +39,7 @@ const title = "Adjustment Register"
 const { $axios } = useNuxtApp()
 
 // Filter Form Configuration
-const filterFormCode = "adjustments"
+const filterFormCode = "adjustments_filter"
 const filterEndPoint = "/form/defaultForm"
 
 // Table Columns
