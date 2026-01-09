@@ -65,7 +65,7 @@ const loadForm = async () => {
         }
         
         const result = await $axios.post(endpoint, { schema: dataSchema })
-        data.value = result.data.data
+        data.value = result.data?.result?.data || []
         
     } catch (err) {
         error.value = err.response?.data?.message || err.message || 'Failed to load data'

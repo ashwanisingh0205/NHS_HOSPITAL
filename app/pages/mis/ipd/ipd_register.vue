@@ -1,12 +1,33 @@
 <template>
     <div class="p-1">
-        <!-- IPD Register Table -->
         <CKCardList 
             :title="title" 
             :show-filter="true"
             :show-add="false"
             :filterFormCode="filterFormCode"
             :filterEndPoint="filterEndPoint">
+            <template #header-actions>
+                <UButton
+                    color="primary"
+                    variant="solid"
+                    :href="pdfPreviewUrl"
+                    target="_blank"
+                    @click.prevent="handlePDFClick"
+                    :loading="downloadingPDF"
+                    leading-icon="lucide:file-pdf">
+                    PDF
+                </UButton>
+                <UButton
+                    color="info"
+                    variant="solid"
+                    :href="csvPreviewUrl"
+                    target="_blank"
+                    @click.prevent="handleCSVClick"
+                    :loading="downloadingCSV"
+                    leading-icon="lucide:file-spreadsheet">
+                    CSV
+                </UButton>
+            </template>
             <UTable :loading="loading" :data="data" :columns="columns">
                 <template #loading>
                     <CKLoader />
@@ -14,8 +35,8 @@
                 <template #empty>
                     <UError :error="{ statusMessage: error || 'No Record Found!!' }" />
                 </template>
-                <template #action-cell="{ row }">
-                    <CKEdit  />
+                <template #action-cell>
+                    <CKEdit />
                 </template>
             </UTable>
         </CKCardList>
@@ -31,50 +52,36 @@ definePageMeta({
     layout: 'home'
 })
 
-// State
-const loading = ref(true)
-const error = ref(null)
-const title = "IPD Register"
 const { $axios } = useNuxtApp()
 
-// Filter Form Configuration
+const loading = ref(false)
+const error = ref(null)
+const data = ref([])
+const downloadingPDF = ref(false)
+const downloadingCSV = ref(false)
+const pdfPreviewUrl = ref(null)
+const csvPreviewUrl = ref(null)
+
+const title = "IPD Register"
 const filterFormCode = "ipd_register_filter"
 const filterEndPoint = "/form/defaultForm"
-const endpoint = '/form/dummy'
 
-// Table Columns
 const columns = [
-    { accessorKey: 'ipd_no', header: 'IPD NO' },
-    { accessorKey: 'd_no', header: 'D NO' },
+    { accessorKey: 'uhid', header: 'UHID' },
     { accessorKey: 'patient_name', header: 'PATIENT NAME' },
-    { accessorKey: 'tpa', header: 'TPA' },
     { accessorKey: 'consultant_name', header: 'CONSULTANT NAME' },
-    { accessorKey: 'date_admit', header: 'DATE ADMIT' },
+    { accessorKey: 'ipd_date', header: 'IPD DATE' },
     { accessorKey: 'amount', header: 'AMOUNT' },
     { id: 'action'}
 ]
 
-// Data
-const data = ref([])
 
-// Load data
+
 const loadForm = async () => {
     loading.value = true
-    
     try {
-        const dataSchema = {
-            ipd_no: 'TEXT',
-            d_no: 'TEXT',
-            patient_name: 'TEXT',
-            tpa: 'TEXT',
-            consultant_name: 'TEXT',
-            date_admit: 'DATE',
-            amount: 'CURRENCY',
-        }
-        
-        const result = await $axios.post(endpoint, { schema: dataSchema })
-        data.value = result.data.data || []
-        
+        const result = await $axios.get('/visits/ipd_register')
+        data.value = result.data?.registrations?.data || []
     } catch (err) {
         error.value = err.response?.data?.message || err.message || 'Failed to load data'
         console.error('Error loading IPD register:', err)
@@ -82,6 +89,56 @@ const loadForm = async () => {
         loading.value = false
     }
 }
-onMounted(loadForm)
 
+const handlePDFClick = async () => {
+    if (process.server) return
+    
+    if (pdfPreviewUrl.value) {
+        window.open(pdfPreviewUrl.value, '_blank')
+        return
+    }
+    
+    downloadingPDF.value = true
+    try {
+        const response = await $axios.get('/visits/ipd_register?output=PDF', {
+            responseType: 'blob'
+        })
+        
+        const blob = new Blob([response.data], { type: 'application/pdf' })
+        pdfPreviewUrl.value = globalThis.URL.createObjectURL(blob)
+        window.open(pdfPreviewUrl.value, '_blank')
+    } catch (err) {
+        error.value = err.response?.data?.message || err.message || 'Failed to load PDF preview'
+        console.error('Error loading PDF preview:', err)
+    } finally {
+        downloadingPDF.value = false
+    }
+}
+
+const handleCSVClick = async () => {
+    if (process.server) return
+    
+    if (csvPreviewUrl.value) {
+        window.open(csvPreviewUrl.value, '_blank')
+        return
+    }
+    
+    downloadingCSV.value = true
+    try {
+        const response = await $axios.get('/visits/ipd_register?output=CSV', {
+            responseType: 'blob'
+        })
+        
+        const blob = new Blob([response.data], { type: 'text/csv' })
+        csvPreviewUrl.value = globalThis.URL.createObjectURL(blob)
+        window.open(csvPreviewUrl.value, '_blank')
+    } catch (err) {
+        error.value = err.response?.data?.message || err.message || 'Failed to load CSV preview'
+        console.error('Error loading CSV preview:', err)
+    } finally {
+        downloadingCSV.value = false
+    }
+}
+
+onMounted(loadForm)
 </script>

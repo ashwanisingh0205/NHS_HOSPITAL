@@ -180,7 +180,7 @@
                 </div>
             </header>
             
-            <main class="flex-1 overflow-y-auto p-6 bg-gray-50 dark:bg-gray-900">
+            <main class="flex-1 overflow-y-auto p-6 bg-white dark:bg-gray-900">
                 <slot />
             </main>
         </div>
@@ -546,6 +546,7 @@ const navSections = {
         { name :"Registration", path: '/visit/registration', icon: 'lucide:user-plus'},
         { name :"OPD Queue", path: '/opd/opd_queue', icon: 'lucide:list-ordered'},
         { name :"IPD Help Desk", path: '/ipd/ipd_help_desk', icon: 'lucide:grid-2x2'},
+        {name:"pay", path: '/ot/pay', icon: 'lucide:grid-2x2'},
     ],
 };
 

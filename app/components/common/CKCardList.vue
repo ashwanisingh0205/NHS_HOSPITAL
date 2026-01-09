@@ -4,6 +4,7 @@
             <div class="flex items-center justify-between">
                 <h2 class="text-lg font-semibold">{{ title }}</h2>
                 <div class="flex items-center gap-2">
+                    <slot name="header-actions" />
                     <UButton
                         v-if="showFilter"
                         variant="ghost"
@@ -45,6 +46,16 @@
         </div>
         
         <slot />
+        
+        <!-- Pagination -->
+        <div v-if="pagination && pagination.total_pages > 1" class="flex items-center justify-center px-4 py-3 border-t border-gray-200 dark:border-gray-800">
+            
+            <UPagination
+                v-model:page="localCurrentPage"
+                :items-per-page="pagination.limit"
+                :total="pagination.total_entries"
+            />
+        </div>
     </UCard>
 
 </template>
@@ -63,16 +74,36 @@ const props = defineProps({
     filterForm: { type: Object, default: () => ({ fields: [] }) },
     filterFormCode: { type: String, default: "" },
     filterEndPoint: { type: String, default: "" },
-    showAdd: { type: [Boolean, String], default: true } // Show add button if true or "yes"
+    showAdd: { type: [Boolean, String], default: true },
+    pagination: { type: Object, default: null }
 })
 
-const emit = defineEmits(['update:modelValue', 'handleAdd', 'filter', 'filterClear']);
+const emit = defineEmits(['update:modelValue', 'handleAdd', 'filter', 'filterClear', 'page-change']);
 
 const isFilterVisible = ref(false)
 const filterConfigKey = ref(0)
 
 const shouldShowAdd = computed(() => {
     return props.showAdd === true || props.showAdd === 'yes' || props.showAdd === 'Yes'
+})
+
+const localCurrentPage = ref(props.pagination?.current_page || 1)
+const isUpdatingFromApi = ref(false)
+
+watch(() => props.pagination?.current_page, (newPage) => {
+    if (newPage && newPage !== localCurrentPage.value) {
+        isUpdatingFromApi.value = true
+        localCurrentPage.value = newPage
+        nextTick(() => {
+            isUpdatingFromApi.value = false
+        })
+    }
+})
+
+watch(localCurrentPage, (newPage) => {
+    if (!isUpdatingFromApi.value && newPage && typeof newPage === 'number' && props.pagination) {
+        emit('page-change', newPage)
+    }
 })
 
 

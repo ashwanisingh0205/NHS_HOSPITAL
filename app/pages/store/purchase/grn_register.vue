@@ -1,13 +1,13 @@
-<!-- status: Waiting/Done, uhid, patient_name, services, time_reg, time_in, time_out  -->
 <template>
     <div class="p-1">
-        <!-- GRN Register Table -->
         <CKCardList 
             :title="title" 
             :show-filter="true" 
             :show-add="false"
             :filterFormCode="filterFormCode"
-            :filterEndPoint="filterEndPoint">
+            :filterEndPoint="filterEndPoint"
+            :pagination="pagination"
+            @page-change="handlePageChange">
             <UTable :loading="loading" :data="data" :columns="columns">
                 <template #loading>
                     <CKLoader />
@@ -15,8 +15,8 @@
                 <template #empty>
                     <UError :error="{ statusMessage: error || 'No Record Found!!' }" />
                 </template>
-                <template #action-cell="{ row }">
-                    <CKEdit  />
+                <template #action-cell>
+                    <CKEdit />
                 </template>
             </UTable>
         </CKCardList>
@@ -26,23 +26,24 @@
 <script setup>
 import CKCardList from "~/components/common/CKCardList.vue"
 import CKLoader from "~/components/common/CKLoader.vue"
-import CKEdit from "~/components/common/CKEdit.vue";
+import CKEdit from "~/components/common/CKEdit.vue"
 
 definePageMeta({
     layout: 'home'
 })
 
-// State
-const loading = ref(true)
-const error = ref(null)
-const title = "GRN Register"
 const { $axios } = useNuxtApp()
 
-// Filter Form Configuration
+const loading = ref(false)
+const error = ref(null)
+const data = ref([])
+const pagination = ref(null)
+const pageSize = ref(50)
+
+const title = "GRN Register"
 const filterFormCode = "grn_register_filter"
 const filterEndPoint = "/form/defaultForm"
 
-// Table Columns
 const columns = [
     { accessorKey: 'po_number', header: 'PO Number' },
     { accessorKey: 'po_date', header: 'PO Date' },
@@ -53,16 +54,9 @@ const columns = [
     { id: 'action'}
 ]
 
-// Data
-const data = ref([])
-
-// Load data
-const loadForm = async () => {
+const loadForm = async (page = 1, limit = 50) => {
     loading.value = true
-    
     try {
-        const endpoint = '/form/dummy'
-         
         const dataSchema = {
             po_number: 'TEXT',
             po_date: 'DATE',
@@ -72,9 +66,15 @@ const loadForm = async () => {
             approval: 'TEXT',
         }
         
-        const result = await $axios.post(endpoint, { schema: dataSchema })
-        data.value = result.data.data || []
+        const result = await $axios.post('/form/dummy', { 
+            schema: dataSchema,
+            quantity: 5000,
+            page,
+            limit
+        })
         
+        data.value = result.data?.result?.data || []
+        pagination.value = result.data?.result?.pagination || null
     } catch (err) {
         error.value = err.response?.data?.message || err.message || 'Failed to load data'
         console.error('Error loading GRN register:', err)
@@ -83,10 +83,12 @@ const loadForm = async () => {
     }
 }
 
-// Initialize
+const handlePageChange = (page) => {
+    if (page && typeof page === 'number') {
+        loadForm(page, pageSize.value)
+    }
+}
+
 onMounted(loadForm)
-
-
-
 </script>
 
