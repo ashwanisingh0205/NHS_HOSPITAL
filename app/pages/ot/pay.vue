@@ -8,9 +8,7 @@
                     Comprehensive view of patient billing and payment records.
                 </p>
             </div>
-            <UBadge  color="primary" variant="outline" size="lg">
-                Still Admitted
-            </UBadge>
+            <UBadge label="Still Admitted" variant="outline" size="lg" />
         </div>
 
         <!-- Patient Information Card -->
@@ -109,8 +107,7 @@
                 <UTable
                     :data="billDetails"
                     :columns="tableColumns"
-                    :loading="loading"
-                >
+                    :loading="loading">
                     <template #loading>
                         <div class="flex justify-center p-4">
                             <span class="text-gray-500">Loading...</span>
