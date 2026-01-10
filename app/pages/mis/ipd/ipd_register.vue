@@ -7,26 +7,8 @@
             :filterFormCode="filterFormCode"
             :filterEndPoint="filterEndPoint">
             <template #header-actions>
-                <UButton
-                    color="primary"
-                    variant="solid"
-                    :href="pdfPreviewUrl"
-                    target="_blank"
-                    @click.prevent="handlePDFClick"
-                    :loading="downloadingPDF"
-                    leading-icon="lucide:file-pdf">
-                    PDF
-                </UButton>
-                <UButton
-                    color="info"
-                    variant="solid"
-                    :href="csvPreviewUrl"
-                    target="_blank"
-                    @click.prevent="handleCSVClick"
-                    :loading="downloadingCSV"
-                    leading-icon="lucide:file-spreadsheet">
-                    CSV
-                </UButton>
+                <UButton :href="urlPDF" download label="PDF" leadingIcon="lucide:file" />
+                <UButton :href="urlCSV" label="CSV" download leading-icon="lucide:file-spreadsheet"/>
             </template>
             <UTable :loading="loading" :data="data" :columns="columns">
                 <template #loading>
@@ -57,6 +39,8 @@ const { $axios } = useNuxtApp()
 const loading = ref(false)
 const error = ref(null)
 const data = ref([])
+const urlPDF = ref("")
+const urlCSV = ref("")
 
 const title = "IPD Register"
 const filterFormCode = "ipd_register_filter"
@@ -78,9 +62,10 @@ const loadForm = async () => {
     try {
         const result = await $axios.get('/visits/ipd_register')
         data.value = result.data?.registrations?.data || []
+        urlPDF.value = useRuntimeConfig().public.apiBase + `${filterEndPoint}?output=PDF`;
+        urlCSV.value = useRuntimeConfig().public.apiBase + `${filterEndPoint}?output=CSV`;
     } catch (err) {
         error.value = err.response?.data?.message || err.message || 'Failed to load data'
-        console.error('Error loading IPD register:', err)
     } finally {
         loading.value = false
     }

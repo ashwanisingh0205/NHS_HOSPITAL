@@ -7,25 +7,8 @@
             :filterFormCode="filterFormCode"
             :filterEndPoint="filterEndPoint">
             <template #header-actions>
-                <UButton
-                    color="primary"
-                    variant="solid"
-                    :href="pdfPreviewUrl"
-                    @click.prevent="handlePDFClick"
-                    :loading="downloadingPDF"
-                    leading-icon="lucide:file-pdf">
-                    PDF
-                </UButton>
-                <UButton
-                    color="info"
-                    variant="solid"
-                    :href="csvPreviewUrl"
-                    target="_blank"
-                    @click.prevent="handleCSVClick"
-                    :loading="downloadingCSV"
-                    leading-icon="lucide:file-spreadsheet">
-                    CSV
-                </UButton>
+                <UButton :href="urlPDF" download label="PDF" leadingIcon="lucide:file" />
+                <UButton :href="urlCSV" label="CSV" download leading-icon="lucide:file-spreadsheet"/>
             </template>
             <UTable :loading="loading" :data="data" :columns="columns">
                 <template #loading>
@@ -56,10 +39,8 @@ const { $axios } = useNuxtApp()
 const loading = ref(false)
 const error = ref(null)
 const data = ref([])
-const downloadingPDF = ref(false)
-const downloadingCSV = ref(false)
-const pdfPreviewUrl = ref(null)
-const csvPreviewUrl = ref(null)
+const urlPDF = ref("")
+const urlCSV = ref("")
 
 const title = "Patient Register"
 const filterFormCode = "patient_register_filter"
@@ -80,61 +61,12 @@ const loadForm = async () => {
     try {
         const result = await $axios.get('/visits/patient_register')
         data.value = result.data?.registrations?.data || []
+        urlPDF.value = useRuntimeConfig().public.apiBase + `${filterEndPoint}?output=PDF`;
+        urlCSV.value = useRuntimeConfig().public.apiBase + `${filterEndPoint}?output=CSV`;
     } catch (err) {
         error.value = err.response?.data?.message || err.message || 'Failed to load data'
-        console.error('Error loading patient register:', err)
     } finally {
         loading.value = false
-    }
-}
-
-const handlePDFClick = async () => {
-    if (process.server) return
-    
-    if (pdfPreviewUrl.value) {
-        window.open(pdfPreviewUrl.value, '_blank')
-        return
-    }
-    
-    downloadingPDF.value = true
-    try {
-        const response = await $axios.get('/visits/patient_register?output=PDF', {
-            responseType: 'blob'
-        })
-        
-        const blob = new Blob([response.data], { type: 'application/pdf' })
-        pdfPreviewUrl.value = globalThis.URL.createObjectURL(blob)
-        window.open(pdfPreviewUrl.value, '_blank')
-    } catch (err) {
-        error.value = err.response?.data?.message || err.message || 'Failed to load PDF preview'
-        console.error('Error loading PDF preview:', err)
-    } finally {
-        downloadingPDF.value = false
-    }
-}
-
-const handleCSVClick = async () => {
-    if (process.server) return
-    
-    if (csvPreviewUrl.value) {
-        window.open(csvPreviewUrl.value, '_blank')
-        return
-    }
-    
-    downloadingCSV.value = true
-    try {
-        const response = await $axios.get('/visits/patient_register?output=CSV', {
-            responseType: 'blob'
-        })
-        
-        const blob = new Blob([response.data], { type: 'text/csv' })
-        csvPreviewUrl.value = globalThis.URL.createObjectURL(blob)
-        window.open(csvPreviewUrl.value, '_blank')
-    } catch (err) {
-        error.value = err.response?.data?.message || err.message || 'Failed to load CSV preview'
-        console.error('Error loading CSV preview:', err)
-    } finally {
-        downloadingCSV.value = false
     }
 }
 

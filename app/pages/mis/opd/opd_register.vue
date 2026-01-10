@@ -42,7 +42,7 @@ const urlCSV = ref("")
 
 const title = "OPD Register"
 const filterFormCode = "opd_register_filter"
-const filterEndPoint = "/visits/opd_register"
+const filterEndPoint = "/form/defaultForm"
 
 const columns = [
     { accessorKey: 'uhid', header: 'UHID' },

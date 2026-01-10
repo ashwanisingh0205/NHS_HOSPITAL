@@ -30,13 +30,14 @@
         :error="field.error"
         :label="field.label">
         <USelectMenu
-            v-model="field.value[0]"
-            :items="field.choices"
+            :model-value="field.value[0]"
+            @update:model-value="field.value[0] = $event"
+            :items="normalizedChoices"
             value-key="id"
             label-key="value"
             :icon="field.icon"
             class="w-full"
-          :placeholder="field.placeholder || null"
+            :placeholder="field.placeholder || null"
         />
     </UFormField>
     
@@ -200,6 +201,20 @@ const fieldClass = computed(() => {
 })
 
 const options = computed(() => props.field.choices || props.field.options || [])
+
+// Normalize choices to always have 'id' and 'value' keys for USelectMenu
+const normalizedChoices = computed(() => {
+    const choices = props.field.choices || []
+    if (!Array.isArray(choices) || choices.length === 0) return []
+    
+    return choices.map(choice => {
+        // Normalize: use 'id' or 'key' as 'id', use 'value' or 'label' as 'value'
+        return {
+            id: choice.id !== undefined ? choice.id : choice.key,
+            value: choice.value !== undefined ? choice.value : choice.label
+        }
+    })
+})
 
 // Handle keypress for TEXT fields - only allow capital alphabets
 const handleKeyPress = (event) => {
