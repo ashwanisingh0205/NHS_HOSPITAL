@@ -85,8 +85,5 @@ const columns = [
     { id: 'action'}
 ]
 
-const handleAdd = () => {
-    // Handle add new IPD record
-    console.log('Add new IPD record')
-}
+
 </script>
