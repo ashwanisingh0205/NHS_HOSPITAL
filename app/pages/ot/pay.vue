@@ -16,25 +16,22 @@
             <ServiceBreakdownCard
                 v-for="service in services"
                 :key="service.title"
-                v-bind="service"
-               
+                :data="service"
             />
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-2">
-            <PaymentTrendChart title="Payment Trend" subtitle="Daily total vs paid amounts." :data="paymentTrendData" />
+            <PaymentTrendChart :data="{ title: 'Payment Trend', subtitle: 'Daily total vs paid amounts.', data: paymentTrendData }" />
             <div class="flex flex-row gap-2">
-                <SummaryCard title="Total Bill" subtitle="Generated amount." :amount="totalBill" icon="lucide:indian-rupee" card-color="bg-teal-500" icon-color="bg-teal-500" />
-                <SummaryCard title="Total Payment" subtitle="Collected amount." :amount="totalPayment" icon="lucide:wallet" card-color="bg-green-500" icon-color="bg-green-500" />
+                <SummaryCard :data="{ title: 'Total Bill', subtitle: 'Generated amount.', amount: totalBill, icon: 'lucide:indian-rupee', cardColor: 'bg-teal-500', iconColor: 'bg-teal-500' }" />
+                <SummaryCard :data="{ title: 'Total Payment', subtitle: 'Collected amount.', amount: totalPayment, icon: 'lucide:wallet', cardColor: 'bg-green-500', iconColor: 'bg-green-500' }" />
             </div>
-            <PaymentStatusDonut title="Payment Status" subtitle="Paid vs Pending breakdown." :data="paymentStatusData" />
+            <PaymentStatusDonut :data="{ title: 'Payment Status', subtitle: 'Paid vs Pending breakdown.', data: paymentStatusData }" />
         </div>
 
         <BillActionsCard
-            :week-days="weekDays"
-            :selected-date="selectedDate"
+            :data="{ weekDays, selectedDate }"
             @date-select="selectedDate = $event"
-            
         />
 
         <PayorInfoCard :payor="payorInfo" " />
@@ -144,7 +141,16 @@ const patientInfo = ref({
     id: '#PAT-2845',
     admissionDate: '3 Jan 2025',
     badges: ['Open', 'Provisional'],
-    physician: { name: 'Dr. Rajesh Kumar', avatar: '' }
+    physician: { name: 'Dr. Rajesh Kumar', avatar: '' },
+    contactNumber: '+91 98765 43210',
+    email: 'amit.patel@email.com',
+    bloodGroup: 'B+',
+    allergies: 'Penicillin',
+    diagnosis: 'Acute Respiratory Infection',
+    roomDetails: 'ICU - Bed 12, Ward A',
+    lengthOfStay: '5 Days',
+    emergencyContact: 'Mrs. Priya Patel (Wife) • +91 98765 43211',
+    residentialAddress: '123, Green Valley Apartments, Sector 21, Mumbai, Maharashtra - 400001'
 })
 
 const services = ref([

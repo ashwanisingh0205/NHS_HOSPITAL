@@ -2,8 +2,8 @@
   <UCard>
     <template #header>
       <div>
-        <h3 class="text-sm font-semibold">{{ title }}</h3>
-        <p class="text-xs text-gray-500 dark:text-gray-400">{{ subtitle }}</p>
+        <h3 class="text-sm font-semibold">{{ data.title || 'Payment Status' }}</h3>
+        <p class="text-xs text-gray-500 dark:text-gray-400">{{ data.subtitle || 'Paid vs Pending breakdown.' }}</p>
       </div>
     </template>
     
@@ -43,33 +43,30 @@ import { computed, ref } from 'vue'
 import { VisSingleContainer, VisDonut } from '@unovis/vue'
 
 const props = defineProps({
-  title: {
-    type: String,
-    default: 'Payment Status'
-  },
-  subtitle: {
-    type: String,
-    default: 'Paid vs Pending breakdown.'
-  },
   data: {
-    type: Array,
-    required: true
+    type: Object,
+    required: true,
+    default: () => ({
+      title: 'Payment Status',
+      subtitle: 'Paid vs Pending breakdown.',
+      data: []
+    })
   }
 })
 
 const chartRef = ref(null)
 
-const chartData = computed(() => props.data.map(d => d.value))
+const chartData = computed(() => props.data.data.map(d => d.value))
 
 const value = (d) => d
 
 const donutColor = (d, i) => {
-  return props.data[i]?.color || '#10b981'
+  return props.data.data[i]?.color || '#10b981'
 }
 
 const legendData = computed(() => {
-  const total = props.data.reduce((sum, item) => sum + item.value, 0)
-  return props.data.map(item => ({
+  const total = props.data.data.reduce((sum, item) => sum + item.value, 0)
+  return props.data.data.map(item => ({
     ...item,
     percentage: total > 0 ? Math.round((item.value / total) * 100) : 0
   }))

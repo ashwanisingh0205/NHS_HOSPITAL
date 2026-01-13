@@ -547,6 +547,8 @@ const navSections = {
         { name :"OPD Queue", path: '/opd/opd_queue', icon: 'lucide:list-ordered'},
         { name :"IPD Help Desk", path: '/ipd/ipd_help_desk', icon: 'lucide:grid-2x2'},
         {name:"pay", path: '/ot/pay', icon: 'lucide:grid-2x2'},
+        {name:"service",path:'/ot/service',icon:'lucide:user-plus'},
+        {name:"table",path:'/ot/table',icon:'lucide:home'}
     ],
 };
 

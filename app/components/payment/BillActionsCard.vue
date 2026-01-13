@@ -14,11 +14,11 @@
         <!-- Date Buttons -->
         <div class="flex gap-2">
           <button
-            v-for="(day, index) in weekDays"
+            v-for="(day, index) in data.weekDays"
             :key="index"
             @click="handleDateSelect(day.date)"
             class="flex flex-col items-center justify-center w-12 h-14 rounded-lg transition-all"
-            :class="selectedDate === day.date 
+            :class="data.selectedDate === day.date 
               ? 'bg-teal-500 text-white shadow-sm' 
               : 'bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-600'"
           >
@@ -64,14 +64,13 @@
 
 <script setup>
 const props = defineProps({
-  weekDays: {
-    type: Array,
+  data: {
+    type: Object,
     required: true,
-    default: () => []
-  },
-  selectedDate: {
-    type: String,
-    required: true
+    default: () => ({
+      weekDays: [],
+      selectedDate: ''
+    })
   }
 })
 

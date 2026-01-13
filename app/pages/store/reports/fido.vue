@@ -8,6 +8,10 @@
             :show-add="false"
             :filterFormCode="filterFormCode"
             :filterEndPoint="filterEndPoint">
+            <template #header-actions>
+                <UButton :href="urlPDF" download label="PDF" leadingIcon="lucide:file" />
+                <UButton :href="urlCSV" label="CSV" download leading-icon="lucide:file-spreadsheet"/>
+            </template>
             <UTable :loading="loading" :data="data" :columns="columns">
                 <template #loading>
                     <CKLoader />
@@ -37,6 +41,8 @@ const loading = ref(true)
 const error = ref(null)
 const title = "FIDO"
 const { $axios } = useNuxtApp()
+const urlPDF = ref("")
+const urlCSV = ref("")
 
 // Filter Form Configuration
 const filterFormCode = "file_manager_filter"
@@ -76,6 +82,8 @@ const loadForm = async () => {
         
         const result = await $axios.post(endpoint, { schema: dataSchema })
         data.value = result.data?.result?.data || []
+        urlPDF.value = useRuntimeConfig().public.apiBase + `${filterEndPoint}?output=PDF`;
+        urlCSV.value = useRuntimeConfig().public.apiBase + `${filterEndPoint}?output=CSV`;
         
     } catch (err) {
         error.value = err.response?.data?.message || err.message || 'Failed to load data'

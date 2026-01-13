@@ -3,9 +3,9 @@
     <template #header>
       <div class="flex items-center gap-3">
         <div class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 flex-shrink-0">
-          <UIcon :name="icon" class="w-5 h-5" :class="iconColor" />
+          <UIcon :name="data.icon" class="w-5 h-5" :class="data.iconColor" />
         </div>
-        <h3 class="font-semibold text-gray-900 dark:text-gray-100">{{ title }}</h3>
+        <h3 class="font-semibold text-gray-900 dark:text-gray-100">{{ data.title }}</h3>
       </div>
     </template>
     
@@ -15,7 +15,7 @@
         <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
           Remaining Amount
         </p>
-        <p class="text-3xl font-bold leading-tight" :class="amountColor">
+        <p class="text-3xl font-bold leading-tight" :class="data.amountColor">
           ₹{{ formatNumber(remainingAmount) }}
         </p>
       </div>
@@ -25,13 +25,13 @@
         <div class="flex items-center justify-between">
           <span class="text-sm text-gray-600 dark:text-gray-400">Paid Amount</span>
           <span class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-            ₹{{ formatNumber(paidAmount) }}
+            ₹{{ formatNumber(data.paidAmount) }}
           </span>
         </div>
         <div class="flex items-center justify-between">
           <span class="text-sm text-gray-600 dark:text-gray-400">Total Amount</span>
           <span class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-            ₹{{ formatNumber(totalAmount) }}
+            ₹{{ formatNumber(data.totalAmount) }}
           </span>
         </div>
       </div>
@@ -46,7 +46,7 @@
         </div>
         <UProgress 
           :value="progressPercentage" 
-          :color="progressColor"
+          :color="data.progressColor"
           size="md"
           class="w-full"
         />
@@ -81,43 +81,28 @@
 
 <script setup>
 const props = defineProps({
-  title: {
-    type: String,
-    required: true
-  },
-  icon: {
-    type: String,
-    required: true
-  },
-  iconColor: {
-    type: String,
-    default: 'text-blue-600'
-  },
-  totalAmount: {
-    type: Number,
-    default: 0
-  },
-  paidAmount: {
-    type: Number,
-    default: 0
-  },
-  progressColor: {
-    type: String,
-    default: 'green'
-  },
-  amountColor: {
-    type: String,
-    default: 'text-gray-900 dark:text-gray-100'
+  data: {
+    type: Object,
+    required: true,
+    default: () => ({
+      title: '',
+      icon: '',
+      iconColor: 'text-blue-600',
+      totalAmount: 0,
+      paidAmount: 0,
+      progressColor: 'green',
+      amountColor: 'text-gray-900 dark:text-gray-100'
+    })
   }
 })
 
 defineEmits(['add-payment', 'add-service'])
 
-const remainingAmount = computed(() => props.totalAmount - props.paidAmount)
+const remainingAmount = computed(() => props.data.totalAmount - props.data.paidAmount)
 
 const progressPercentage = computed(() => {
-  if (props.totalAmount === 0) return 0
-  return Math.round((props.paidAmount / props.totalAmount) * 100)
+  if (props.data.totalAmount === 0) return 0
+  return Math.round((props.data.paidAmount / props.data.totalAmount) * 100)
 })
 
 const formatNumber = (value) => {

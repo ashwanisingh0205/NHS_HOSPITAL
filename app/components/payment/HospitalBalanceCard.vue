@@ -9,17 +9,17 @@
     
     <div class="space-y-4">
       <div>
-        <p class="text-4xl font-bold text-white mb-2">₹{{ formatNumber(currentBalance) }}</p>
+        <p class="text-4xl font-bold text-white mb-2">₹{{ formatNumber(data.currentBalance) }}</p>
       </div>
       
       <div class="space-y-2 pt-4 border-t border-white/20">
         <div class="flex justify-between text-sm">
           <span class="text-white/80">Total Bill</span>
-          <span class="font-medium text-white">₹{{ formatNumber(totalBill) }}</span>
+          <span class="font-medium text-white">₹{{ formatNumber(data.totalBill) }}</span>
         </div>
         <div class="flex justify-between text-sm">
           <span class="text-white/80">Total Paid</span>
-          <span class="font-medium text-white">₹{{ formatNumber(totalPaid) }}</span>
+          <span class="font-medium text-white">₹{{ formatNumber(data.totalPaid) }}</span>
         </div>
         <div class="flex justify-between text-sm">
           <span class="text-white/80">Remaining</span>
@@ -42,23 +42,20 @@
 
 <script setup>
 const props = defineProps({
-  currentBalance: {
-    type: Number,
-    default: 0
-  },
-  totalBill: {
-    type: Number,
-    default: 0
-  },
-  totalPaid: {
-    type: Number,
-    default: 0
+  data: {
+    type: Object,
+    required: true,
+    default: () => ({
+      currentBalance: 0,
+      totalBill: 0,
+      totalPaid: 0
+    })
   }
 })
 
 defineEmits(['collect-payment'])
 
-const remaining = computed(() => props.totalBill - props.totalPaid)
+const remaining = computed(() => props.data.totalBill - props.data.totalPaid)
 
 const formatNumber = (value) => {
   return new Intl.NumberFormat('en-IN').format(value)

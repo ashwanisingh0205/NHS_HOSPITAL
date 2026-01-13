@@ -8,6 +8,10 @@
             :filterEndPoint="filterEndPoint"
             :pagination="pagination"
             @page-change="handlePageChange">
+            <template #header-actions>
+                <UButton :href="urlPDF" download label="PDF" leadingIcon="lucide:file" />
+                <UButton :href="urlCSV" label="CSV" download leading-icon="lucide:file-spreadsheet"/>
+            </template>
             <UTable :loading="loading" :data="data" :columns="columns">
                 <template #loading>
                     <CKLoader />
@@ -39,6 +43,8 @@ const error = ref(null)
 const data = ref([])
 const pagination = ref(null)
 const pageSize = ref(50)
+const urlPDF = ref("")
+const urlCSV = ref("")
 
 const title = "GRN Register"
 const filterFormCode = "grn_register_filter"
@@ -75,6 +81,8 @@ const loadForm = async (page = 1, limit = 50) => {
         
         data.value = result.data?.result?.data || []
         pagination.value = result.data?.result?.pagination || null
+        urlPDF.value = useRuntimeConfig().public.apiBase + `${filterEndPoint}?output=PDF`;
+        urlCSV.value = useRuntimeConfig().public.apiBase + `${filterEndPoint}?output=CSV`;
     } catch (err) {
         error.value = err.response?.data?.message || err.message || 'Failed to load data'
         console.error('Error loading GRN register:', err)

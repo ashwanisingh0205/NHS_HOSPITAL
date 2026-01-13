@@ -2,8 +2,8 @@
   <UCard ref="cardRef" class="h-full" :ui="{ root: 'overflow-visible', body: '!px-0 !pt-0 !pb-3' }">
     <template #header>
       <div>
-        <h3 class="text-sm font-semibold">{{ title }}</h3>
-        <p class="text-xs text-gray-500 dark:text-gray-400">{{ subtitle }}</p>
+        <h3 class="text-sm font-semibold">{{ data.title || 'Payment Trend' }}</h3>
+        <p class="text-xs text-gray-500 dark:text-gray-400">{{ data.subtitle || 'Daily total vs paid amounts.' }}</p>
       </div>
     </template>
     
@@ -57,17 +57,14 @@ import { VisXYContainer, VisGroupedBar, VisAxis, VisTooltip } from '@unovis/vue'
 import { format } from 'date-fns'
 
 const props = defineProps({
-  title: {
-    type: String,
-    default: 'Payment Trend'
-  },
-  subtitle: {
-    type: String,
-    default: 'Daily total vs paid amounts.'
-  },
   data: {
-    type: Array,
-    required: true
+    type: Object,
+    required: true,
+    default: () => ({
+      title: 'Payment Trend',
+      subtitle: 'Daily total vs paid amounts.',
+      data: []
+    })
   }
 })
 
@@ -78,7 +75,7 @@ const { width: containerWidth } = useElementSize(cardRef)
 
 // Create data for grouped bars
 const chartData = computed(() => 
-  props.data.map((item, index) => ({
+  props.data.data.map((item, index) => ({
     x: index,
     date: item.date,
     paidAmount: item.paidAmount,
@@ -102,7 +99,7 @@ const barColor = (d, i) => {
 }
 
 const xTicks = (i) => {
-  const item = props.data[i]
+  const item = props.data.data[i]
   return item ? format(new Date(item.date), 'd MMM') : ''
 }
 
