@@ -389,6 +389,7 @@ const mainNavItems = [
     { id: 'BLOODBANK', name: 'Blood Bank', icon: 'lucide:droplets' },
     { id: 'ACCOUNTS', name: 'Accounts', icon: 'lucide:indian-rupee' },
     { id: 'MIS', name: 'MIS/BI', icon: 'lucide:file-chart-column-increasing' },
+    { id: 'TESTING', name: 'Testing', icon: 'lucide:user-plus' },
 ];
 
 const navSections = {
@@ -550,6 +551,9 @@ const navSections = {
         {name:"service",path:'/ot/service',icon:'lucide:user-plus'},
         {name:"table",path:'/ot/table',icon:'lucide:home'}
     ],
+    TESTING:[
+        {name:"Testing",path:'/testing/testing',icon:'lucide:user-plus'},
+    ]
 };
 
 const currentNavItems = computed(() => navSections[activeSection.value] || []);
