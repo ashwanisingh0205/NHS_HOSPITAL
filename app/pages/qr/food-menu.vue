@@ -30,8 +30,8 @@
           <UButton
             v-for="category in foodCategories"
             :key="category.id"
-            :variant="selectedCategory === category.id ? 'solid' : 'outline'"
-            :color="selectedCategory === category.id ? 'teal' : 'gray'"
+            :variant="selectedCategory === category.id ? 'solid' : 'soft'"
+            :color="selectedCategory === category.id ? 'primary' : 'info'"
             size="lg"
             @click="selectedCategory = category.id"
             class="shrink-0"
