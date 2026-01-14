@@ -107,6 +107,6 @@ const sendOTP = async () => {
   await new Promise(resolve => setTimeout(resolve, 500))
   
   isLoading.value = false
-  router.push(`/testing/verify-otp?phone=${phoneNumber.value}`)
+  router.push(`/qr/login_verification?phone=${phoneNumber.value}`)
 }
 </script>

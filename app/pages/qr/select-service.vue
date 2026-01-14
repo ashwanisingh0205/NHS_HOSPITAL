@@ -88,9 +88,10 @@ const serviceList = {
     { id: 3, name: 'Insurance Query' }
   ],
   fb: [
-    { id: 1, name: 'Food Quality' },
-    { id: 2, name: 'Special Diet Request' },
-    { id: 3, name: 'Meal Timing' }
+    { id: 1, name: 'Order Food', isMenu: true },
+    { id: 2, name: 'Food Quality' },
+    { id: 3, name: 'Special Diet Request' },
+    { id: 4, name: 'Meal Timing' }
   ]
 }
 
@@ -108,10 +109,16 @@ const filteredServices = computed(() => {
 })
 
 const goBack = () => {
-  router.push('/testing/main-menu')
+  router.push('/qr/home')
 }
 
 const selectService = (service) => {
-  router.push(`/testing/service-request?service=${service.name}&category=${category.value}`)
+  // If it's the food menu option, route to food menu
+  if (service.isMenu) {
+    router.push('/qr/food-menu')
+    return
+  }
+  // Otherwise, route to service request
+  router.push(`/qr/service-request?service=${service.name}&category=${category.value}`)
 }
 </script>

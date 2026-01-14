@@ -26,6 +26,18 @@
         color="gray"
         @click="$emit('notify')"
       />
+      <div v-if="showCart" class="relative">
+        <UButton
+          icon="lucide:shopping-cart"
+          variant="ghost"
+          color="gray"
+          @click="$emit('cart')"
+        >
+          <span v-if="cartCount > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+            {{ cartCount }}
+          </span>
+        </UButton>
+      </div>
       <LanguageSelector />
     </div>
   </div>
@@ -50,8 +62,16 @@ defineProps({
   showNotifications: {
     type: Boolean,
     default: false
+  },
+  showCart: {
+    type: Boolean,
+    default: false
+  },
+  cartCount: {
+    type: Number,
+    default: 0
   }
 })
 
-defineEmits(['back', 'search', 'notify'])
+defineEmits(['back', 'search', 'notify', 'cart'])
 </script>

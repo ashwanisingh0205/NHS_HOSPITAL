@@ -79,11 +79,12 @@ const searchQuery = ref('')
 
 const services = ref([
   { id: 1, name: 'House Keeping', icon: 'lucide:brush-cleaning', category: 'housekeeping' },
-  { id: 2, name: 'Patient Complaints & Suggestions', icon: 'lucide:headphones', category: 'complaints' },
-  { id: 3, name: 'GDA', icon: 'lucide:bed', category: 'gda' },
-  { id: 4, name: 'E&M', icon: 'lucide:zap', category: 'em' },
-  { id: 5, name: 'IPD Billing', icon: 'lucide:dollar-sign', category: 'billing' },
-  { id: 6, name: 'F&B', icon: 'lucide:utensils', category: 'fb' }
+    { id: 2, name: 'Food & Beverage', icon: 'lucide:utensils', category: 'fb' },
+  { id: 3, name: 'Patient Complaints & Suggestions', icon: 'lucide:headphones', category: 'complaints' },
+  { id: 4, name: 'Plumber', icon: 'lucide:bed', category: 'gda' },
+  { id: 5, name: 'Electricity & Maintenance', icon: 'lucide:zap', category: 'em' },
+  { id: 6, name: 'IPD Billing', icon: 'lucide:dollar-sign', category: 'billing' },
+
 ])
 
 const filteredServices = computed(() => {
@@ -97,6 +98,6 @@ const filteredServices = computed(() => {
 })
 
 const selectService = (service) => {
-  router.push(`/testing/select-service?category=${service.category}`)
+  router.push(`/qr/select-service?category=${service.category}`)
 }
 </script>

@@ -1,12 +1,9 @@
 <template>
   <div class="min-h-screen bg-gray-50 flex flex-col">
-    <!-- Header -->
-    <div class="flex items-center justify-end p-4 bg-white">
-      <LanguageSelector />
-    </div>
+    
 
     <!-- Main Content -->
-    <div class="flex-1 flex items-center justify-center px-6 py-12">
+    <div class="flex-1 flex items-center justify-center mb-24 px-6 py-12">
       <div class="w-full max-w-md">
         <!-- Icon -->
         <div class="flex justify-center mb-6">
@@ -107,7 +104,7 @@ const handleKeyDown = (index, event) => {
 
 const verifyOTP = () => {
   if (isOTPComplete.value) {
-    router.push('/testing/main-menu')
+    router.push('/qr/home')
   }
 }
 
@@ -118,6 +115,6 @@ const resendOTP = () => {
 }
 
 const changePhoneNumber = () => {
-  router.push('/testing/welcome')
+  router.push('/qr/login')
 }
 </script>
